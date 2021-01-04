@@ -1,0 +1,13 @@
+{
+  "name": "{{project.id}}",
+  "private": "true",
+  "devDependencies": {
+    "autoprefixer": "*",
+    "chokidar-cli": "*",
+    "clean-css-cli": "*",
+    "esbuild": "*",
+    "html-minifier": "*",
+    "postcss": "*",
+    "postcss-cli": "*"
+  }
+}
