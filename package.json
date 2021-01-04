@@ -1,13 +1,13 @@
 {
-  "name": "{{project.id}}",
+  "name": "sprite",
   "private": "true",
   "devDependencies": {
-    "autoprefixer": "*",
-    "chokidar-cli": "*",
-    "clean-css-cli": "*",
-    "esbuild": "*",
-    "html-minifier": "*",
-    "postcss": "*",
-    "postcss-cli": "*"
+    "autoprefixer": "^10.1.0",
+    "chokidar-cli": "^2.1.0",
+    "clean-css-cli": "^4.3.0",
+    "esbuild": "^0.8.29",
+    "html-minifier": "^4.0.0",
+    "postcss": "^8.2.2",
+    "postcss-cli": "^8.3.1"
   }
 }
