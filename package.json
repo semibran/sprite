@@ -2,7 +2,7 @@
   "name": "sprite",
   "private": "true",
   "dependencies": {
-    "hyperapp": "^2.0.8"
+    "mithril": "^2.0.4"
   },
   "devDependencies": {
     "chokidar-cli": "^2.1.0",

@@ -1,50 +1,53 @@
-import { h, text, app } from 'hyperapp'
+import m from 'mithril'
 
-const uploadFx = (dispatch, props) => {
-  const image = new Image()
-  image.src = URL.createObjectURL(props.file)
-  image.onload = () => {
-    dispatch(image)
-  }
+const Canvas = {
+  oncreate: vnode => {
+    const image = vnode.attrs.image
+    const canvas = vnode.dom
+    const context = canvas.getContext('2d')
+    canvas.width = image.width
+    canvas.height = image.height
+    context.drawImage(image, 0, 0)
+  },
+  view: vnode =>
+    m('canvas')
 }
 
-const upload = (props) =>
-  [uploadFx, props]
+m.mount(document.body, () => {
+  const state = { image: null, sprites: [] }
 
-const UploadImage = (state, evt) => [
-  state,
-  upload({
-    file: evt.target.files[0],
-    action: SetImage
-  })
-]
+  const uploadImage = (evt) => {
+    const image = new Image()
+    image.src = URL.createObjectURL(evt.target.files[0])
+    image.onload = () =>
+      setImage(image)
+  }
 
-const SetImage = (state, image) =>
-  ({ ...state, image })
+  const setImage = (image) => {
+    state.image = image
+    m.redraw()
+  }
 
-app({
-  init: { image: null, sprites: [] },
-  view: ({ image }) => {
-    console.log(image)
-    return h('main', { class: 'app' }, [
-      h('aside', { class: 'sidebar' }),
-      h('div', { class: 'editor' }, [
-        !image
-          ? h('input', {
-              id: 'upload',
-              type: 'file',
-              accept: 'image/png, image/gif',
-              multiple: false,
-              onchange: UploadImage
-            })
-          : text(image)
-        // h('button', {}, [
-        //   h('span', { class: 'icon material-icons-round' },
-        //     text('publish')),
-        //   text('Select an image...')
-        // ])
+  return {
+    view: () =>
+      m('main', { class: 'app' }, [
+        m('aside', { class: 'sidebar' }),
+        m('div', { class: 'editor' }, [
+          !state.image
+            ? m('input', {
+                id: 'upload',
+                type: 'file',
+                accept: 'image/png, image/gif',
+                multiple: false,
+                onchange: uploadImage
+              })
+            : m(Canvas, { image: state.image })
+          // h('button', {}, [
+          //   h('span', { class: 'icon material-icons-round' },
+          //     text('publish')),
+          //   text('Select an image...')
+          // ])
+        ])
       ])
-    ])
-  },
-  node: document.getElementById('app')
+  }
 })

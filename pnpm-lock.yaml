@@ -1,5 +1,5 @@
 dependencies:
-  hyperapp: 2.0.8
+  mithril: 2.0.4
 devDependencies:
   chokidar-cli: 2.1.0
   clean-css-cli: 4.3.0
@@ -1514,10 +1514,6 @@ packages:
     optional: true
     resolution:
       integrity: sha512-IgieNijUMbkDovyoKObU1DUhm1iwNYE/fuifEoEHfd1oZKZDaONBSkal7Y01shxsM49R4XaMdGez3WnF9UfiCQ==
-  /hyperapp/2.0.8:
-    dev: false
-    resolution:
-      integrity: sha512-RZxmJ3G4VcR23RZfmK6U8KR7wHhXrbXAhKvjQuyg/kAv1bEIymdxUsrJAwtfXj0aasGU7CDQP70Gb2KwfxgJ/w==
   /ignore/4.0.6:
     dev: false
     engines:
@@ -2031,6 +2027,11 @@ packages:
     optional: true
     resolution:
       integrity: sha512-FM9nNUYrRBAELZQT3xeZQ7fmMOBg6nWNmJKTcgsJeaLstP/UODVpGsr5OhXhhXg6f+qtJ8uiZ+PUxkDWcgIXLw==
+  /mithril/2.0.4:
+    dev: false
+    hasBin: true
+    resolution:
+      integrity: sha512-mgw+DMZlhMS4PpprF6dl7ZoeZq5GGcAuWnrg5e12MvaGauc4jzWsDZtVGRCktsiQczOEUr2K5teKbE5k44RlOg==
   /ms/2.0.0:
     dev: false
     optional: true
@@ -3288,7 +3289,7 @@ specifiers:
   eslint-plugin-node: ^11.1.0
   eslint-plugin-promise: ^4.2.1
   html-minifier: ^4.0.0
-  hyperapp: ^2.0.8
+  mithril: ^2.0.4
   sass: ^1.32.5
   stylelint: ^13.9.0
   stylelint-config-standard: ^20.0.0
