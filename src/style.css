@@ -3,3 +3,22 @@
   padding: 0;
   box-sizing: border-box;
 }
+
+:root {
+  --black: #222;
+  --charcoal: #333;
+  --darkgray: #444;
+  --gray: #666;
+  --lightgray: #999;
+  --silver: #ccc;
+}
+
+body {
+  background: var(--charcoal);
+}
+
+.sidebar {
+  width: 40%;
+  height: 100vh;
+  background: var(--darkgray);
+}

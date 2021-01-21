@@ -1,29 +1,42 @@
 # GNU Make 3.8.2 and above
 
+MAKEFLAGS += --no-print-directory
+
+.EXPORT_ALL_VARIABLES:
+.PHONY: all start clean html css js assets
+
 PATH := $(PWD)/node_modules/.bin:$(PATH)
 SHELL := /bin/bash
 
 all: clean
-	esbuild src/index.js --bundle --minify --outfile=dist/index.js
-	postcss src/style.css -u autoprefixer -o dist/style.css -m
-	cleancss dist/style.css -o dist/style.css --source-map --source-map-inline-sources
-	html-minifier --collapse-whitespace src/index.html -o dist/index.html
-	rm dist/*.map
+	esbuild src/main.js --bundle --minify \
+	--define:process.env.NODE_ENV=\"production\" \
+	--loader:.js=jsx \
+	--outfile=tmp/main.bundle.js
+	tsc tmp/main.bundle.js --allowJs --lib DOM,ES2015 --target ES5 --outFile tmp/main.bundle.es5.js
+	uglifyjs tmp/main.bundle.es5.js --toplevel -m -c drop_console=true,passes=3 > public/main.js
+	sass src/style.scss public/style.css
+	cleancss public/style.css -o public/style.css
+	html-minifier --collapse-whitespace src/index.html -o public/index.html
+	rm public/*.map
 
-watch: clean js css html
+start: clean js css html
 	chokidar "src/**/*.js" -c "make js" \
 	& chokidar "src/*.css" -c "make css" \
 	& chokidar "src/*.html" -c "make html" \
 
 clean:
-	rm -rf dist
-	mkdir -p dist/tmp
+	rm -rf public
+	mkdir -p {public,tmp}
 
 html:
-	cp src/index.html dist/index.html
+	cp src/index.html public/index.html
 
 css:
-	cp src/style.css dist/style.css
+	cp src/style.css public/style.css
 
 js:
-	esbuild src/index.js --bundle --sourcemap --outfile=dist/index.js
+	esbuild src/main.js --bundle --sourcemap \
+	--define:process.env.NODE_ENV=\"dev\" \
+	--loader:.js=jsx \
+	--outfile=public/main.js
