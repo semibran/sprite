@@ -1,0 +1,34 @@
+$black: #222;
+$charcoal: #333;
+$darkgray: #444;
+$gray: #666;
+$lightgray: #999;
+$silver: #ccc;
+$blue: #3cf;
+
+body {
+  background: $charcoal;
+  font-family: Inter, '-apple-system', BlinkMacSystemFont, Helvetica, Arial, sans-serif;
+}
+
+.sidebar {
+  width: 40%;
+  height: 100vh;
+  background: $darkgray;
+}
+
+button {
+  background: $blue;
+  color: white;
+  font-weight: bold;
+  letter-spacing: 0.05em;
+  padding: 0.75rem 1rem;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+}
+
+button .icon {
+  margin-left: -0.125em;
+  margin-right: 0.25em;
+}

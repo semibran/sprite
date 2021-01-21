@@ -1,0 +1,22 @@
+* {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: 0;
+  box-sizing: border-box;
+  font: inherit;
+  letter-spacing: inherit;
+  color: inherit;
+}
+
+html {
+  // prevent scaling on mobile devices
+  -webkit-text-size-adjust: none;
+}
+
+body {
+  width: 100%;
+  min-height: 100vh;
+  -webkit-font-smoothing: subpixel-antialiased;
+  text-rendering: optimizeLegibility;
+}
