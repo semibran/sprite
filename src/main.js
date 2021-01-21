@@ -1,28 +1,5 @@
 import m from 'mithril'
-
-const Canvas = {
-  oncreate: vnode => {
-    const image = vnode.attrs.image
-    const canvas = vnode.dom
-    const parent = canvas.parentNode
-    const context = canvas.getContext('2d')
-    canvas.width = parent.offsetWidth
-    canvas.height = parent.offsetHeight
-    context.fillStyle = 'gray'
-    context.fillRect(0, 0, canvas.width, canvas.height)
-    for (let y = 0; y < canvas.height; y += 16) {
-      for (let x = 0; x < canvas.width; x += 16) {
-        if ((x + y) % 32) {
-          context.fillStyle = 'silver'
-          context.fillRect(x, y, 16, 16)
-        }
-      }
-    }
-    context.drawImage(image, 0, 0)
-  },
-  view: () =>
-    m('canvas')
-}
+import Canvas from './comps/canvas'
 
 m.mount(document.body, () => {
   const state = { image: null, sprites: [] }
