@@ -6,15 +6,37 @@ $lightgray: #999;
 $silver: #ccc;
 $blue: #3cf;
 
+* {
+  font-family: Inter, '-apple-system', BlinkMacSystemFont, Helvetica, Arial, sans-serif;
+}
+
 body {
   background: $charcoal;
-  font-family: Inter, '-apple-system', BlinkMacSystemFont, Helvetica, Arial, sans-serif;
+}
+
+.app {
+  display: flex;
 }
 
 .sidebar {
   width: 40%;
   height: 100vh;
   background: $darkgray;
+}
+
+.editor {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+}
+
+#upload {
+  display: flex;
+  color: white;
+  border: thin solid $gray;
+  border-radius: 4px;
+  padding: 1rem;
 }
 
 button {
