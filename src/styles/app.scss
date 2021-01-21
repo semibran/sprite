@@ -1,10 +1,11 @@
-$black: #222;
-$charcoal: #333;
-$darkgray: #444;
+$black: #111;
+$charcoal: #222;
+$darkgray: #333;
 $gray: #666;
 $lightgray: #999;
 $silver: #ccc;
-$blue: #3cf;
+$blue: #3af;
+$darkblue: #28e;
 
 * {
   font-family: Inter, '-apple-system', BlinkMacSystemFont, Helvetica, Arial, sans-serif;
@@ -19,7 +20,7 @@ body {
 }
 
 .sidebar {
-  width: 40%;
+  width: 320px;
   height: 100vh;
   background: $darkgray;
 }
@@ -42,19 +43,25 @@ body {
   cursor: pointer;
   display: flex;
   align-items: center;
+  transition: 0.125s background,
+              0.125s border;
 }
 
 .button .icon {
   margin-left: -0.125em;
-  margin-right: 0.25em;
+  margin-right: 0.125em;
 }
 
 #upload {
   width: 0;
 }
 
+.upload-button:hover {
+  background: $darkblue;
+}
+
 .upload-button:focus-within {
-  box-shadow: 0 0 0 1px white;
+  border-color: white;
 }
 
 .upload-text {
