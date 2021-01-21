@@ -9,7 +9,7 @@ const Canvas = {
     canvas.height = image.height
     context.drawImage(image, 0, 0)
   },
-  view: vnode =>
+  view: () =>
     m('canvas')
 }
 
@@ -30,17 +30,23 @@ m.mount(document.body, () => {
 
   return {
     view: () =>
-      m('main', { class: 'app' }, [
-        m('aside', { class: 'sidebar' }),
-        m('div', { class: 'editor' }, [
+      m('main.app', [
+        m('aside.sidebar'),
+        m('.editor', [
           !state.image
-            ? m('input', {
-                id: 'upload',
-                type: 'file',
-                accept: 'image/png, image/gif',
-                multiple: false,
-                onchange: uploadImage
-              })
+            ? m('.upload-wrap', [
+                m('label.button.upload-button', { for: 'upload' }, [
+                  m('span.icon.material-icons-round', 'publish'),
+                  'Select an image...',
+                  m('input#upload', {
+                    type: 'file',
+                    accept: 'image/png, image/gif',
+                    multiple: false,
+                    onchange: uploadImage
+                  })
+                ]),
+                m('span.upload-text', 'Accepted formats: .png, .gif')
+              ])
             : m(Canvas, { image: state.image })
           // h('button', {}, [
           //   h('span', { class: 'icon material-icons-round' },
