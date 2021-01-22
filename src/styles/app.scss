@@ -1,6 +1,7 @@
 $black: #111;
 $charcoal: #222;
-$darkgray: #333;
+$darkgray: #2d2d2d;
+$dimgray: #333;
 $gray: #666;
 $lightgray: #999;
 $silver: #ccc;
@@ -28,7 +29,7 @@ body {
 .sidebar {
   width: 320px;
   height: 100vh;
-  background: $darkgray;
+  background: $dimgray;
   overflow-y: scroll;
 }
 
@@ -40,8 +41,23 @@ body {
 
 .entry:hover {
   cursor: pointer;
-  background: $charcoal;
+  background: adjust-color($dimgray, $blackness: 20%);
 }
+
+.entry.-select {
+  background: $gray;
+  color: white;
+
+  &:hover {
+    background: adjust-color($gray, $blackness: 20%)
+  }
+
+  .entry-thumb {
+    border-color: $lightgray;
+  }
+}
+
+
 
 .entry-thumb {
   background: $charcoal;

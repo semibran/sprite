@@ -5,11 +5,15 @@ export default {
     const image = vnode.attrs.image
     const canvas = vnode.dom
     resize(canvas)
-    // canvas.height = image.height
     fill(canvas)
 
     const context = canvas.getContext('2d')
-    context.drawImage(image, Math.round(canvas.width / 2 - image.width / 2), 0)
+    const xoffset = Math.round(canvas.width / 2 - image.width / 2)
+    for (const [x, y, width, height] of vnode.attrs.rects) {
+      context.strokeStyle = 'white'
+      context.strokeRect(x + xoffset + 0.5, y + 0.5, width, height)
+    }
+    context.drawImage(image, xoffset, 0)
   },
   view: () =>
     m('canvas')

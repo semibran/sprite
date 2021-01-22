@@ -9,7 +9,8 @@ m.mount(document.body, () => {
   const state = {
     image: null,
     rects: [],
-    sprites: []
+    sprites: [],
+    selects: []
   }
 
   const uploadImage = (evt) => {
@@ -26,13 +27,26 @@ m.mount(document.body, () => {
     m.redraw()
   }
 
+  const toggleEntry = (i) => (evt) => {
+    const idx = state.selects.indexOf(i)
+    if (idx === -1) {
+      state.selects.push(i)
+    } else {
+      state.selects.splice(idx, 1)
+    }
+  }
+
   return {
     view: () =>
       m('main.app', [
         m('aside.sidebar', [
           state.sprites.map((sprite, i) => {
             const [x, y] = state.rects[i]
-            return m('.entry', [
+            return m('.entry', {
+              key: i,
+              onclick: toggleEntry(i),
+              class: state.selects.includes(i) ? '-select' : -1
+            }, [
               m('.entry-thumb', [
                 m(Thumb, { image: sprite })
               ]),
@@ -55,7 +69,7 @@ m.mount(document.body, () => {
                 ]),
                 m('span.upload-text', 'Accepted formats: .png, .gif')
               ])
-            : m(Canvas, { image: state.image })
+            : m(Canvas, { image: state.image, rects: state.rects })
         ])
       ])
   }
