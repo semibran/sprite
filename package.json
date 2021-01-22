@@ -2,6 +2,7 @@
   "name": "sprite",
   "private": "true",
   "dependencies": {
+    "img-extract": "^1.0.0",
     "mithril": "^2.0.4"
   },
   "devDependencies": {

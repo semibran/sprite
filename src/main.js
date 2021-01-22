@@ -1,8 +1,16 @@
 import m from 'mithril'
+import extract from 'img-extract'
 import Canvas from './comps/canvas'
+import Thumb from './comps/thumb'
+import clone from './lib/img-clone'
+import slice from './lib/slice'
 
 m.mount(document.body, () => {
-  const state = { image: null, sprites: [] }
+  const state = {
+    image: null,
+    rects: [],
+    sprites: []
+  }
 
   const uploadImage = (evt) => {
     const image = new Image()
@@ -12,14 +20,24 @@ m.mount(document.body, () => {
   }
 
   const setImage = (image) => {
-    state.image = image
+    state.image = clone(image)
+    state.rects = slice(state.image)
+    state.sprites = state.rects.map(rect => extract(image, ...rect))
     m.redraw()
   }
 
   return {
     view: () =>
       m('main.app', [
-        m('aside.sidebar'),
+        m('aside.sidebar', [
+          state.sprites.map(sprite =>
+            m('.entry', [
+              m('.entry-thumb', [
+                m(Thumb, { image: sprite })
+              ])
+            ])
+          )
+        ]),
         m('#editor', [
           !state.image
             ? m('.upload-wrap', [
