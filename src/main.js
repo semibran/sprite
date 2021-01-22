@@ -69,7 +69,11 @@ m.mount(document.body, () => {
                 ]),
                 m('span.upload-text', 'Accepted formats: .png, .gif')
               ])
-            : m(Canvas, { image: state.image, rects: state.rects })
+            : m(Canvas, {
+              image: state.image,
+              rects: state.rects,
+              selects: state.selects
+            })
         ])
       ])
   }
