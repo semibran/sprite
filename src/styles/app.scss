@@ -27,10 +27,27 @@ body {
 }
 
 .sidebar {
+  background: $charcoal;
   width: 320px;
   height: 100vh;
-  background: $dimgray;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-entries {
+  flex: 1;
   overflow-y: scroll;
+}
+
+.sidebar-footer {
+  background: $dimgray;
+  padding: 8px 1rem;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.sidebar-footer .button + .button {
+  margin-left: 8px;
 }
 
 .entry {
@@ -41,15 +58,15 @@ body {
 
 .entry:hover {
   cursor: pointer;
-  background: adjust-color($dimgray, $blackness: 20%);
+  background: adjust-color($charcoal, $blackness: 20%);
 }
 
 .entry.-select {
-  background: $gray;
+  background: $dimgray;
   color: white;
 
   &:hover {
-    background: adjust-color($gray, $blackness: 20%)
+    background: adjust-color($dimgray, $blackness: 20%)
   }
 
   .entry-thumb {
@@ -57,10 +74,8 @@ body {
   }
 }
 
-
-
 .entry-thumb {
-  background: $charcoal;
+  background: $black;
   border: thin solid $gray;
   width: 4rem;
   height: 4rem;
@@ -92,30 +107,41 @@ body {
   font-weight: bold;
   letter-spacing: 0.05em;
   padding: 0.75em 1.5em;
-  border: 2px solid $charcoal;
+  border: 2px solid transparent;
   border-radius: 4px;
-  cursor: pointer;
+  outline: 0;
   display: flex;
   align-items: center;
   transition: 0.125s background,
+              0.125s color,
               0.125s border;
 }
 
 .button .icon {
   margin-left: -0.125em;
-  margin-right: 0.125em;
+  margin-right: 0.25em;
+}
+
+.button:hover {
+  cursor: pointer;
+  background: $darkblue;
+}
+
+.button:focus-within, .button:focus {
+  border-color: white;
+}
+
+.button[disabled] {
+  background: $darkgray;
+  color: $lightgray;
+
+  &:hover {
+    cursor: default;
+  }
 }
 
 #upload {
   width: 0;
-}
-
-.upload-button:hover {
-  background: $darkblue;
-}
-
-.upload-button:focus-within {
-  border-color: white;
 }
 
 .upload-text {

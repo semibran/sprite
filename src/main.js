@@ -4,6 +4,7 @@ import Canvas from './comps/canvas'
 import Thumb from './comps/thumb'
 import clone from './lib/img-clone'
 import slice from './lib/slice'
+import merge from './lib/merge'
 
 m.mount(document.body, () => {
   const state = {
@@ -36,23 +37,52 @@ m.mount(document.body, () => {
     }
   }
 
+  const mergeSelects = () => {
+    const rects = state.selects.map(idx => state.rects[idx])
+    for (let i = state.selects.length; --i;) {
+      const idx = state.selects[i]
+      state.rects.splice(idx, 1)
+      state.sprites.splice(idx, 1)
+    }
+    state.rects[state.selects[0]] = merge(rects)
+    state.selects.length = 0
+  }
+
   return {
+    onupdate: () => {
+      console.log(state.sprites.length)
+    },
     view: () =>
       m('main.app', [
         m('aside.sidebar', [
-          state.sprites.map((sprite, i) => {
-            const [x, y] = state.rects[i]
-            return m('.entry', {
-              key: i,
-              onclick: toggleEntry(i),
-              class: state.selects.includes(i) ? '-select' : -1
+          m('.sidebar-entries', [
+            state.sprites.map((sprite, i) => {
+              const [x, y] = state.rects[i]
+              return m('.entry', {
+                key: i,
+                onclick: toggleEntry(i),
+                class: state.selects.includes(i) ? '-select' : -1
+              }, [
+                m('.entry-thumb', [
+                  m(Thumb, { image: sprite })
+                ]),
+                m('.entry-name', `${x},${y}`)
+              ])
+            })
+          ]),
+          m('.sidebar-footer', [
+            m('button.button.-split', { disabled: true }, [
+              m('span.icon.material-icons-round', 'vertical_split'),
+              'Split'
+            ]),
+            m('button.button.-merge', {
+              disabled: state.selects.length < 2,
+              onclick: state.selects.length >= 2 && mergeSelects
             }, [
-              m('.entry-thumb', [
-                m(Thumb, { image: sprite })
-              ]),
-              m('.entry-name', `${x},${y}`)
+              m('span.icon.material-icons-round', 'aspect_ratio'),
+              'Merge'
             ])
-          })
+          ])
         ]),
         m('#editor', [
           !state.image
