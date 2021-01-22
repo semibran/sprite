@@ -38,35 +38,37 @@ m.mount(document.body, () => {
   }
 
   const mergeSelects = () => {
+    state.selects.sort()
     const rects = state.selects.map(idx => state.rects[idx])
     for (let i = state.selects.length; --i;) {
       const idx = state.selects[i]
       state.rects.splice(idx, 1)
       state.sprites.splice(idx, 1)
     }
-    state.rects[state.selects[0]] = merge(rects)
+    const idx = state.selects[0]
+    const rect = merge(rects)
+    state.rects[idx] = rect
+    state.sprites[idx] = extract(state.image, ...rect)
     state.selects.length = 0
   }
 
   return {
-    onupdate: () => {
-      console.log(state.sprites.length)
-    },
     view: () =>
       m('main.app', [
         m('aside.sidebar', [
           m('.sidebar-entries', [
             state.sprites.map((sprite, i) => {
-              const [x, y] = state.rects[i]
+              const rect = state.rects[i]
+              const [x, y] = rect
               return m('.entry', {
-                key: i,
+                key: i + '-' + rect.join(','),
                 onclick: toggleEntry(i),
                 class: state.selects.includes(i) ? '-select' : -1
               }, [
                 m('.entry-thumb', [
                   m(Thumb, { image: sprite })
                 ]),
-                m('.entry-name', `${x},${y}`)
+                m('.entry-name', x + ',' + y)
               ])
             })
           ]),
