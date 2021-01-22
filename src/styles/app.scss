@@ -6,13 +6,19 @@ $lightgray: #999;
 $silver: #ccc;
 $blue: #3af;
 $darkblue: #28e;
+$font-mono: 'Source Code Pro', Monaco, Consolas, monospace;
 
 * {
   font-family: Inter, '-apple-system', BlinkMacSystemFont, Helvetica, Arial, sans-serif;
 }
 
+html {
+  font-size: 14px;
+}
+
 body {
   background: $charcoal;
+  color: $silver;
 }
 
 .app {
@@ -28,7 +34,13 @@ body {
 
 .entry {
   display: flex;
-  padding: 0.5rem 2rem;
+  align-items: center;
+  padding: 4px 2rem;
+}
+
+.entry:hover {
+  cursor: pointer;
+  background: $charcoal;
 }
 
 .entry-thumb {
@@ -36,6 +48,7 @@ body {
   border: thin solid $gray;
   width: 4rem;
   height: 4rem;
+  margin-right: 1rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -44,6 +57,10 @@ body {
 .entry-thumb canvas {
   max-width: 4rem;
   max-height: 4rem;
+}
+
+.entry-name {
+  font-family: $font-mono;
 }
 
 #editor {

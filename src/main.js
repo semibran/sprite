@@ -30,13 +30,15 @@ m.mount(document.body, () => {
     view: () =>
       m('main.app', [
         m('aside.sidebar', [
-          state.sprites.map(sprite =>
-            m('.entry', [
+          state.sprites.map((sprite, i) => {
+            const [x, y] = state.rects[i]
+            return m('.entry', [
               m('.entry-thumb', [
                 m(Thumb, { image: sprite })
-              ])
+              ]),
+              m('.entry-name', `${x},${y}`)
             ])
-          )
+          })
         ]),
         m('#editor', [
           !state.image
