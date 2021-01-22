@@ -52,10 +52,39 @@ m.mount(document.body, () => {
     state.selects.length = 0
   }
 
+  function Upload () {
+    return m('.upload-wrap', [
+      m('label.button.upload-button', { for: 'upload' }, [
+        m('span.icon.material-icons-round', 'publish'),
+        'Select an image',
+        m('input#upload', {
+          type: 'file',
+          accept: 'image/png, image/gif',
+          multiple: false,
+          onchange: uploadImage
+        })
+      ]),
+      m('span.upload-text', 'Accepted formats: .png, .gif')
+    ])
+  }
+
   return {
     view: () =>
       m('main.app', [
+        m('header', [
+
+        ]),
         m('aside.sidebar', [
+          m('.sidebar-header', [
+            m('.tab.-sprites.-active', [
+              m('span.icon.material-icons-round', 'list'),
+              `Sprites (${state.sprites.length})`
+            ]),
+            m('.tab.-anims', [
+              m('span.icon.material-icons-round', 'movie'),
+              'Animations'
+            ])
+          ]),
           m('.sidebar-entries', [
             state.sprites.map((sprite, i) => {
               const rect = state.rects[i]
@@ -63,7 +92,7 @@ m.mount(document.body, () => {
               return m('.entry', {
                 key: i + '-' + rect.join(','),
                 onclick: toggleEntry(i),
-                class: state.selects.includes(i) ? '-select' : -1
+                class: state.selects.includes(i) ? '-select' : null
               }, [
                 m('.entry-thumb', [
                   m(Thumb, { image: sprite })
@@ -88,19 +117,7 @@ m.mount(document.body, () => {
         ]),
         m('#editor', [
           !state.image
-            ? m('.upload-wrap', [
-                m('label.button.upload-button', { for: 'upload' }, [
-                  m('span.icon.material-icons-round', 'publish'),
-                  'Select an image',
-                  m('input#upload', {
-                    type: 'file',
-                    accept: 'image/png, image/gif',
-                    multiple: false,
-                    onchange: uploadImage
-                  })
-                ]),
-                m('span.upload-text', 'Accepted formats: .png, .gif')
-              ])
+            ? Upload()
             : m(Canvas, {
               image: state.image,
               rects: state.rects,

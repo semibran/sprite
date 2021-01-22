@@ -1,7 +1,7 @@
 $black: #111;
 $charcoal: #222;
 $darkgray: #2d2d2d;
-$dimgray: #333;
+$dimgray: #3a3a3a;
 $gray: #666;
 $lightgray: #999;
 $silver: #ccc;
@@ -32,6 +32,28 @@ body {
   height: 100vh;
   display: flex;
   flex-direction: column;
+}
+
+.sidebar-header {
+  display: flex;
+  background: $dimgray;
+}
+
+.tab {
+  display: flex;
+  align-items: center;
+  padding: 12px 1.5rem;
+  font-weight: bold;
+}
+
+.tab .icon {
+  margin-left: -4px;
+  margin-right: 8px;
+}
+
+.tab.-active {
+  background: $charcoal;
+  color: white;
 }
 
 .sidebar-entries {
