@@ -8,10 +8,12 @@ import merge from './lib/merge'
 
 m.mount(document.body, () => {
   const state = {
+    tab: 'sprites',
     image: null,
     rects: [],
     sprites: [],
-    selects: []
+    selects: [],
+    anims: []
   }
 
   const uploadImage = (evt) => {
@@ -52,6 +54,10 @@ m.mount(document.body, () => {
     state.selects.length = 0
   }
 
+  const selectTab = (tab) => () => {
+    state.tab = tab
+  }
+
   function Upload () {
     return m('.upload-wrap', [
       m('label.button.upload-button', { for: 'upload' }, [
@@ -76,11 +82,17 @@ m.mount(document.body, () => {
         ]),
         m('aside.sidebar', [
           m('.sidebar-header', [
-            m('.tab.-sprites.-active', [
+            m('.tab.-sprites', {
+              class: state.tab === 'sprites' ? '-active' : '',
+              onclick: selectTab('sprites')
+            }, [
               m('span.icon.material-icons-round', 'list'),
               `Sprites (${state.sprites.length})`
             ]),
-            m('.tab.-anims', [
+            m('.tab.-anims', {
+              class: state.tab === 'anims' ? '-active' : '',
+              onclick: selectTab('anims')
+            }, [
               m('span.icon.material-icons-round', 'movie'),
               'Animations'
             ])
