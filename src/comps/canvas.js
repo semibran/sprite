@@ -7,15 +7,17 @@ export default () => {
     oncreate: (vnode) => {
       const image = vnode.attrs.image
       const canvas = vnode.dom
-      resize(canvas)
-      fill(canvas)
+      // resize(canvas)
+      canvas.width = image.width
+      canvas.height = image.height
+      // fill(canvas)
 
       const context = canvas.getContext('2d')
       const xoffset = Math.round(canvas.width / 2 - image.width / 2)
-      for (const [x, y, width, height] of vnode.attrs.rects) {
-        context.strokeStyle = 'white'
-        context.strokeRect(x + xoffset + 0.5, y + 0.5, width, height)
-      }
+      // for (const [x, y, width, height] of vnode.attrs.rects) {
+      //   context.strokeStyle = 'white'
+      //   context.strokeRect(x + xoffset + 0.5, y + 0.5, width, height)
+      // }
       context.drawImage(image, xoffset, 0)
     },
     onupdate: (vnode) => {

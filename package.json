@@ -3,6 +3,7 @@
   "private": "true",
   "dependencies": {
     "img-extract": "^1.0.0",
+    "img-load": "^2.0.0",
     "mithril": "^2.0.4"
   },
   "devDependencies": {

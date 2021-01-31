@@ -1,5 +1,6 @@
 import m from 'mithril'
 import extract from 'img-extract'
+import loadImage from 'img-load'
 import Canvas from './comps/canvas'
 import Thumb from './comps/thumb'
 import clone from './lib/img-clone'
@@ -16,11 +17,10 @@ m.mount(document.body, () => {
     anims: []
   }
 
-  const uploadImage = (evt) => {
-    const image = new Image()
-    image.src = URL.createObjectURL(evt.target.files[0])
-    image.onload = () =>
-      setImage(image)
+  const handleImage = async (evt) => {
+    const url = URL.createObjectURL(evt.target.files[0])
+    const image = await loadImage(url)
+    setImage(image)
   }
 
   const setImage = (image) => {
@@ -67,12 +67,16 @@ m.mount(document.body, () => {
           type: 'file',
           accept: 'image/png, image/gif',
           multiple: false,
-          onchange: uploadImage
+          onchange: handleImage
         })
       ]),
       m('span.upload-text', 'Accepted formats: .png, .gif')
     ])
   }
+
+  loadImage('../tmp/test.png')
+    .then(setImage)
+    .catch(console.error)
 
   return {
     view: () =>

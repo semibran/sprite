@@ -1,4 +1,6 @@
 dependencies:
+  img-extract: 1.0.0
+  img-load: 2.0.0
   mithril: 2.0.4
 devDependencies:
   chokidar-cli: 2.1.0
@@ -1528,6 +1530,14 @@ packages:
     optional: true
     resolution:
       integrity: sha512-BMpfD7PpiETpBl/A6S498BaIJ6Y/ABT93ETbby2fP00v4EbvPBXWEoaR1UBPKs3iR53pJY7EtZk5KACI57i1Uw==
+  /img-extract/1.0.0:
+    dev: false
+    resolution:
+      integrity: sha512-AMaAYosdC06XDnjkZOqt8emD1G5Lvwebc8oKNrD13JNZWAH5aswe/oKVzznh95MtU0cZ7VdwOUpyiimFbZxI+w==
+  /img-load/2.0.0:
+    dev: false
+    resolution:
+      integrity: sha512-OIrOBa/vyQJs7e/cAKFXOmWWFFfdOUtu61RGHLVCXKs2i7Wf98wdgHGFr6D0TvD5Gjc1CUMlteas33DYGulC6w==
   /import-fresh/3.3.0:
     dependencies:
       parent-module: 1.0.1
@@ -3289,6 +3299,8 @@ specifiers:
   eslint-plugin-node: ^11.1.0
   eslint-plugin-promise: ^4.2.1
   html-minifier: ^4.0.0
+  img-extract: ^1.0.0
+  img-load: ^2.0.0
   mithril: ^2.0.4
   sass: ^1.32.5
   stylelint: ^13.9.0
