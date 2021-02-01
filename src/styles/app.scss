@@ -5,12 +5,16 @@ $dimgray: #3a3a3a;
 $gray: #666;
 $lightgray: #999;
 $silver: #ccc;
+$white: #f3f3f3;
 $blue: #3af;
 $darkblue: #28e;
+$font-sans: Inter, '-apple-system', BlinkMacSystemFont, Helvetica, Arial, sans-serif;
 $font-mono: 'Source Code Pro', Monaco, Consolas, monospace;
+$header-height: 72px;
+$sidebar-width: 320px;
 
 * {
-  font-family: Inter, '-apple-system', BlinkMacSystemFont, Helvetica, Arial, sans-serif;
+  font-family: $font-sans;
 }
 
 html {
@@ -18,58 +22,65 @@ html {
 }
 
 body {
-  background: $charcoal;
-  color: $silver;
+  color: $charcoal;
 }
 
 .app {
+  height: 100vh;
   display: flex;
+  flex-direction: column;
+}
+
+header {
+  background: $charcoal;
+  width: 100%;
+  height: $header-height;
+  position: relative;
+  z-index: 1;
+}
+
+.content {
+  display: flex;
+  flex: 1;
+
+  & > * {
+    max-height: calc(100vh - #{$header-height});
+  }
 }
 
 .sidebar {
-  background: $charcoal;
   width: 320px;
-  height: 100vh;
+  flex-grow: 0;
   display: flex;
   flex-direction: column;
 }
 
 .sidebar-header {
   display: flex;
-  background: $dimgray;
+  background: $white;
 }
 
 .tab {
-  display: flex;
-  align-items: center;
-  padding: 12px 1.5rem;
+  flex: 1;
+  text-align: center;
+  line-height: 3rem;
   font-weight: bold;
-}
-
-.tab .icon {
-  margin-left: -4px;
-  margin-right: 8px;
+  border: thin solid transparent;
 }
 
 .tab.-active {
-  background: $charcoal;
-  color: white;
+  background: white;
+}
+
+.tab:not(.-active) {
+  border-color: $silver;
+  color: $lightgray;
 }
 
 .sidebar-entries {
+  padding: 8px 0;
   flex: 1;
-  overflow-y: scroll;
-}
-
-.sidebar-footer {
-  background: $dimgray;
-  padding: 8px 1rem;
-  display: flex;
-  justify-content: flex-end;
-}
-
-.sidebar-footer .button + .button {
-  margin-left: 8px;
+  overflow-y: auto;
 }
 
 .entry {
@@ -80,15 +91,15 @@ body {
 
 .entry:hover {
   cursor: pointer;
-  background: adjust-color($charcoal, $blackness: 20%);
+  background: $white;
 }
 
 .entry.-select {
-  background: $dimgray;
+  background: $blue;
   color: white;
 
   &:hover {
-    background: adjust-color($dimgray, $blackness: 20%)
+    background: adjust-color($darkblue, $blackness: 20%)
   }
 
   .entry-thumb {
@@ -97,8 +108,9 @@ body {
 }
 
 .entry-thumb {
-  background: $black;
-  border: thin solid $gray;
+  background: $white;
+  border: thin solid $silver;
+  border-radius: 4px;
   width: 4rem;
   height: 4rem;
   margin-right: 1rem;
@@ -112,15 +124,31 @@ body {
   max-height: 4rem;
 }
 
-.entry-name {
-  font-family: $font-mono;
+.sidebar-footer {
+  border-top: thin solid $silver;
+  padding: 8px 1rem;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.sidebar-footer .button + .button {
+  margin-left: 8px;
 }
 
 #editor {
+  background: #e5e5e5;
   display: flex;
   flex: 1;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
+  overflow: auto;
+  padding: 1rem 0 2rem;
+}
+
+#editor canvas {
+  border: thin solid $lightgray;
+
+  box-shadow: 0 8px 24px rgba(black, 0.25);
 }
 
 .button {
@@ -154,7 +182,7 @@ body {
 }
 
 .button[disabled] {
-  background: $darkgray;
+  background: $white;
   color: $lightgray;
 
   &:hover {

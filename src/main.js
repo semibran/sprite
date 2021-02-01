@@ -7,139 +7,133 @@ import clone from './lib/img-clone'
 import slice from './lib/slice'
 import merge from './lib/merge'
 
-m.mount(document.body, () => {
-  const state = {
-    tab: 'sprites',
-    image: null,
-    rects: [],
-    sprites: [],
-    selects: [],
-    anims: []
+const state = {
+  tab: 'sprites',
+  image: null,
+  rects: [],
+  sprites: [],
+  selects: [],
+  anims: []
+}
+
+const handleImage = async (evt) => {
+  const url = URL.createObjectURL(evt.target.files[0])
+  const image = await loadImage(url)
+  setImage(image)
+}
+
+const setImage = (image) => {
+  state.image = clone(image)
+  state.rects = slice(state.image)
+  state.sprites = state.rects.map(rect => extract(image, ...rect))
+  m.redraw()
+}
+
+const toggleEntry = (i) => (evt) => {
+  const idx = state.selects.indexOf(i)
+  if (idx === -1) {
+    state.selects.push(i)
+  } else {
+    state.selects.splice(idx, 1)
   }
+}
 
-  const handleImage = async (evt) => {
-    const url = URL.createObjectURL(evt.target.files[0])
-    const image = await loadImage(url)
-    setImage(image)
+const mergeSelects = () => {
+  state.selects.sort()
+  const rects = state.selects.map(idx => state.rects[idx])
+  for (let i = state.selects.length; --i;) {
+    const idx = state.selects[i]
+    state.rects.splice(idx, 1)
+    state.sprites.splice(idx, 1)
   }
+  const idx = state.selects[0]
+  const rect = merge(rects)
+  state.rects[idx] = rect
+  state.sprites[idx] = extract(state.image, ...rect)
+  state.selects.length = 0
+}
 
-  const setImage = (image) => {
-    state.image = clone(image)
-    state.rects = slice(state.image)
-    state.sprites = state.rects.map(rect => extract(image, ...rect))
-    m.redraw()
-  }
+const selectTab = (tab) => () => {
+  state.tab = tab
+}
 
-  const toggleEntry = (i) => (evt) => {
-    const idx = state.selects.indexOf(i)
-    if (idx === -1) {
-      state.selects.push(i)
-    } else {
-      state.selects.splice(idx, 1)
-    }
-  }
+function Upload () {
+  return m('.upload-wrap', [
+    m('label.button.upload-button', { for: 'upload' }, [
+      m('span.icon.material-icons-round', 'publish'),
+      'Select an image',
+      m('input#upload', {
+        type: 'file',
+        accept: 'image/png, image/gif',
+        multiple: false,
+        onchange: handleImage
+      })
+    ]),
+    m('span.upload-text', 'Accepted formats: .png, .gif')
+  ])
+}
 
-  const mergeSelects = () => {
-    state.selects.sort()
-    const rects = state.selects.map(idx => state.rects[idx])
-    for (let i = state.selects.length; --i;) {
-      const idx = state.selects[i]
-      state.rects.splice(idx, 1)
-      state.sprites.splice(idx, 1)
-    }
-    const idx = state.selects[0]
-    const rect = merge(rects)
-    state.rects[idx] = rect
-    state.sprites[idx] = extract(state.image, ...rect)
-    state.selects.length = 0
-  }
+loadImage('../tmp/test.png')
+  .then(setImage)
+  .catch(console.error)
 
-  const selectTab = (tab) => () => {
-    state.tab = tab
-  }
+const view = () =>
+  m('main.app', [
+    m('header', [
 
-  function Upload () {
-    return m('.upload-wrap', [
-      m('label.button.upload-button', { for: 'upload' }, [
-        m('span.icon.material-icons-round', 'publish'),
-        'Select an image',
-        m('input#upload', {
-          type: 'file',
-          accept: 'image/png, image/gif',
-          multiple: false,
-          onchange: handleImage
-        })
-      ]),
-      m('span.upload-text', 'Accepted formats: .png, .gif')
-    ])
-  }
-
-  loadImage('../tmp/test.png')
-    .then(setImage)
-    .catch(console.error)
-
-  return {
-    view: () =>
-      m('main.app', [
-        m('header', [
-
+    ]),
+    m('.content', [
+      m('aside.sidebar', [
+        m('.sidebar-header', [
+          m('.tab.-sprites', {
+            class: state.tab === 'sprites' ? '-active' : '',
+            onclick: selectTab('sprites')
+          }, [`Sprites (${state.sprites.length})`]),
+          m('.tab.-anims', {
+            class: state.tab === 'anims' ? '-active' : '',
+            onclick: selectTab('anims')
+          }, ['Animations'])
         ]),
-        m('aside.sidebar', [
-          m('.sidebar-header', [
-            m('.tab.-sprites', {
-              class: state.tab === 'sprites' ? '-active' : '',
-              onclick: selectTab('sprites')
+        m('.sidebar-entries', [
+          state.sprites.map((sprite, i) => {
+            const rect = state.rects[i]
+            const [x, y] = rect
+            return m('.entry', {
+              key: i + '-' + rect.join(','),
+              onclick: toggleEntry(i),
+              class: state.selects.includes(i) ? '-select' : null
             }, [
-              m('span.icon.material-icons-round', 'list'),
-              `Sprites (${state.sprites.length})`
-            ]),
-            m('.tab.-anims', {
-              class: state.tab === 'anims' ? '-active' : '',
-              onclick: selectTab('anims')
-            }, [
-              m('span.icon.material-icons-round', 'movie'),
-              'Animations'
+              m('.entry-thumb', [
+                m(Thumb, { image: sprite })
+              ]),
+              m('.entry-name', x + ',' + y)
             ])
+          })
+        ]),
+        m('.sidebar-footer', [
+          m('button.button.-split', { disabled: true }, [
+            m('span.icon.material-icons-round', 'vertical_split'),
+            'Split'
           ]),
-          m('.sidebar-entries', [
-            state.sprites.map((sprite, i) => {
-              const rect = state.rects[i]
-              const [x, y] = rect
-              return m('.entry', {
-                key: i + '-' + rect.join(','),
-                onclick: toggleEntry(i),
-                class: state.selects.includes(i) ? '-select' : null
-              }, [
-                m('.entry-thumb', [
-                  m(Thumb, { image: sprite })
-                ]),
-                m('.entry-name', x + ',' + y)
-              ])
-            })
-          ]),
-          m('.sidebar-footer', [
-            m('button.button.-split', { disabled: true }, [
-              m('span.icon.material-icons-round', 'vertical_split'),
-              'Split'
-            ]),
-            m('button.button.-merge', {
-              disabled: state.selects.length < 2,
-              onclick: state.selects.length >= 2 && mergeSelects
-            }, [
-              m('span.icon.material-icons-round', 'aspect_ratio'),
-              'Merge'
-            ])
+          m('button.button.-merge', {
+            disabled: state.selects.length < 2,
+            onclick: state.selects.length >= 2 && mergeSelects
+          }, [
+            m('span.icon.material-icons-round', 'aspect_ratio'),
+            'Merge'
           ])
-        ]),
-        m('#editor', [
-          !state.image
-            ? Upload()
-            : m(Canvas, {
-              image: state.image,
-              rects: state.rects,
-              selects: state.selects
-            })
         ])
+      ]),
+      m('#editor', [
+        !state.image
+          ? Upload()
+          : m(Canvas, {
+            image: state.image,
+            rects: state.rects,
+            selects: state.selects
+          })
       ])
-  }
-})
+    ])
+  ])
+
+m.mount(document.body, () => ({ view }))
