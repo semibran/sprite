@@ -8,8 +8,9 @@ import slice from './lib/slice'
 import merge from './lib/merge'
 
 const state = {
-  tab: 'sprites',
+  tab: 'states',
   image: null,
+  state: null,
   rects: [],
   sprites: [],
   selects: [],
@@ -169,7 +170,26 @@ const view = () =>
                 selects: state.selects
               })
           ])
-        : m('#editor')
+        : m('.editor-column', [
+          m('#editor'),
+          m('#timeline', [
+            m('.timeline-meta'),
+            m('.frames'),
+            m('.timeline-controls', [
+              m('.control-panel.-move', [
+                m('span.icon.material-icons-round.-step-prev', 'eject'),
+                m('span.icon.material-icons-round.-play', 'play_arrow'),
+                m('span.icon.material-icons-round.-step-next', 'eject')
+              ]),
+              m('.control-panel.-repeat', [
+                m('span.icon.material-icons-round.-small', 'repeat')
+              ]),
+              m('.control-panel.-onion-skin', [
+                m('span.icon.material-icons-round.-small', 'filter_none')
+              ])
+            ])
+          ])
+        ])
     ])
   ])
 

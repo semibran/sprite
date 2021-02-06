@@ -256,6 +256,12 @@ header {
   margin-left: 8px;
 }
 
+.editor-column {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
 #editor {
   background: #e5e5e5;
   display: flex;
@@ -270,6 +276,48 @@ header {
   border: thin solid $lightgray;
 
   box-shadow: 0 8px 24px rgba(black, 0.25);
+}
+
+#timeline {
+  background: white;
+  border-top: thin solid $silver;
+  padding: 24px;
+
+  .timeline-controls {
+    display: flex;
+  }
+
+  .control-panel {
+    border: thin solid $silver;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+  }
+
+  .control-panel .icon {
+    padding: 0 8px;
+  }
+
+  .control-panel + .control-panel {
+    margin-left: 8px;
+  }
+
+  .icon.-step-prev {
+    transform: rotate(-90deg);
+  }
+
+  .icon.-step-next {
+    transform: rotate(90deg);
+  }
+
+  .icon.-play {
+    border-left: thin solid $silver;
+    border-right: thin solid $silver;
+  }
+
+  .icon.-small {
+    font-size: 20px;
+  }
 }
 
 .button {
