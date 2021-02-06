@@ -11,6 +11,7 @@ const state = {
   tab: 'states',
   image: null,
   state: null,
+  window: null,
   rects: [],
   sprites: [],
   selects: [],
@@ -58,6 +59,14 @@ const selectTab = (tab) => () => {
   state.tab = tab
 }
 
+const openWindow = (type) => () => {
+  state.window = type
+}
+
+const closeWindow = () => {
+  state.window = null
+}
+
 const Upload = () =>
   m('.upload-wrap', [
     m('label.button.upload-button', { for: 'upload' }, [
@@ -71,6 +80,64 @@ const Upload = () =>
       })
     ]),
     m('span.upload-text', 'Accepted formats: .png, .gif')
+  ])
+
+const Timeline = () =>
+  m('#timeline', [
+    m('.timeline-meta'),
+    m('.frames'),
+    m('.timeline-controls', [
+      m('.panel.-move', [
+        m('.panel-button', [
+          m('span.icon.material-icons-round.-step-prev', 'eject')
+        ]),
+        m('.panel-button', [
+          m('span.icon.material-icons-round.-play', 'play_arrow')
+        ]),
+        m('.panel-button', [
+          m('span.icon.material-icons-round.-step-next', 'eject')
+        ])
+      ]),
+      m('.panel.-repeat', [
+        m('.panel-button', [
+          m('span.icon.material-icons-round.-small', 'repeat')
+        ])
+      ]),
+      m('.panel.-onion-skin', [
+        m('.panel-button', [
+          m('span.icon.material-icons-round.-small', 'filter_none')
+        ])
+      ])
+    ])
+  ])
+
+const CreateWindow = () =>
+  m('.window.-create', [
+    m('.window-header', [
+      m('.window-title', 'Create new state'),
+      m('span.action.icon.material-icons-round',
+        { onclick: closeWindow },
+        'close')
+    ]),
+    m('.window-content', [
+      m('.window-bar', [
+        '0 sprites selected',
+        m('.view-toggle', [
+          m('span.icon.material-icons-round', 'view_module'),
+          m('span.icon.material-icons-round', 'view_list')
+        ])
+      ]),
+      m('.window-entries', [
+
+      ]),
+      m('.window-footer', [
+        m('button.-create', { onclick: closeWindow }, [
+          m('span.icon.material-icons-round', 'add'),
+          'Create'
+        ]),
+        m('button.-cancel.-alt', { onclick: closeWindow }, 'Cancel')
+      ])
+    ])
   ])
 
 loadImage('../tmp/test.png')
@@ -103,10 +170,12 @@ const view = () =>
           ]),
           m('.sidebar-subheader', [
             m('label.sidebar-search', { for: 'search' }, [
-              m('span.icon.material-icons-round', ['search']),
+              m('span.icon.material-icons-round', 'search'),
               m('input', { id: 'search', placeholder: 'Search' })
             ]),
-            m('button.-add.material-icons-round', ['add'])
+            m('.action.-add.material-icons-round',
+              { onclick: openWindow('create') },
+              'add')
           ])
         ]),
         state.tab === 'sprites'
@@ -137,7 +206,7 @@ const view = () =>
               : m('.sidebar-content.-empty', [
                 m('.sidebar-notice', [
                   'No states registered.',
-                  m('button.-create', [
+                  m('button.-create', { onclick: openWindow('create') }, [
                     m('span.icon.material-icons-round', 'add'),
                     'Create'
                   ])
@@ -172,35 +241,15 @@ const view = () =>
           ])
         : m('.editor-column', [
           m('#editor'),
-          m('#timeline', [
-            m('.timeline-meta'),
-            m('.frames'),
-            m('.timeline-controls', [
-              m('.panel.-move', [
-                m('.panel-button', [
-                  m('span.icon.material-icons-round.-step-prev', 'eject')
-                ]),
-                m('.panel-button', [
-                  m('span.icon.material-icons-round.-play', 'play_arrow')
-                ]),
-                m('.panel-button', [
-                  m('span.icon.material-icons-round.-step-next', 'eject')
-                ])
-              ]),
-              m('.panel.-repeat', [
-                m('.panel-button', [
-                  m('span.icon.material-icons-round.-small', 'repeat')
-                ])
-              ]),
-              m('.panel.-onion-skin', [
-                m('.panel-button', [
-                  m('span.icon.material-icons-round.-small', 'filter_none')
-                ])
-              ])
-            ])
-          ])
+          Timeline()
         ])
-    ])
+    ]),
+    state.window !== null
+      ? m('.overlay', { onclick: closeWindow })
+      : null,
+    state.window === 'create'
+      ? CreateWindow()
+      : null
   ])
 
 m.mount(document.body, () => ({ view }))

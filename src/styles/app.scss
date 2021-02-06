@@ -28,7 +28,24 @@ body {
 
 button {
   cursor: pointer;
+  background: $blue;
+  color: white;
   font-weight: bold;
+  border: thin solid $darkblue;
+  border-radius: 4px;
+  padding: 8px 20px 8px 16px;
+  display: flex;
+  align-items: center;
+}
+
+button.-alt {
+  background: $white;
+  color: $charcoal;
+  border-color: $silver;
+}
+
+.action {
+  cursor: pointer;
 }
 
 .app {
@@ -66,7 +83,7 @@ header {
 }
 
 .header-subtitle {
-  color: $lightgray;
+  color: $silver;
   margin-bottom: 2px;
 }
 
@@ -99,7 +116,7 @@ header {
   display: flex;
   align-items: center;
 
-  button.-add {
+  .action.-add {
     margin-left: 8px;
   }
 }
@@ -183,14 +200,7 @@ header {
   }
 
   button.-create {
-    background: $blue;
-    color: white;
-    border: thin solid $darkblue;
-    border-radius: 4px;
-    padding: 8px 20px 8px 16px;
     margin-top: 12px;
-    display: flex;
-    align-items: center;
 
     &:hover {
       background: $darkblue;

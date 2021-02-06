@@ -1,0 +1,72 @@
+.overlay {
+  background: rgba(black, 0.5);
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+}
+
+.window {
+  background: white;
+  color: $charcoal;
+  border: thin solid $silver;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: 360px;
+  transform: translate(-50%, -50%);
+  z-index: 3;
+}
+
+.window-header {
+  border-bottom: thin solid $silver;
+  padding: 12px 24px;
+  padding-right: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.window-title {
+  font-weight: bold;
+}
+
+.window-content {
+  padding: 12px 24px 16px;
+}
+
+.window-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.view-toggle {
+  display: flex;
+}
+
+.view-toggle .icon + .icon {
+  margin-left: 8px;
+}
+
+.window-entries {
+  background: $white;
+  border: thin solid $silver;
+  border-radius: 4px;
+  width: 100%;
+  height: 160px;
+  margin-top: 12px;
+}
+
+.window-footer {
+  display: flex;
+  justify-content: flex-end;
+  align-items: stretch;
+  margin-top: 16px;
+
+  button + button {
+    margin-left: 8px;
+  }
+}
