@@ -57,8 +57,8 @@ const selectTab = (tab) => () => {
   state.tab = tab
 }
 
-function Upload () {
-  return m('.upload-wrap', [
+const Upload = () =>
+  m('.upload-wrap', [
     m('label.button.upload-button', { for: 'upload' }, [
       m('span.icon.material-icons-round', 'publish'),
       'Select an image',
@@ -71,7 +71,6 @@ function Upload () {
     ]),
     m('span.upload-text', 'Accepted formats: .png, .gif')
   ])
-}
 
 loadImage('../tmp/test.png')
   .then(setImage)
@@ -85,14 +84,23 @@ const view = () =>
     m('.content', [
       m('aside.sidebar', [
         m('.sidebar-header', [
-          m('.tab.-sprites', {
-            class: state.tab === 'sprites' ? '-active' : '',
-            onclick: selectTab('sprites')
-          }, [`Sprites (${state.sprites.length})`]),
-          m('.tab.-anims', {
-            class: state.tab === 'anims' ? '-active' : '',
-            onclick: selectTab('anims')
-          }, ['Animations'])
+          m('.sidebar-tabs', [
+            m('.tab.-sprites', {
+              class: state.tab === 'sprites' ? '-active' : '',
+              onclick: selectTab('sprites')
+            }, [`Sprites (${state.sprites.length})`]),
+            m('.tab.-anims', {
+              class: state.tab === 'anims' ? '-active' : '',
+              onclick: selectTab('anims')
+            }, ['Animations'])
+          ]),
+          m('.sidebar-subheader', [
+            m('.sidebar-search', [
+              m('span.icon.material-icons-round', ['search']),
+              m('input', { placeholder: 'Search' })
+            ]),
+            m('button.-add.material-icons-round', ['add'])
+          ])
         ]),
         m('.sidebar-entries', [
           state.sprites.map((sprite, i) => {

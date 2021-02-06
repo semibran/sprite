@@ -6,6 +6,7 @@ $gray: #666;
 $lightgray: #999;
 $silver: #ccc;
 $white: #f3f3f3;
+$lightblue: #def;
 $blue: #3af;
 $darkblue: #28e;
 $font-sans: Inter, '-apple-system', BlinkMacSystemFont, Helvetica, Arial, sans-serif;
@@ -56,9 +57,49 @@ header {
   border-right: thin solid $silver;
 }
 
-.sidebar-header {
+.sidebar-tabs {
   display: flex;
   background: $white;
+}
+
+.sidebar-subheader {
+  border-bottom: thin solid $silver;
+  padding: 16px 16px 16px 24px;
+  display: flex;
+  align-items: center;
+
+  button.-add {
+    margin-left: 8px;
+  }
+}
+
+.sidebar-search {
+  background: $white;
+  border: thin solid $silver;
+  border-radius: 4px;
+  color: $gray;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  flex: 1;
+
+  &:focus-within {
+    background: white;
+    border-color: $blue;
+    color: $blue;
+
+    input::placeholder {
+      color: $lightgray;
+    }
+  }
+
+  input {
+    outline: 0;
+  }
+
+  .icon {
+    margin-right: 8px;
+  }
 }
 
 .tab {
@@ -67,28 +108,28 @@ header {
   line-height: 3rem;
   font-weight: bold;
   border: thin solid transparent;
-}
 
-.tab.-active {
-  background: white;
-}
-
-.tab:not(.-active) {
-  cursor: pointer;
-  color: $lightgray;
-  border-bottom-color: $silver;
-
-  &:first-child {
-    border-right-color: $silver;
+  &.-active {
+    background: white;
   }
 
-  &:last-child {
-    border-left-color: $silver;
+  &:not(.-active) {
+    cursor: pointer;
+    color: $lightgray;
+    border-bottom-color: $silver;
+
+    &:first-child {
+      border-right-color: $silver;
+    }
+
+    &:last-child {
+      border-left-color: $silver;
+    }
   }
 }
 
 .sidebar-entries {
-  padding: 8px 0;
+  padding: 12px 0;
   flex: 1;
   overflow-y: auto;
 }
@@ -97,23 +138,25 @@ header {
   display: flex;
   align-items: center;
   padding: 4px 2rem;
-}
-
-.entry:hover {
-  cursor: pointer;
-  background: $white;
-}
-
-.entry.-select {
-  background: $blue;
-  color: white;
 
   &:hover {
-    background: adjust-color($darkblue, $blackness: 20%)
+    cursor: pointer;
+    background: $white;
   }
 
-  .entry-thumb {
-    border-color: $lightgray;
+  &.-select {
+    background: $lightblue;
+    color: $blue;
+    font-weight: bold;
+
+    &:hover {
+      background: #cdf;
+    }
+
+    .entry-thumb {
+      background: white;
+      border-color: $blue;
+    }
   }
 }
 
