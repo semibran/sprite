@@ -39,6 +39,7 @@ button {
 
 header {
   background: $charcoal;
+  color: white;
   width: 100%;
   height: $header-height;
   position: relative;
@@ -79,6 +80,7 @@ header {
 }
 
 .sidebar-search {
+  cursor: text;
   background: $white;
   border: thin solid $silver;
   border-radius: 4px;
@@ -146,18 +148,21 @@ header {
   }
 
   .sidebar-notice {
+    padding: 128px 48px;
+    border: 2px dashed $silver;
+    border-radius: 8px;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
   }
 
-  button.-add {
+  button.-create {
     background: $blue;
     color: white;
     border: thin solid $darkblue;
     border-radius: 4px;
-    padding: 8px 16px 8px 12px;
+    padding: 8px 20px 8px 16px;
     margin-top: 12px;
     display: flex;
     align-items: center;

@@ -79,7 +79,7 @@ loadImage('../tmp/test.png')
 const view = () =>
   m('main.app', [
     m('header', [
-
+      m('span.icon.material-icons-round', 'menu')
     ]),
     m('.content', [
       m('aside.sidebar', [
@@ -95,9 +95,9 @@ const view = () =>
             }, ['States'])
           ]),
           m('.sidebar-subheader', [
-            m('.sidebar-search', [
+            m('label.sidebar-search', { for: 'search' }, [
               m('span.icon.material-icons-round', ['search']),
-              m('input', { placeholder: 'Search' })
+              m('input', { id: 'search', placeholder: 'Search' })
             ]),
             m('button.-add.material-icons-round', ['add'])
           ])
@@ -130,9 +130,9 @@ const view = () =>
               : m('.sidebar-content.-empty', [
                 m('.sidebar-notice', [
                   'No states registered.',
-                  m('button.-add', [
+                  m('button.-create', [
                     m('span.icon.material-icons-round', 'add'),
-                    'Add'
+                    'Create'
                   ])
                 ])
               ])
@@ -153,15 +153,17 @@ const view = () =>
             ])
           : null
       ]),
-      m('#editor', [
-        !state.image
-          ? Upload()
-          : m(Canvas, {
-            image: state.image,
-            rects: state.rects,
-            selects: state.selects
-          })
-      ])
+      state.tab === 'sprites'
+        ? m('#editor', [
+            !state.image
+              ? Upload()
+              : m(Canvas, {
+                image: state.image,
+                rects: state.rects,
+                selects: state.selects
+              })
+          ])
+        : m('#editor')
     ])
   ])
 
