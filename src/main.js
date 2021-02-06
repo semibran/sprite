@@ -176,16 +176,26 @@ const view = () =>
             m('.timeline-meta'),
             m('.frames'),
             m('.timeline-controls', [
-              m('.control-panel.-move', [
-                m('span.icon.material-icons-round.-step-prev', 'eject'),
-                m('span.icon.material-icons-round.-play', 'play_arrow'),
-                m('span.icon.material-icons-round.-step-next', 'eject')
+              m('.panel.-move', [
+                m('.panel-button', [
+                  m('span.icon.material-icons-round.-step-prev', 'eject')
+                ]),
+                m('.panel-button', [
+                  m('span.icon.material-icons-round.-play', 'play_arrow')
+                ]),
+                m('.panel-button', [
+                  m('span.icon.material-icons-round.-step-next', 'eject')
+                ])
               ]),
-              m('.control-panel.-repeat', [
-                m('span.icon.material-icons-round.-small', 'repeat')
+              m('.panel.-repeat', [
+                m('.panel-button', [
+                  m('span.icon.material-icons-round.-small', 'repeat')
+                ])
               ]),
-              m('.control-panel.-onion-skin', [
-                m('span.icon.material-icons-round.-small', 'filter_none')
+              m('.panel.-onion-skin', [
+                m('.panel-button', [
+                  m('span.icon.material-icons-round.-small', 'filter_none')
+                ])
               ])
             ])
           ])
