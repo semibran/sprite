@@ -13,7 +13,7 @@ const state = {
   rects: [],
   sprites: [],
   selects: [],
-  anims: []
+  states: []
 }
 
 const handleImage = async (evt) => {
@@ -89,10 +89,10 @@ const view = () =>
               class: state.tab === 'sprites' ? '-active' : '',
               onclick: selectTab('sprites')
             }, [`Sprites (${state.sprites.length})`]),
-            m('.tab.-anims', {
-              class: state.tab === 'anims' ? '-active' : '',
-              onclick: selectTab('anims')
-            }, ['Animations'])
+            m('.tab.-states', {
+              class: state.tab === 'states' ? '-active' : '',
+              onclick: selectTab('states')
+            }, ['States'])
           ]),
           m('.sidebar-subheader', [
             m('.sidebar-search', [
@@ -102,35 +102,56 @@ const view = () =>
             m('button.-add.material-icons-round', ['add'])
           ])
         ]),
-        m('.sidebar-entries', [
-          state.sprites.map((sprite, i) => {
-            const rect = state.rects[i]
-            const [x, y] = rect
-            return m('.entry', {
-              key: i + '-' + rect.join(','),
-              onclick: toggleEntry(i),
-              class: state.selects.includes(i) ? '-select' : null
-            }, [
-              m('.entry-thumb', [
-                m(Thumb, { image: sprite })
+        state.tab === 'sprites'
+          ? state.sprites.length
+              ? m('.sidebar-content', state.sprites.map((sprite, i) => {
+                  const rect = state.rects[i]
+                  const [x, y] = rect
+                  return m('.entry', {
+                    key: i + '-' + rect.join(','),
+                    onclick: toggleEntry(i),
+                    class: state.selects.includes(i) ? '-select' : null
+                  }, [
+                    m('.entry-thumb', [
+                      m(Thumb, { image: sprite })
+                    ]),
+                    m('.entry-name', x + ',' + y)
+                  ])
+                }))
+              : m('.sidebar-content.-empty', [
+                m('.sidebar-notice', 'No sprites registered.')
+              ])
+          : null,
+        state.tab === 'states'
+          ? state.states.length
+              ? m('.sidebar-content', state.states.map((state, i) => {
+
+                }))
+              : m('.sidebar-content.-empty', [
+                m('.sidebar-notice', [
+                  'No states registered.',
+                  m('button.-add', [
+                    m('span.icon.material-icons-round', 'add'),
+                    'Add'
+                  ])
+                ])
+              ])
+          : null,
+        state.tab === 'sprites'
+          ? m('.sidebar-footer', [
+              m('button.button.-split', { disabled: true }, [
+                m('span.icon.material-icons-round', 'vertical_split'),
+                'Split'
               ]),
-              m('.entry-name', x + ',' + y)
+              m('button.button.-merge', {
+                disabled: state.selects.length < 2,
+                onclick: state.selects.length >= 2 && mergeSelects
+              }, [
+                m('span.icon.material-icons-round', 'aspect_ratio'),
+                'Merge'
+              ])
             ])
-          })
-        ]),
-        m('.sidebar-footer', [
-          m('button.button.-split', { disabled: true }, [
-            m('span.icon.material-icons-round', 'vertical_split'),
-            'Split'
-          ]),
-          m('button.button.-merge', {
-            disabled: state.selects.length < 2,
-            onclick: state.selects.length >= 2 && mergeSelects
-          }, [
-            m('span.icon.material-icons-round', 'aspect_ratio'),
-            'Merge'
-          ])
-        ])
+          : null
       ]),
       m('#editor', [
         !state.image
