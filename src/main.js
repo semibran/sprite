@@ -8,11 +8,11 @@ import slice from './lib/slice'
 import merge from './lib/merge'
 
 const state = {
+  sprname: 'untitled',
   tab: 'states',
   image: null,
   state: null,
   window: null,
-  rects: [],
   sprites: [],
   selects: [],
   states: []
@@ -26,8 +26,11 @@ const handleImage = async (evt) => {
 
 const setImage = (image) => {
   state.image = clone(image)
-  state.rects = slice(state.image)
-  state.sprites = state.rects.map(rect => extract(image, ...rect))
+  state.sprites = slice(state.image).map((rect, i) => ({
+    name: `${state.sprname}_${i}`,
+    image: extract(image, ...rect),
+    rect: rect
+  }))
   m.redraw()
 }
 
@@ -42,16 +45,15 @@ const toggleEntry = (i) => (evt) => {
 
 const mergeSelects = () => {
   state.selects.sort()
-  const rects = state.selects.map(idx => state.rects[idx])
+  const rects = state.selects.map(idx => state.sprites[idx].rect)
   for (let i = state.selects.length; --i;) {
     const idx = state.selects[i]
-    state.rects.splice(idx, 1)
     state.sprites.splice(idx, 1)
   }
   const idx = state.selects[0]
   const rect = merge(rects)
-  state.rects[idx] = rect
-  state.sprites[idx] = extract(state.image, ...rect)
+  state.sprites[idx].rect = rect
+  state.sprites[idx].image = extract(state.image, ...rect)
   state.selects.length = 0
 }
 
@@ -181,17 +183,15 @@ const view = () =>
         state.tab === 'sprites'
           ? state.sprites.length
               ? m('.sidebar-content', state.sprites.map((sprite, i) => {
-                  const rect = state.rects[i]
-                  const [x, y] = rect
                   return m('.entry', {
-                    key: i + '-' + rect.join(','),
+                    key: i + '-' + sprite.name,
                     onclick: toggleEntry(i),
                     class: state.selects.includes(i) ? '-select' : null
                   }, [
                     m('.entry-thumb', [
-                      m(Thumb, { image: sprite })
+                      m(Thumb, { image: sprite.image })
                     ]),
-                    m('.entry-name', x + ',' + y)
+                    m('.entry-name', sprite.name)
                   ])
                 }))
               : m('.sidebar-content.-empty', [
@@ -235,7 +235,7 @@ const view = () =>
               ? Upload()
               : m(Canvas, {
                 image: state.image,
-                rects: state.rects,
+                rects: state.sprites.map(sprite => sprite.rect),
                 selects: state.selects
               })
           ])
