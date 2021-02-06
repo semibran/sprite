@@ -79,7 +79,13 @@ loadImage('../tmp/test.png')
 const view = () =>
   m('main.app', [
     m('header', [
-      m('span.icon.material-icons-round', 'menu')
+      m('.header-block', [
+        m('span.icon.material-icons-round', 'menu'),
+        m('.header-text', [
+          m('.header-title', 'Untitled'),
+          m('.header-subtitle', 'Current project')
+        ])
+      ])
     ]),
     m('.content', [
       m('aside.sidebar', [

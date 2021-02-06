@@ -46,6 +46,30 @@ header {
   z-index: 1;
 }
 
+.header-block {
+  border-right: thin solid black;
+  padding: 0 24px;
+  width: $sidebar-width;
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.header-text {
+  display: flex;
+  flex-direction: column-reverse;
+  margin-left: 12px;
+}
+
+.header-title {
+  font-weight: bold;
+}
+
+.header-subtitle {
+  color: $lightgray;
+  margin-bottom: 2px;
+}
+
 .content {
   display: flex;
   flex: 1;
@@ -56,7 +80,7 @@ header {
 }
 
 .sidebar {
-  width: 320px;
+  width: $sidebar-width;
   flex-grow: 0;
   display: flex;
   flex-direction: column;
@@ -70,7 +94,8 @@ header {
 
 .sidebar-subheader {
   border-bottom: thin solid $silver;
-  padding: 16px 16px 16px 24px;
+  padding: 12px 16px;
+  padding-left: 24px;
   display: flex;
   align-items: center;
 
@@ -148,7 +173,7 @@ header {
   }
 
   .sidebar-notice {
-    padding: 128px 48px;
+    padding: 48px 48px;
     border: 2px dashed $silver;
     border-radius: 8px;
     display: flex;
