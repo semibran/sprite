@@ -3,6 +3,23 @@ import m from 'mithril'
 export default () => {
   let selects = null
 
+  const update = (vnode) => {
+    const image = vnode.attrs.image
+    const canvas = vnode.dom
+    fill(canvas)
+
+    const context = canvas.getContext('2d')
+    const xoffset = Math.round(canvas.width / 2 - image.width / 2)
+    for (let i = 0; i < vnode.attrs.rects.length; i++) {
+      const [x, y, width, height] = vnode.attrs.rects[i]
+      context.strokeStyle = vnode.attrs.selects.includes(i)
+        ? '#68e'
+        : 'white'
+      context.strokeRect(x + xoffset - 0.5, y - 0.5, width + 1, height + 1)
+    }
+    context.drawImage(image, xoffset, 0)
+  }
+
   return {
     oncreate: (vnode) => {
       const image = vnode.attrs.image
@@ -10,32 +27,9 @@ export default () => {
       // resize(canvas)
       canvas.width = image.width
       canvas.height = image.height
-      fill(canvas)
-
-      const context = canvas.getContext('2d')
-      const xoffset = Math.round(canvas.width / 2 - image.width / 2)
-      // for (const [x, y, width, height] of vnode.attrs.rects) {
-      //   context.strokeStyle = 'white'
-      //   context.strokeRect(x + xoffset + 0.5, y + 0.5, width, height)
-      // }
-      context.drawImage(image, xoffset, 0)
+      update(vnode)
     },
-    onupdate: (vnode) => {
-      const image = vnode.attrs.image
-      const canvas = vnode.dom
-      fill(canvas)
-
-      const context = canvas.getContext('2d')
-      const xoffset = Math.round(canvas.width / 2 - image.width / 2)
-      for (let i = 0; i < vnode.attrs.rects.length; i++) {
-        const [x, y, width, height] = vnode.attrs.rects[i]
-        context.strokeStyle = vnode.attrs.selects.includes(i)
-          ? 'red'
-          : 'white'
-        context.strokeRect(x + xoffset + 0.5, y + 0.5, width, height)
-      }
-      context.drawImage(image, xoffset, 0)
-    },
+    onupdate: update,
     view: () =>
       m('canvas')
   }

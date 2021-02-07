@@ -33,12 +33,31 @@ const setImage = (image) => {
   m.redraw()
 }
 
-const toggleEntry = (i) => (evt) => {
+const setSelect = (i) => (evt) => {
   const idx = state.selects.indexOf(i)
-  if (idx === -1) {
-    state.selects.push(i)
+  const prev = state.selects[state.selects.length - 1]
+  const shift = evt.shiftKey
+  const ctrl = evt.ctrlKey || evt.metaKey
+  if (shift && !ctrl && prev !== undefined && prev !== i) {
+    const dir = i > prev ? 1 : -1
+    for (let j = prev; j !== i;) {
+      j += dir
+      if (state.selects.indexOf(j) === -1) {
+        state.selects.push(j)
+      }
+    }
+  } else if (ctrl && !shift) {
+    if (idx === -1) {
+      state.selects.push(i)
+    } else {
+      state.selects.splice(idx, 1)
+    }
   } else {
-    state.selects.splice(idx, 1)
+    if (idx === -1 || state.selects.length > 1) {
+      state.selects = [i]
+    } else {
+      state.selects = []
+    }
   }
 }
 
@@ -176,8 +195,8 @@ const CreateWindow = () =>
       m('.window-entries', [
         m('.window-entrygrid', state.sprites.map((sprite, i) =>
           m('.entry.action', {
-            key: i + '-' + sprite.name,
-            onclick: toggleEntry(i),
+            key: `${i}-${sprite.name}-${sprite.rect[2]},${sprite.rect[3]}`,
+            onclick: setSelect(i),
             class: state.selects.includes(i) ? '-select' : null
           }, [
             m('.thumb.-entry', [
@@ -241,8 +260,8 @@ const view = () =>
           ? state.sprites.length
               ? m('.sidebar-content', state.sprites.map((sprite, i) =>
                   m('.entry', {
-                    key: i + '-' + sprite.name,
-                    onclick: toggleEntry(i),
+                    key: `${i}-${sprite.name}-${sprite.rect[2]},${sprite.rect[3]}`,
+                    onclick: setSelect(i),
                     class: state.selects.includes(i) ? '-select' : null
                   }, [
                     m('.thumb.-entry', [
@@ -260,7 +279,7 @@ const view = () =>
               ? m('.sidebar-content', state.anims.map((anim, i) =>
                   m('.entry', {
                     key: i + '-' + anim.name,
-                    onclick: toggleEntry(i),
+                    onclick: setSelect(i),
                     class: state.selects.includes(i) ? '-select' : null
                   }, [
                     m('.thumb.-entry', [
