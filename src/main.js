@@ -18,7 +18,8 @@ const state = {
   anims: {
     list: [],
     selidx: 0,
-    frameidx: 0
+    frameidx: 0,
+    editingName: false
   },
   timeline: {
     selects: []
@@ -42,6 +43,9 @@ const setImage = (image) => {
 }
 
 const select = (items, i) => (evt) => {
+  if (evt.detail === 2) {
+    return false
+  }
   const shift = evt.shiftKey
   const ctrl = evt.ctrlKey || evt.metaKey
   const idx = items.indexOf(i)
@@ -66,6 +70,16 @@ const select = (items, i) => (evt) => {
   } else {
     items.length = 0
   }
+  return true
+}
+
+const selectAnim = (i) => (evt) => {
+  state.anims.selidx = i
+}
+
+const selectFrame = (i) => (evt) => {
+  select(state.timeline.selects, i)(evt)
+  state.anims.frameidx = i
 }
 
 const mergeSelects = () => {
@@ -92,6 +106,15 @@ const mergeSelects = () => {
 const selectTab = (tab) => () => {
   state.selects.length = 0
   state.tab = tab
+}
+
+const startNameEdit = (evt) => {
+  state.anims.editingName = true
+}
+
+const endNameEdit = (evt) => {
+  state.anims.editingName = false
+  state.anims.list[state.anims.selidx].name = evt.target.value;
 }
 
 const createState = () => {
@@ -145,7 +168,7 @@ const Timeline = () => {
         ? anim.frames.map((frame, i) =>
             m('.frame', {
               key: `${i}-${frame.sprite.name}`,
-              onclick: select(state.timeline.selects, i),
+              onclick: selectFrame(i),
               class: state.timeline.selects.includes(i) ? '-select' : null
             }, [
               m('.frame-number', i + 1),
@@ -288,13 +311,20 @@ const view = () =>
               ? m('.sidebar-content', state.anims.list.map((anim, i) =>
                   m('.entry', {
                     key: i + '-' + anim.name,
-                    onclick: select(state.selects, i),
-                    class: state.selects.includes(i) ? '-select' : null
+                    onclick: selectAnim(i),
+                    class: state.anims.selidx === i ? '-select' : null
                   }, [
                     m('.thumb.-entry', [
                       m(Thumb, { image: anim.frames[0].sprite.image })
                     ]),
-                    m('.entry-name', anim.name)
+                    state.anims.editingName
+                      ? m.fragment({ oncreate: (vnode) => vnode.dom.select() }, [
+                          m('input.entry-name', {
+                            value: anim.name,
+                            onblur: endNameEdit
+                          })
+                        ])
+                      : m('.entry-name', { ondblclick: startNameEdit }, anim.name)
                   ])
                 ))
               : m('.sidebar-content.-empty', [

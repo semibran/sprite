@@ -24,20 +24,13 @@ export default () => {
     oncreate: (vnode) => {
       const image = vnode.attrs.image
       const canvas = vnode.dom
-      // resize(canvas)
       canvas.width = image.width
       canvas.height = image.height
       update(vnode)
     },
     onupdate: update,
-    view: () =>
-      m('canvas.-sprite')
+    view: () => m('canvas')
   }
-}
-
-function resize (canvas) {
-  canvas.width = canvas.parentNode.offsetWidth
-  canvas.height = canvas.parentNode.offsetHeight
 }
 
 function fill (canvas) {
