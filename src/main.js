@@ -9,7 +9,7 @@ import merge from './lib/merge'
 
 const state = {
   sprname: 'untitled',
-  tab: 'anims',
+  tab: 'sprites',
   image: null,
   window: null,
   sprites: [],
@@ -137,17 +137,19 @@ const Timeline = () => {
   console.log(anim)
   return m('#timeline', [
     m('.timeline-meta'),
-    m('.frames', anim
-      ? anim.frames.map((frame, i) =>
-          m('.frame', [
-            m('.frame-number', i),
-            m('.thumb.-frame', [
-              m(Thumb, { image: frame.sprite.image })
+    m('.timeline-frames', [
+      m('.frames', anim
+        ? anim.frames.map((frame, i) =>
+            m('.frame', [
+              m('.frame-number', i + 1),
+              m('.thumb.-frame', [
+                m(Thumb, { image: frame.sprite.image })
+              ])
             ])
-          ])
-        )
-      : null
-    ),
+          )
+        : null
+      )
+    ]),
     m('.timeline-controls', [
       m('.panel.-move', [
         m('.panel-button', [
@@ -290,7 +292,7 @@ const view = () =>
                 ))
               : m('.sidebar-content.-empty', [
                 m('.sidebar-notice', [
-                  'No anims registered.',
+                  'No states registered.',
                   m('button.-create', { onclick: openWindow('create') }, [
                     m('span.icon.material-icons-round', 'add'),
                     'Create'

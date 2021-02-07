@@ -2,14 +2,26 @@
   background: white;
   border-top: thin solid $silver;
   padding: 24px;
+  width: 100%;
 
-  .frames {
+  .timeline-frames {
     background: $white;
     border: thin solid $silver;
     border-radius: 4px;
-    width: 100%;
-    height: 96px;
+    min-height: 96px;
     padding: 4px;
+    width: 100%;
+    overflow-x: auto;
+  }
+
+  .frames {
+    white-space: nowrap;
+
+    .frame {
+      display: inline-block;
+      vertical-align: top;
+      margin-right: 4px;
+    }
 
     .frame-number {
       color: $lightgray;
@@ -25,10 +37,6 @@
     .thumb {
       margin-top: 2px;
       background: white;
-    }
-
-    .frame + .frame {
-      margin-left: 4px;
     }
   }
 

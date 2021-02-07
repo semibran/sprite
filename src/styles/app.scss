@@ -52,6 +52,11 @@ button.-alt {
   border-color: $silver;
 }
 
+button.-alt:hover {
+  background: $silver;
+  border-color: $lightgray;
+}
+
 button .icon {
   margin-left: -2px;
   margin-right: 4px;
@@ -304,10 +309,6 @@ header {
   max-height: 64px;
 }
 
-.frames {
-  display: flex;
-}
-
 .sidebar-footer {
   border-top: thin solid $silver;
   padding: 8px 1rem;
@@ -323,6 +324,7 @@ header {
   display: flex;
   flex-direction: column;
   flex: 1;
+  max-width: calc(100vw - #{$sidebar-width});
 }
 
 #editor {
