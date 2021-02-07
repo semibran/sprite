@@ -1,0 +1,79 @@
+#timeline {
+  background: white;
+  border-top: thin solid $silver;
+  padding: 24px;
+
+  .frames {
+    background: $white;
+    border: thin solid $silver;
+    border-radius: 4px;
+    width: 100%;
+    height: 96px;
+    padding: 4px;
+
+    .frame-number {
+      color: $lightgray;
+      border: thin solid $silver;
+      border-radius: 4px;
+      text-align: center;
+      font-size: 12px;
+      line-height: 20px;
+      width: 20px;
+      height: 20px;
+    }
+
+    .thumb {
+      margin-top: 2px;
+      background: white;
+    }
+
+    .frame + .frame {
+      margin-left: 4px;
+    }
+  }
+
+  .timeline-controls {
+    margin-top: 8px;
+    display: flex;
+  }
+
+  .panel {
+    border: thin solid $silver;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+  }
+
+  .panel + .panel {
+    margin-left: 8px;
+  }
+
+  .panel-button {
+    padding: 0 8px;
+    display: flex;
+    align-items: center;
+    height: 100%;
+  }
+
+  .panel-button:hover {
+    cursor: pointer;
+    background: $white;
+  }
+
+  .panel-button + .panel-button {
+    border-left: thin solid $silver;
+  }
+
+  .icon.-step-prev {
+    transform: rotate(-90deg);
+  }
+
+  .icon.-step-next {
+    transform: rotate(90deg);
+  }
+
+  .icon.-small {
+    font-size: 20px;
+  }
+}

@@ -9,13 +9,12 @@ import merge from './lib/merge'
 
 const state = {
   sprname: 'untitled',
-  tab: 'states',
+  tab: 'anims',
   image: null,
-  state: null,
   window: null,
   sprites: [],
-  selects: [],
-  states: []
+  anims: [],
+  selects: []
 }
 
 const handleImage = async (evt) => {
@@ -44,21 +43,48 @@ const toggleEntry = (i) => (evt) => {
 }
 
 const mergeSelects = () => {
-  state.selects.sort()
-  const rects = state.selects.map(idx => state.sprites[idx].rect)
-  for (let i = state.selects.length; --i;) {
-    const idx = state.selects[i]
-    state.sprites.splice(idx, 1)
+  const sprites = state.sprites
+  const selects = state.selects
+  if (!selects.length) {
+    return false
   }
-  const idx = state.selects[0]
+  selects.sort()
+  const rects = selects.map(idx => sprites[idx].rect)
   const rect = merge(rects)
-  state.sprites[idx].rect = rect
-  state.sprites[idx].image = extract(state.image, ...rect)
-  state.selects.length = 0
+  for (let i = selects.length; --i;) {
+    const idx = selects[i]
+    sprites.splice(idx, 1)
+  }
+  const idx = selects[0]
+  const sprite = sprites[idx]
+  sprite.rect = rect
+  sprite.image = extract(state.image, ...rect)
+  selects.length = 0
+  return true
 }
 
 const selectTab = (tab) => () => {
+  state.selects.length = 0
   state.tab = tab
+}
+
+const createState = () => {
+  if (!state.selects.length) {
+    return false
+  }
+
+  state.anims.push({
+    name: 'untitled',
+    loop: false,
+    next: null,
+    frames: state.selects.map(idx => ({
+      sprite: state.sprites[idx],
+      origin: [0, 0],
+      duration: 1
+    }))
+  })
+  state.selects = [state.anims.length - 1]
+  return true
 }
 
 const openWindow = (type) => () => {
@@ -84,10 +110,25 @@ const Upload = () =>
     m('span.upload-text', 'Accepted formats: .png, .gif')
   ])
 
-const Timeline = () =>
-  m('#timeline', [
+const Timeline = () => {
+  const anim = state.tab === 'anims'
+    && state.anims.length
+    && state.selects.length
+    && state.anims[state.selects[state.selects.length - 1]]
+  console.log(anim)
+  return m('#timeline', [
     m('.timeline-meta'),
-    m('.frames'),
+    m('.frames', anim
+      ? anim.frames.map((frame, i) =>
+          m('.frame', [
+            m('.frame-number', i),
+            m('.thumb.-frame', [
+              m(Thumb, { image: frame.sprite.image })
+            ])
+          ])
+        )
+      : null
+    ),
     m('.timeline-controls', [
       m('.panel.-move', [
         m('.panel-button', [
@@ -112,6 +153,7 @@ const Timeline = () =>
       ])
     ])
   ])
+}
 
 const CreateWindow = () =>
   m('.window.-create', [
@@ -138,7 +180,7 @@ const CreateWindow = () =>
             onclick: toggleEntry(i),
             class: state.selects.includes(i) ? '-select' : null
           }, [
-            m('.entry-thumb', [
+            m('.thumb.-entry', [
               m(Thumb, { image: sprite.image })
             ]),
             m('.entry-name', sprite.name)
@@ -146,7 +188,9 @@ const CreateWindow = () =>
         ))
       ]),
       m('.window-footer', [
-        m('button.-create', { onclick: closeWindow }, [
+        m('button.-create', {
+          onclick: () => { createState(); closeWindow() }
+        }, [
           m('span.icon.material-icons-round', 'add'),
           'Create'
         ]),
@@ -178,9 +222,9 @@ const view = () =>
               class: state.tab === 'sprites' ? '-active' : '',
               onclick: selectTab('sprites')
             }, [`Sprites (${state.sprites.length})`]),
-            m('.tab.-states', {
-              class: state.tab === 'states' ? '-active' : '',
-              onclick: selectTab('states')
+            m('.tab.-anims', {
+              class: state.tab === 'anims' ? '-active' : '',
+              onclick: selectTab('anims')
             }, ['States'])
           ]),
           m('.sidebar-subheader', [
@@ -201,7 +245,7 @@ const view = () =>
                     onclick: toggleEntry(i),
                     class: state.selects.includes(i) ? '-select' : null
                   }, [
-                    m('.entry-thumb', [
+                    m('.thumb.-entry', [
                       m(Thumb, { image: sprite.image })
                     ]),
                     m('.entry-name', sprite.name)
@@ -211,14 +255,23 @@ const view = () =>
                 m('.sidebar-notice', 'No sprites registered.')
               ])
           : null,
-        state.tab === 'states'
-          ? state.states.length
-              ? m('.sidebar-content', state.states.map((state, i) => {
-
-                }))
+        state.tab === 'anims'
+          ? state.anims.length
+              ? m('.sidebar-content', state.anims.map((anim, i) =>
+                  m('.entry', {
+                    key: i + '-' + anim.name,
+                    onclick: toggleEntry(i),
+                    class: state.selects.includes(i) ? '-select' : null
+                  }, [
+                    m('.thumb.-entry', [
+                      m(Thumb, { image: anim.frames[0].sprite.image })
+                    ]),
+                    m('.entry-name', anim.name)
+                  ])
+                ))
               : m('.sidebar-content.-empty', [
                 m('.sidebar-notice', [
-                  'No states registered.',
+                  'No anims registered.',
                   m('button.-create', { onclick: openWindow('create') }, [
                     m('span.icon.material-icons-round', 'add'),
                     'Create'
@@ -228,11 +281,11 @@ const view = () =>
           : null,
         state.tab === 'sprites'
           ? m('.sidebar-footer', [
-              m('button.button.-split', { disabled: true }, [
+              m('button.-split', { disabled: true }, [
                 m('span.icon.material-icons-round', 'vertical_split'),
                 'Split'
               ]),
-              m('button.button.-merge', {
+              m('button.-merge', {
                 disabled: state.selects.length < 2,
                 onclick: state.selects.length >= 2 && mergeSelects
               }, [

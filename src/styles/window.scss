@@ -76,7 +76,7 @@
   .entry {
     border: thin solid transparent;
     border-radius: 4px;
-    padding: 8px 6px;
+    padding: 6px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -86,7 +86,7 @@
   .entry:hover {
     background: $silver;
 
-    .entry-thumb {
+    .thumb {
       border-color: $lightgray;
     }
   }
@@ -100,7 +100,7 @@
       background: $skyblue;
     }
 
-    .entry-thumb {
+    .thumb {
       border-color: $blue;
     }
   }
@@ -109,20 +109,9 @@
     margin-top: 4px;
   }
 
-  .entry-thumb {
+  .thumb {
     background: white;
     border: thin solid $silver;
-    border-radius: 4px;
-    width: 4rem;
-    height: 4rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .entry-thumb canvas {
-    max-width: 4rem;
-    max-height: 4rem;
   }
 }
 
