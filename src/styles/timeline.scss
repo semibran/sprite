@@ -15,13 +15,14 @@
   }
 
   .frames {
+    user-select: none;
     white-space: nowrap;
+  }
 
-    .frame {
-      display: inline-block;
-      vertical-align: top;
-      margin-right: 4px;
-    }
+  .frame {
+    display: inline-block;
+    vertical-align: top;
+    margin-right: 4px;
 
     .frame-number {
       color: $lightgray;
@@ -37,6 +38,19 @@
     .thumb {
       margin-top: 2px;
       background: white;
+    }
+  }
+
+  .frame.-select {
+    .frame-number {
+      color: $blue;
+      border-color: $blue;
+      background: $lightblue;
+    }
+
+    .thumb {
+      border-color: $blue;
+      background: $lightblue;
     }
   }
 

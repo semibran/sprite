@@ -1,7 +1,8 @@
 import m from 'mithril'
 import extract from 'img-extract'
 import loadImage from 'img-load'
-import Canvas from './comps/canvas'
+import SpriteCanvas from './comps/sprite-canvas'
+import StateCanvas from './comps/state-canvas'
 import Thumb from './comps/thumb'
 import clone from './lib/img-clone'
 import slice from './lib/slice'
@@ -12,9 +13,16 @@ const state = {
   tab: 'sprites',
   image: null,
   window: null,
+  selects: [],
   sprites: [],
-  anims: [],
-  selects: []
+  anims: {
+    list: [],
+    selidx: 0,
+    frameidx: 0
+  },
+  timeline: {
+    selects: []
+  }
 }
 
 const handleImage = async (evt) => {
@@ -33,31 +41,30 @@ const setImage = (image) => {
   m.redraw()
 }
 
-const setSelect = (i) => (evt) => {
-  const idx = state.selects.indexOf(i)
-  const prev = state.selects[state.selects.length - 1]
+const select = (items, i) => (evt) => {
   const shift = evt.shiftKey
   const ctrl = evt.ctrlKey || evt.metaKey
-  if (shift && !ctrl && prev !== undefined && prev !== i) {
+  const idx = items.indexOf(i)
+  const prev = items[items.length - 1]
+  if (shift && !ctrl && prev != null && prev !== i) {
     const dir = i > prev ? 1 : -1
     for (let j = prev; j !== i;) {
       j += dir
-      if (state.selects.indexOf(j) === -1) {
-        state.selects.push(j)
+      if (items.indexOf(j) === -1) {
+        items.push(j)
       }
     }
   } else if (ctrl && !shift) {
     if (idx === -1) {
-      state.selects.push(i)
+      items.push(i)
     } else {
-      state.selects.splice(idx, 1)
+      items.splice(idx, 1)
     }
+  } else if (idx === -1 || items.length > 1) {
+    items[0] = i
+    items.length = 1
   } else {
-    if (idx === -1 || state.selects.length > 1) {
-      state.selects = [i]
-    } else {
-      state.selects = []
-    }
+    items.length = 0
   }
 }
 
@@ -92,7 +99,7 @@ const createState = () => {
     return false
   }
 
-  state.anims.push({
+  state.anims.list.push({
     name: 'untitled',
     loop: false,
     next: null,
@@ -102,7 +109,7 @@ const createState = () => {
       duration: 1
     }))
   })
-  state.selects = [state.anims.length - 1]
+  state.anims.selidx = state.anims.list.length - 1
   return true
 }
 
@@ -130,17 +137,17 @@ const Upload = () =>
   ])
 
 const Timeline = () => {
-  const anim = state.tab === 'anims'
-    && state.anims.length
-    && state.selects.length
-    && state.anims[state.selects[state.selects.length - 1]]
-  console.log(anim)
+  const anim = state.tab === 'anims' && state.anims.list[state.anims.selidx]
   return m('#timeline', [
     m('.timeline-meta'),
     m('.timeline-frames', [
       m('.frames', anim
         ? anim.frames.map((frame, i) =>
-            m('.frame', [
+            m('.frame', {
+              key: `${i}-${frame.sprite.name}`,
+              onclick: select(state.timeline.selects, i),
+              class: state.timeline.selects.includes(i) ? '-select' : null
+            }, [
               m('.frame-number', i + 1),
               m('.thumb.-frame', [
                 m(Thumb, { image: frame.sprite.image })
@@ -198,7 +205,7 @@ const CreateWindow = () =>
         m('.window-entrygrid', state.sprites.map((sprite, i) =>
           m('.entry.action', {
             key: `${i}-${sprite.name}-${sprite.rect[2]},${sprite.rect[3]}`,
-            onclick: setSelect(i),
+            onclick: select(state.selects, i),
             class: state.selects.includes(i) ? '-select' : null
           }, [
             m('.thumb.-entry', [
@@ -263,7 +270,7 @@ const view = () =>
               ? m('.sidebar-content', state.sprites.map((sprite, i) =>
                   m('.entry', {
                     key: `${i}-${sprite.name}-${sprite.rect[2]},${sprite.rect[3]}`,
-                    onclick: setSelect(i),
+                    onclick: select(state.selects, i),
                     class: state.selects.includes(i) ? '-select' : null
                   }, [
                     m('.thumb.-entry', [
@@ -277,11 +284,11 @@ const view = () =>
               ])
           : null,
         state.tab === 'anims'
-          ? state.anims.length
-              ? m('.sidebar-content', state.anims.map((anim, i) =>
+          ? state.anims.list.length
+              ? m('.sidebar-content', state.anims.list.map((anim, i) =>
                   m('.entry', {
                     key: i + '-' + anim.name,
-                    onclick: setSelect(i),
+                    onclick: select(state.selects, i),
                     class: state.selects.includes(i) ? '-select' : null
                   }, [
                     m('.thumb.-entry', [
@@ -317,19 +324,28 @@ const view = () =>
           : null
       ]),
       state.tab === 'sprites'
-        ? m('#editor', [
+        ? m('#editor.-sprites', [
             !state.image
               ? Upload()
-              : m(Canvas, {
+              : m(SpriteCanvas, {
                 image: state.image,
                 rects: state.sprites.map(sprite => sprite.rect),
                 selects: state.selects
               })
           ])
-        : m('.editor-column', [
-          m('#editor'),
-          Timeline()
-        ])
+        : null,
+      state.tab === 'anims'
+        ? m('.editor-column', [
+            m('#editor.-anims', [
+              state.anims.list.length
+                ? m(StateCanvas, {
+                    image: state.anims.list[state.anims.selidx].frames[state.anims.frameidx].sprite.image
+                  })
+                : null
+            ]),
+            Timeline()
+          ])
+        : null
     ]),
     state.window !== null
       ? m('.overlay', { onclick: closeWindow })
