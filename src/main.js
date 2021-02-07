@@ -123,7 +123,9 @@ const CreateWindow = () =>
     ]),
     m('.window-content', [
       m('.window-bar', [
-        '0 sprites selected',
+        state.selects.length == 1
+          ? '1 sprite selected'
+          : `${state.selects.length} sprites selected`,
         m('.view-toggle', [
           m('span.icon.material-icons-round.action.-select', 'view_module'),
           m('span.icon.material-icons-round.action', 'view_list')
@@ -131,10 +133,10 @@ const CreateWindow = () =>
       ]),
       m('.window-entries', [
         m('.window-entrygrid', state.sprites.map((sprite, i) =>
-          m('.entry', {
+          m('.entry.action', {
             key: i + '-' + sprite.name,
-            // onclick: toggleEntry(i),
-            // class: state.selects.includes(i) ? '-select' : null
+            onclick: toggleEntry(i),
+            class: state.selects.includes(i) ? '-select' : null
           }, [
             m('.entry-thumb', [
               m(Thumb, { image: sprite.image })
