@@ -83,6 +83,11 @@
     background: $white;
   }
 
+  .panel-button.-select {
+    background: $lightblue;
+    color: $blue;
+  }
+
   .panel-button + .panel-button {
     border-left: thin solid $silver;
   }

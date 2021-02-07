@@ -13,7 +13,8 @@ $darkblue: #36d;
 $font-sans: Inter, '-apple-system', BlinkMacSystemFont, Helvetica, Arial, sans-serif;
 $font-mono: 'Source Code Pro', Monaco, Consolas, monospace;
 $header-height: 72px;
-$sidebar-width: 320px;
+$sidebar-left-width: 320px;
+$sidebar-right-width: 240px;
 
 * {
   font-family: $font-sans;
@@ -115,7 +116,7 @@ header {
 .header-block {
   border-right: thin solid black;
   padding: 0 24px;
-  width: $sidebar-width;
+  width: $sidebar-left-width;
   height: 100%;
   display: flex;
   align-items: center;
@@ -146,11 +147,19 @@ header {
 }
 
 .sidebar {
-  width: $sidebar-width;
   flex-grow: 0;
   display: flex;
   flex-direction: column;
+}
+
+.sidebar.-left {
+  width: $sidebar-left-width;
   border-right: thin solid $silver;
+}
+
+.sidebar.-right {
+  width: $sidebar-right-width;
+  border-left: thin solid $silver;
 }
 
 .sidebar-tabs {
@@ -327,7 +336,7 @@ header {
   display: flex;
   flex-direction: column;
   flex: 1;
-  max-width: calc(100vw - #{$sidebar-width});
+  max-width: calc(100vw - #{$sidebar-left-width} - #{$sidebar-right-width});
 }
 
 #editor {

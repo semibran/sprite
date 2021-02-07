@@ -16,12 +16,14 @@ const state = {
   selects: [],
   sprites: [],
   anims: {
+    tab: 'anim',
     list: [],
     selidx: 0,
-    frameidx: 0,
     editingName: false
   },
   timeline: {
+    playing: false,
+    frameidx: 0,
     selects: []
   }
 }
@@ -79,7 +81,7 @@ const selectAnim = (i) => (evt) => {
 
 const selectFrame = (i) => (evt) => {
   select(state.timeline.selects, i)(evt)
-  state.anims.frameidx = i
+  state.timeline.frameidx = i
 }
 
 const mergeSelects = () => {
@@ -108,6 +110,10 @@ const selectTab = (tab) => () => {
   state.tab = tab
 }
 
+const selectAnimTab = (tab) => () => {
+  state.anims.tab = tab
+}
+
 const startNameEdit = (evt) => {
   state.anims.editingName = true
 }
@@ -117,7 +123,23 @@ const endNameEdit = (evt) => {
   state.anims.list[state.anims.selidx].name = evt.target.value;
 }
 
-const createState = () => {
+const toggleAnim = () => {
+  const anim = state.anims.list[state.anims.selidx]
+  if (!anim) {
+    return false
+  }
+  if (state.timeline.playing) {
+    state.timeline.playing = false
+  } else {
+    state.timeline.playing = true
+    if (state.timeline.frameidx === anim.frames.length - 1) {
+      state.timeline.frameidx = 0
+    }
+  }
+  return true
+}
+
+const createAnim = () => {
   if (!state.selects.length) {
     return false
   }
@@ -185,7 +207,10 @@ const Timeline = () => {
         m('.panel-button', [
           m('span.icon.material-icons-round.-step-prev', 'eject')
         ]),
-        m('.panel-button', [
+        m('.panel-button', {
+          class: state.timeline.playing ? '-select' : '',
+          onclick: toggleAnim,
+        }, [
           m('span.icon.material-icons-round.-play', 'play_arrow')
         ]),
         m('.panel-button', [
@@ -240,7 +265,7 @@ const CreateWindow = () =>
       ]),
       m('.window-footer', [
         m('button.-create', {
-          onclick: () => { createState(); closeWindow() }
+          onclick: () => { createAnim(); closeWindow() }
         }, [
           m('span.icon.material-icons-round', 'add'),
           'Create'
@@ -266,7 +291,7 @@ const view = () =>
       ])
     ]),
     m('.content', [
-      m('aside.sidebar', [
+      m('aside.sidebar.-left', [
         m('.sidebar-header', [
           m('.sidebar-tabs', [
             m('.tab.-sprites', {
@@ -369,11 +394,30 @@ const view = () =>
             m('#editor.-anims', [
               state.anims.list.length
                 ? m(StateCanvas, {
-                    image: state.anims.list[state.anims.selidx].frames[state.anims.frameidx].sprite.image
+                    image: state.anims.list[state.anims.selidx].frames[state.timeline.frameidx].sprite.image
                   })
                 : null
             ]),
             Timeline()
+          ])
+        : null,
+      state.tab === 'anims'
+        ? m('aside.sidebar.-right', [
+            m('.sidebar-header', [
+              m('.sidebar-tabs', [
+                m('.tab.-anim', {
+                  class: state.anims.tab === 'anim' ? '-active' : '',
+                  onclick: selectAnimTab('anim')
+                }, 'State'),
+                m('.tab.-frame', {
+                  class: state.anims.tab === 'frame' ? '-active' : '',
+                  onclick: selectAnimTab('frame')
+                }, 'Frame')
+              ])
+            ]),
+            m('.sidebar-content', [
+
+            ])
           ])
         : null
     ]),
