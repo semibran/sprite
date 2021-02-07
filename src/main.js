@@ -125,12 +125,23 @@ const CreateWindow = () =>
       m('.window-bar', [
         '0 sprites selected',
         m('.view-toggle', [
-          m('span.icon.material-icons-round', 'view_module'),
-          m('span.icon.material-icons-round', 'view_list')
+          m('span.icon.material-icons-round.action.-select', 'view_module'),
+          m('span.icon.material-icons-round.action', 'view_list')
         ])
       ]),
       m('.window-entries', [
-
+        m('.window-entrygrid', state.sprites.map((sprite, i) =>
+          m('.entry', {
+            key: i + '-' + sprite.name,
+            // onclick: toggleEntry(i),
+            // class: state.selects.includes(i) ? '-select' : null
+          }, [
+            m('.entry-thumb', [
+              m(Thumb, { image: sprite.image })
+            ]),
+            m('.entry-name', sprite.name)
+          ])
+        ))
       ]),
       m('.window-footer', [
         m('button.-create', { onclick: closeWindow }, [
@@ -182,8 +193,8 @@ const view = () =>
         ]),
         state.tab === 'sprites'
           ? state.sprites.length
-              ? m('.sidebar-content', state.sprites.map((sprite, i) => {
-                  return m('.entry', {
+              ? m('.sidebar-content', state.sprites.map((sprite, i) =>
+                  m('.entry', {
                     key: i + '-' + sprite.name,
                     onclick: toggleEntry(i),
                     class: state.selects.includes(i) ? '-select' : null
@@ -193,7 +204,7 @@ const view = () =>
                     ]),
                     m('.entry-name', sprite.name)
                   ])
-                }))
+                ))
               : m('.sidebar-content.-empty', [
                 m('.sidebar-notice', 'No sprites registered.')
               ])
