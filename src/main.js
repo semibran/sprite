@@ -131,12 +131,32 @@ const toggleAnim = () => {
   if (state.timeline.playing) {
     state.timeline.playing = false
   } else {
-    state.timeline.playing = true
-    if (state.timeline.frameidx === anim.frames.length - 1) {
-      state.timeline.frameidx = 0
-    }
+    playAnim()
   }
   return true
+}
+
+const playAnim = () => {
+  const anim = state.anims.list[state.anims.selidx]
+  if (!anim) {
+    return false
+  }
+
+  const tl = state.timeline
+  tl.playing = true
+  if (tl.frameidx === anim.frames.length - 1) {
+    tl.frameidx = 0
+  }
+
+  tl.timeout = requestAnimationFrame(function animate () {
+    if (tl.frameidx === anim.frames.length - 1) {
+      tl.playing = false
+    } else {
+      tl.frameidx++
+      tl.timeout = requestAnimationFrame(animate)
+      m.redraw()
+    }
+  })
 }
 
 const createAnim = () => {
@@ -211,7 +231,8 @@ const Timeline = () => {
           class: state.timeline.playing ? '-select' : '',
           onclick: toggleAnim,
         }, [
-          m('span.icon.material-icons-round.-play', 'play_arrow')
+          m('span.icon.material-icons-round.-play',
+            state.timeline.playing ? 'pause' : 'play_arrow')
         ]),
         m('.panel-button', [
           m('span.icon.material-icons-round.-step-next', 'eject')
