@@ -288,7 +288,19 @@ const Upload = () =>
 
 const Timeline = () => {
   const anim = state.tab === 'anims' && state.anims.select
-  return m('#timeline', [
+  return m.fragment({
+    oncreate: (vnode) => {
+      window.addEventListener('keydown', evt => {
+        if (evt.key === ',') {
+          stepPrev()
+          m.redraw()
+        } else if (evt.key === '.') {
+          stepNext()
+          m.redraw()
+        }
+      })
+    }
+  }, m('#timeline', [
     m('.timeline-controls', [
       m('.panel.-move', [
         m('.panel-button', { onclick: stepPrev }, [
@@ -322,7 +334,10 @@ const Timeline = () => {
         ])
       ])
     ]),
-    m('.timeline-frames', [
+    m('.timeline-frames', {
+      tabindex: '0',
+      onkeydown: (evt) => evt.preventDefault()
+    }, [
       m('.frames', anim
         ? anim.frames.map((frame, i) =>
             m('.frame', {
@@ -339,7 +354,7 @@ const Timeline = () => {
         : null
       )
     ])
-  ])
+  ]))
 }
 
 const AnimsEditor = () => {
@@ -348,7 +363,6 @@ const AnimsEditor = () => {
   const frame = anim && anim.frames[tl.frameidx]
   const frameBefore = anim && anim.frames[tl.frameidx - 1]
   const frameAfter = anim && anim.frames[tl.frameidx + 1]
-  const onionSkin = tl.onionSkin
   return m('.editor-column', [
     m('#editor.-anims', [
       state.anims.list.length

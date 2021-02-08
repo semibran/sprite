@@ -5,6 +5,7 @@ export default () => {
   let frame = null
   let frameBefore = null
   let frameAfter = null
+  let playing = null
   let presspos = null
   let changeOffset = null
 
