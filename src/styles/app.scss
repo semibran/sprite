@@ -333,7 +333,7 @@ header {
 }
 
 .sidebar section {
-  padding: 12px 0;
+  padding: 16px 0;
   margin: 0 24px;
   display: flex;
 }
@@ -343,7 +343,7 @@ header {
 }
 
 .sidebar-key {
-  width: 80px;
+  width: 72px;
   font-weight: bold;
 }
 
@@ -351,13 +351,25 @@ header {
   display: flex;
 }
 
+.sidebar-fields {
+  display: flex;
+}
+
+.sidebar-field:not(.-text) {
+  display: flex
+}
+
 .sidebar-field + .sidebar-field {
-  margin-left: 24px;
+  margin-left: 16px;
 }
 
 .sidebar-fieldname {
   color: $lightgray;
   margin-right: 16px;
+}
+
+input.-sidebar-field {
+  width: 24px;
 }
 
 .editor-column {

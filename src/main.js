@@ -2,7 +2,7 @@ import m from 'mithril'
 import extract from 'img-extract'
 import loadImage from 'img-load'
 import SpriteCanvas from './comps/sprite-canvas'
-import StateCanvas from './comps/state-canvas'
+import AnimCanvas from './comps/anim-canvas'
 import Thumb from './comps/thumb'
 import clone from './lib/img-clone'
 import slice from './lib/slice'
@@ -120,7 +120,7 @@ const startNameEdit = (evt) => {
 
 const endNameEdit = (evt) => {
   state.anims.editingName = false
-  state.anims.select.name = evt.target.value;
+  state.anims.select.name = evt.target.value
 }
 
 const toggleAnim = () => {
@@ -208,6 +208,22 @@ const createAnim = () => {
   return true
 }
 
+const handleFrameOrigin = (axis) => (evt) => {
+  const val = parseInt(evt.target.value)
+  if (axis === 'x') {
+    setFrameOrigin(val, null)
+  } else if (axis === 'y') {
+    setFrameOrigin(null, val)
+  }
+}
+
+const setFrameOrigin = (x, y) => {
+  const anim = state.anims.select
+  const frame = anim && anim.frames[state.timeline.frameidx]
+  if (x != null) frame.origin.x = x
+  if (y != null) frame.origin.y = y
+}
+
 const openWindow = (type) => () => {
   state.window = type
 }
@@ -259,7 +275,7 @@ const Timeline = () => {
         ]),
         m('.panel-button', {
           class: state.timeline.playing ? '-select' : '',
-          onclick: toggleAnim,
+          onclick: toggleAnim
         }, [
           m('span.icon.material-icons-round.-play',
             state.timeline.playing ? 'pause' : 'play_arrow')
@@ -282,15 +298,22 @@ const Timeline = () => {
   ])
 }
 
-const AnimsEditor = () =>
-  m('.editor-column', [
+const AnimsEditor = () => {
+  const anim = state.anims.select
+  const frame = anim && anim.frames[state.timeline.frameidx]
+  return m('.editor-column', [
     m('#editor.-anims', [
       state.anims.list.length
-        ? m(StateCanvas, { image: state.anims.select.frames[state.timeline.frameidx].sprite.image })
+        ? m(AnimCanvas, {
+            image: frame.sprite.image,
+            offset: frame.origin,
+            onchangeoffset: setFrameOrigin
+          })
         : null
     ]),
     Timeline()
   ])
+}
 
 const RightSidebar = () =>
   m('aside.sidebar.-right', [
@@ -314,7 +337,12 @@ const AnimTab = () => {
   const anim = state.anims.select
   return anim
     ? m('.sidebar-content', [
-        anim.name
+        m('section.-name', [
+          m('h4.sidebar-key', 'Name'),
+          m('span.sidebar-value', [
+            m('.sidebar-field', anim.name)
+          ])
+        ])
       ])
     : null
 }
@@ -333,7 +361,7 @@ const FrameTab = () => {
         m('section.-duration', [
           m('h4.sidebar-key', 'Duration'),
           m('span.sidebar-value', [
-            m('.sidebar-field', [
+            m('.sidebar-field.-text', [
               frame.duration,
               m('span.sidebar-fieldname',
                 frame.duration === 1 ? ' frame' : ' frames')
@@ -343,13 +371,21 @@ const FrameTab = () => {
         m('section.-origin', [
           m('h4.sidebar-key', 'Origin'),
           m('span.sidebar-value', [
-            m('.sidebar-field.-x', [
-              m('span.sidebar-fieldname', 'X'),
-              frame.origin.x
-            ]),
-            m('.sidebar-field.-y', [
-              m('span.sidebar-fieldname', 'Y'),
-              frame.origin.y
+            m('.sidebar-fields', [
+              m('.sidebar-field.-x', [
+                m('span.sidebar-fieldname', 'X'),
+                m('input.-sidebar-field', {
+                  onchange: handleFrameOrigin('x'),
+                  value: frame.origin.x
+                })
+              ]),
+              m('.sidebar-field.-y', [
+                m('span.sidebar-fieldname', 'Y'),
+                m('input.-sidebar-field', {
+                  onchange: handleFrameOrigin('y'),
+                  value: frame.origin.y
+                })
+              ])
             ])
           ])
         ])
@@ -367,7 +403,7 @@ const CreateWindow = () =>
     ]),
     m('.window-content', [
       m('.window-bar', [
-        state.selects.length == 1
+        state.selects.length === 1
           ? '1 sprite selected'
           : `${state.selects.length} sprites selected`,
         m('.view-toggle', [
