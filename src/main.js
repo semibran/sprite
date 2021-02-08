@@ -187,10 +187,10 @@ const playAnim = () => {
       tl.playing = false
     }
     if (tl.playing) {
-      tl.timeout = setTimeout(animate, 50)
+      tl.timeout = setTimeout(animate, 34)
     }
     m.redraw()
-  }, 50)
+  }, 34)
   return true
 }
 
@@ -230,6 +230,29 @@ const handleFrameOrigin = (axis) => (evt) => {
     setFrameOrigin(val, null)
   } else if (axis === 'y') {
     setFrameOrigin(null, val)
+  }
+}
+
+const selectTimelineOrigin = (evt) => {
+  const tl = state.timeline
+  const anim = state.anims.select
+  const frames = anim && tl.selects.map(idx => anim.frames[idx])
+  const [xpos, ypos] = evt.target.value.split('-')
+  for (const frame of frames) {
+    if (xpos === 'left') {
+      frame.origin.x = 0
+    } else if (xpos === 'center') {
+      frame.origin.x = Math.floor(frame.sprite.image.width / 2)
+    } else if (xpos === 'right') {
+      frame.origin.x = frame.sprite.image.width
+    }
+    if (ypos === 'top') {
+      frame.origin.y = 0
+    } else if (ypos === 'middle') {
+      frame.origin.y = Math.floor(frame.sprite.image.height / 2)
+    } else if (ypos === 'bottom') {
+      frame.origin.y = frame.sprite.image.height
+    }
   }
 }
 
@@ -338,7 +361,7 @@ const AnimsEditor = () => {
           })
         : null
     ]),
-    Timeline()
+    anim ? Timeline() : null
   ])
 }
 
@@ -432,6 +455,9 @@ const FramesTab = () => {
     frame.duration !== frames[0].duration)
   const duration = equalDuration ? frames[0].duration : '*'
   return m('.sidebar-content', [
+    m('section.-desc', [
+      `${selects.length} frames selected`
+    ]),
     m('section.-duration', [
       m('h4.sidebar-key', 'Duration'),
       m('span.sidebar-value', [
@@ -439,6 +465,21 @@ const FramesTab = () => {
           duration,
           m('span.sidebar-fieldname', duration === 1 ? ' frame' : ' frames')
         ])
+      ])
+    ]),
+    m('section.-origin', [
+      m('h4.sidebar-key', 'Origin'),
+      m('select.sidebar-value', { onchange: selectTimelineOrigin }, [
+        m('option', { value: 'custom' }, 'Custom'),
+        m('option', { value: 'left-top' }, 'Top left'),
+        m('option', { value: 'center-top' }, 'Top'),
+        m('option', { value: 'right-top' }, 'Top right'),
+        m('option', { value: 'left-middle' }, 'Left'),
+        m('option', { value: 'center-middle' }, 'Center'),
+        m('option', { value: 'right-middle' }, 'Right'),
+        m('option', { value: 'left-bottom' }, 'Bottom left'),
+        m('option', { value: 'center-bottom' }, 'Bottom'),
+        m('option', { value: 'right-bottom' }, 'Bottom right')
       ])
     ])
   ])
@@ -488,7 +529,7 @@ const CreateWindow = () =>
     ])
   ])
 
-loadImage('../tmp/test.png')
+loadImage('../tmp/test.gif')
   .then(setImage)
   .catch(console.error)
 
@@ -602,9 +643,7 @@ const view = () =>
               })
           ])
         : null,
-      state.tab === 'anims'
-        ? AnimsEditor()
-        : null,
+      state.tab === 'anims' ? AnimsEditor() : null,
       state.tab === 'anims'
         ? RightSidebar()
         : null
