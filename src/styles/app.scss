@@ -236,8 +236,7 @@ header {
 }
 
 .sidebar-content {
-  user-select: none;
-  padding: 12px 0;
+  padding: 8px 0;
   flex: 1;
   overflow-y: auto;
 
@@ -275,6 +274,7 @@ header {
   }
 
   .entry {
+    user-select: none;
     display: flex;
     align-items: center;
     padding: 4px 2rem;
@@ -330,6 +330,34 @@ header {
 
 .sidebar-footer .button + .button {
   margin-left: 8px;
+}
+
+.sidebar section {
+  padding: 12px 0;
+  margin: 0 24px;
+  display: flex;
+}
+
+.sidebar section + section {
+  border-top: thin solid $silver;
+}
+
+.sidebar-key {
+  width: 80px;
+  font-weight: bold;
+}
+
+.sidebar-value {
+  display: flex;
+}
+
+.sidebar-field + .sidebar-field {
+  margin-left: 24px;
+}
+
+.sidebar-fieldname {
+  color: $lightgray;
+  margin-right: 16px;
 }
 
 .editor-column {

@@ -10,7 +10,7 @@
     border: thin solid $silver;
     border-radius: 4px;
     min-height: 96px;
-    padding: 4px;
+    padding: 2px;
     width: 100%;
     overflow-x: auto;
   }
@@ -20,9 +20,11 @@
   }
 
   .frame {
+    cursor: pointer;
     display: inline-block;
     vertical-align: top;
-    margin-right: 4px;
+    padding: 2px;
+    margin-right: 2px;
 
     .frame-number {
       color: $lightgray;
@@ -42,15 +44,17 @@
   }
 
   .frame.-select {
+    border-radius: 4px;
+    background: $lightblue;
+
     .frame-number {
       color: $blue;
       border-color: $blue;
-      background: $lightblue;
     }
 
     .thumb {
       border-color: $blue;
-      background: $lightblue;
+      background: white;
     }
   }
 

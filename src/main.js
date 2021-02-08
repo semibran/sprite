@@ -16,9 +16,9 @@ const state = {
   selects: [],
   sprites: [],
   anims: {
-    tab: 'anim',
+    tab: 'frame',
     list: [],
-    selidx: 0,
+    select: 0,
     editingName: false
   },
   timeline: {
@@ -76,7 +76,7 @@ const select = (items, i) => (evt) => {
 }
 
 const selectAnim = (i) => (evt) => {
-  state.anims.selidx = i
+  state.anims.select = state.anims.list[i]
 }
 
 const selectFrame = (i) => (evt) => {
@@ -120,20 +120,15 @@ const startNameEdit = (evt) => {
 
 const endNameEdit = (evt) => {
   state.anims.editingName = false
-  state.anims.list[state.anims.selidx].name = evt.target.value;
+  state.anims.select.name = evt.target.value;
 }
 
 const toggleAnim = () => {
-  const anim = state.anims.list[state.anims.selidx]
-  if (!anim) {
-    return false
-  }
   if (state.timeline.playing) {
     return pauseAnim()
   } else {
     return playAnim()
   }
-  return true
 }
 
 const stepPrev = () => {
@@ -146,7 +141,7 @@ const stepPrev = () => {
 }
 
 const stepNext = () => {
-  const anim = state.anims.list[state.anims.selidx]
+  const anim = state.anims.select
   if (!anim) {
     return false
   }
@@ -163,14 +158,14 @@ const pauseAnim = () => {
   const tl = state.timeline
   tl.playing = false
   if (tl.timeout) {
-    cancelAnimationFrame(tl.timeout)
+    clearTimeout(tl.timeout)
     tl.timeout = null
   }
   return true
 }
 
 const playAnim = () => {
-  const anim = state.anims.list[state.anims.selidx]
+  const anim = state.anims.select
   if (!anim) {
     return false
   }
@@ -181,15 +176,15 @@ const playAnim = () => {
     tl.frameidx = 0
   }
 
-  tl.timeout = requestAnimationFrame(function animate () {
+  tl.timeout = setTimeout(function animate () {
     if (tl.frameidx === anim.frames.length - 1) {
       tl.playing = false
     } else {
       tl.frameidx++
-      tl.timeout = requestAnimationFrame(animate)
+      tl.timeout = setTimeout(animate, 100)
     }
     m.redraw()
-  })
+  }, 100)
   return true
 }
 
@@ -198,17 +193,18 @@ const createAnim = () => {
     return false
   }
 
-  state.anims.list.push({
+  const anim = {
     name: 'untitled',
     loop: false,
     next: null,
     frames: state.selects.map(idx => ({
       sprite: state.sprites[idx],
-      origin: [0, 0],
+      origin: { x: 0, y: 0 },
       duration: 1
     }))
-  })
-  state.anims.selidx = state.anims.list.length - 1
+  }
+  state.anims.list.push(anim)
+  state.anims.select = anim
   return true
 }
 
@@ -236,7 +232,7 @@ const Upload = () =>
   ])
 
 const Timeline = () => {
-  const anim = state.tab === 'anims' && state.anims.list[state.anims.selidx]
+  const anim = state.tab === 'anims' && state.anims.select
   return m('#timeline', [
     m('.timeline-meta'),
     m('.timeline-frames', [
@@ -284,6 +280,81 @@ const Timeline = () => {
       ])
     ])
   ])
+}
+
+const AnimsEditor = () =>
+  m('.editor-column', [
+    m('#editor.-anims', [
+      state.anims.list.length
+        ? m(StateCanvas, { image: state.anims.select.frames[state.timeline.frameidx].sprite.image })
+        : null
+    ]),
+    Timeline()
+  ])
+
+const RightSidebar = () =>
+  m('aside.sidebar.-right', [
+    m('.sidebar-header', [
+      m('.sidebar-tabs', [
+        m('.tab.-anim', {
+          class: state.anims.tab === 'anim' ? '-active' : '',
+          onclick: selectAnimTab('anim')
+        }, 'State'),
+        m('.tab.-frame', {
+          class: state.anims.tab === 'frame' ? '-active' : '',
+          onclick: selectAnimTab('frame')
+        }, 'Frame')
+      ])
+    ]),
+    state.anims.tab === 'anim' ? AnimTab() : null,
+    state.anims.tab === 'frame' ? FrameTab() : null
+  ])
+
+const AnimTab = () => {
+  const anim = state.anims.select
+  return anim
+    ? m('.sidebar-content', [
+        anim.name
+      ])
+    : null
+}
+
+const FrameTab = () => {
+  const anim = state.anims.select
+  const frame = anim && anim.frames[state.timeline.frameidx]
+  return frame
+    ? m('.sidebar-content', [
+        m('section.-sprite', [
+          m('h4.sidebar-key', 'Sprite'),
+          m('span.sidebar-value', [
+            m('.sidebar-field', frame.sprite.name)
+          ])
+        ]),
+        m('section.-duration', [
+          m('h4.sidebar-key', 'Duration'),
+          m('span.sidebar-value', [
+            m('.sidebar-field', [
+              frame.duration,
+              m('span.sidebar-fieldname',
+                frame.duration === 1 ? ' frame' : ' frames')
+            ])
+          ])
+        ]),
+        m('section.-origin', [
+          m('h4.sidebar-key', 'Origin'),
+          m('span.sidebar-value', [
+            m('.sidebar-field.-x', [
+              m('span.sidebar-fieldname', 'X'),
+              frame.origin.x
+            ]),
+            m('.sidebar-field.-y', [
+              m('span.sidebar-fieldname', 'Y'),
+              frame.origin.y
+            ])
+          ])
+        ])
+      ])
+    : null
 }
 
 const CreateWindow = () =>
@@ -392,7 +463,7 @@ const view = () =>
                   m('.entry', {
                     key: i + '-' + anim.name,
                     onclick: selectAnim(i),
-                    class: state.anims.selidx === i ? '-select' : null
+                    class: state.anims.select === anim ? '-select' : null
                   }, [
                     m('.thumb.-entry', [
                       m(Thumb, { image: anim.frames[0].sprite.image })
@@ -445,35 +516,10 @@ const view = () =>
           ])
         : null,
       state.tab === 'anims'
-        ? m('.editor-column', [
-            m('#editor.-anims', [
-              state.anims.list.length
-                ? m(StateCanvas, {
-                    image: state.anims.list[state.anims.selidx].frames[state.timeline.frameidx].sprite.image
-                  })
-                : null
-            ]),
-            Timeline()
-          ])
+        ? AnimsEditor()
         : null,
       state.tab === 'anims'
-        ? m('aside.sidebar.-right', [
-            m('.sidebar-header', [
-              m('.sidebar-tabs', [
-                m('.tab.-anim', {
-                  class: state.anims.tab === 'anim' ? '-active' : '',
-                  onclick: selectAnimTab('anim')
-                }, 'State'),
-                m('.tab.-frame', {
-                  class: state.anims.tab === 'frame' ? '-active' : '',
-                  onclick: selectAnimTab('frame')
-                }, 'Frame')
-              ])
-            ]),
-            m('.sidebar-content', [
-
-            ])
-          ])
+        ? RightSidebar()
         : null
     ]),
     state.window !== null
