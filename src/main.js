@@ -23,6 +23,7 @@ const state = {
   },
   timeline: {
     playing: false,
+    onionSkin: true,
     frameidx: 0,
     selects: []
   }
@@ -181,11 +182,16 @@ const playAnim = () => {
       tl.playing = false
     } else {
       tl.frameidx++
-      tl.timeout = setTimeout(animate, 100)
+      tl.timeout = setTimeout(animate, 50)
     }
     m.redraw()
-  }, 100)
+  }, 50)
   return true
+}
+
+const toggleOnionSkin = () => {
+  const tl = state.timeline
+  tl.onionSkin = !tl.onionSkin
 }
 
 const createAnim = () => {
@@ -290,7 +296,10 @@ const Timeline = () => {
         ])
       ]),
       m('.panel.-onion-skin', [
-        m('.panel-button', [
+        m('.panel-button', {
+          class: state.timeline.onionSkin ? '-select' : '',
+          onclick: toggleOnionSkin
+        }, [
           m('span.icon.material-icons-round.-small', 'filter_none')
         ])
       ])
@@ -299,14 +308,19 @@ const Timeline = () => {
 }
 
 const AnimsEditor = () => {
+  const tl = state.timeline
   const anim = state.anims.select
-  const frame = anim && anim.frames[state.timeline.frameidx]
+  const frame = anim && anim.frames[tl.frameidx]
+  const frameBefore = anim && anim.frames[tl.frameidx - 1]
+  const frameAfter = anim && anim.frames[tl.frameidx + 1]
+  const onionSkin = tl.onionSkin && !tl.playing
   return m('.editor-column', [
     m('#editor.-anims', [
       state.anims.list.length
         ? m(AnimCanvas, {
-            image: frame.sprite.image,
-            offset: frame.origin,
+            frame,
+            frameBefore: onionSkin ? frameBefore : null,
+            frameAfter: onionSkin ? frameAfter : null,
             onchangeoffset: setFrameOrigin
           })
         : null

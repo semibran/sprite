@@ -1,18 +1,18 @@
 import m from 'mithril'
 
 export default () => {
-  let image = null
   let canvas = null
+  let frame = null
+  let frameBefore = null
+  let frameAfter = null
   let presspos = null
-  let xoffset = 0
-  let yoffset = 0
   let changeOffset = null
 
   const update = (vnode) => {
-    image = vnode.attrs.image
     canvas = vnode.dom
-    xoffset = vnode.attrs.offset.x
-    yoffset = vnode.attrs.offset.y
+    frame = vnode.attrs.frame
+    frameBefore = vnode.attrs.frameBefore
+    frameAfter = vnode.attrs.frameAfter
     changeOffset = vnode.attrs.onchangeoffset
     resize(canvas)
 
@@ -21,13 +21,34 @@ export default () => {
     fill(canvas, xcenter, ycenter)
 
     const context = canvas.getContext('2d')
-    const x = xcenter - xoffset
-    const y = ycenter - yoffset
+
+    if (frameAfter) {
+      const image = frameAfter.sprite.image
+      const x = xcenter - frameAfter.origin.x
+      const y = ycenter - frameAfter.origin.y
+      context.globalAlpha = 0.25
+      context.drawImage(image, x, y)
+      context.globalAlpha = 1
+    }
+
+    const image = frame.sprite.image
+    const x = xcenter - frame.origin.x
+    const y = ycenter - frame.origin.y
+
     if (presspos) {
       context.strokeStyle = '#68e'
       context.strokeRect(x - 0.5, y - 0.5, image.width + 1, image.height + 1)
     }
     context.drawImage(image, x, y)
+
+    if (frameBefore) {
+      const image = frameBefore.sprite.image
+      const x = xcenter - frameBefore.origin.x
+      const y = ycenter - frameBefore.origin.y
+      context.globalAlpha = 0.5
+      context.drawImage(image, x, y)
+      context.globalAlpha = 1
+    }
   }
 
   const onresize = (vnode) => () => update(vnode)
@@ -35,8 +56,9 @@ export default () => {
   const onmousedown = (evt) => {
     const xcenter = Math.round(canvas.width / 2)
     const ycenter = Math.round(canvas.height / 2)
-    const x = evt.offsetX - xcenter + xoffset
-    const y = evt.offsetY - ycenter + yoffset
+    const x = evt.offsetX - xcenter + frame.origin.x
+    const y = evt.offsetY - ycenter + frame.origin.y
+    const image = frame.sprite.image
     if (x >= 0 && x < image.width && y >= 0 && y < image.height) {
       presspos = { x, y }
       m.redraw()
