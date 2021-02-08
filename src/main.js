@@ -23,6 +23,7 @@ const state = {
   },
   timeline: {
     playing: false,
+    repeat: true,
     onionSkin: true,
     frameidx: 0,
     selects: []
@@ -178,15 +179,24 @@ const playAnim = () => {
   }
 
   tl.timeout = setTimeout(function animate () {
-    if (tl.frameidx === anim.frames.length - 1) {
-      tl.playing = false
-    } else {
+    if (tl.frameidx < anim.frames.length - 1) {
       tl.frameidx++
+    } else if (tl.repeat) {
+      tl.frameidx = 0
+    } else {
+      tl.playing = false
+    }
+    if (tl.playing) {
       tl.timeout = setTimeout(animate, 50)
     }
     m.redraw()
   }, 50)
   return true
+}
+
+const toggleRepeat = () => {
+  const tl = state.timeline
+  tl.repeat = !tl.repeat
 }
 
 const toggleOnionSkin = () => {
@@ -291,7 +301,10 @@ const Timeline = () => {
         ])
       ]),
       m('.panel.-repeat', [
-        m('.panel-button', [
+        m('.panel-button', {
+          class: state.timeline.repeat ? '-select' : '',
+          onclick: toggleRepeat
+        }, [
           m('span.icon.material-icons-round.-small', 'repeat')
         ])
       ]),
