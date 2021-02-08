@@ -275,6 +275,16 @@ const setFrameOrigin = (x, y) => {
   if (y != null) frame.origin.y = y
 }
 
+const moveFrameOrigin = (dx, dy) => {
+  const tl = state.timeline
+  const anim = state.anims.select
+  const frames = tl.selects.map(idx => anim.frames[idx])
+  for (const frame of frames) {
+    frame.origin.x += dx
+    frame.origin.y += dy
+  }
+}
+
 const openWindow = (type) => () => {
   state.window = type
 }
@@ -302,25 +312,23 @@ const Timeline = () => {
   const anim = state.tab === 'anims' && state.anims.select
   return m.fragment({
     oncreate: (vnode) => {
-      window.addEventListener('keydown', evt => {
+      window.addEventListener('keydown', (evt) => {
         if (evt.key === ' ' && !evt.repeat) {
           toggleAnim()
         } else if (evt.key === ',') {
           stepPrev()
-          m.redraw()
         } else if (evt.key === '.') {
           stepNext()
-          m.redraw()
-        } else if (evt.code === 'KeyA') {
+        } else if (evt.code === 'KeyA' && (evt.ctrlKey || evt.metaKey)) {
           evt.preventDefault()
           selectAllFrames()
-          m.redraw()
         } else if (evt.code === 'Escape') {
           evt.preventDefault()
           deselectAllFrames()
-          m.redraw()
+        } else if (evt.key === 'Shift') {
+          evt.redraw = false
         }
-      })
+      }, true)
     }
   }, m('#timeline', [
     m('.timeline-controls', [
@@ -389,18 +397,17 @@ const Timeline = () => {
 const AnimsEditor = () => {
   const tl = state.timeline
   const anim = state.anims.select
+  const selects = tl.selects
+  const frames = anim && selects.map(idx => anim.frames[idx])
   const frame = anim && anim.frames[tl.frameidx]
-  const frameBefore = anim && anim.frames[tl.frameidx - 1]
-  const frameAfter = anim && anim.frames[tl.frameidx + 1]
   return m('.editor-column', [
     m('#editor.-anims', [
       state.anims.list.length
         ? m(AnimCanvas, {
             frame,
-            frameBefore: tl.onionSkin ? frameBefore : null,
-            frameAfter: tl.onionSkin ? frameAfter : null,
+            frames: tl.onionSkin ? frames : [],
             playing: tl.playing,
-            onchangeoffset: setFrameOrigin
+            onchangeoffset: moveFrameOrigin
           })
         : null
     ]),

@@ -3,8 +3,7 @@ import m from 'mithril'
 export default () => {
   let canvas = null
   let frame = null
-  let frameBefore = null
-  let frameAfter = null
+  let frames = null
   let playing = null
   let presspos = null
   let changeOffset = null
@@ -12,8 +11,7 @@ export default () => {
   const update = (vnode) => {
     canvas = vnode.dom
     frame = vnode.attrs.frame
-    frameBefore = vnode.attrs.frameBefore
-    frameAfter = vnode.attrs.frameAfter
+    frames = vnode.attrs.frames
     playing = vnode.attrs.playing
     changeOffset = vnode.attrs.onchangeoffset
     resize(canvas)
@@ -22,12 +20,20 @@ export default () => {
     const ycenter = Math.round(canvas.height / 2)
     fill(canvas, xcenter, ycenter)
 
+    let framesBefore = []
+    let framesAfter = []
+    if (frames.length && !playing) {
+      const idx = frames.indexOf(frame)
+      framesBefore = frames.slice(0, idx)
+      framesAfter = frames.slice(idx + 1, frames.length)
+    }
+
     const context = canvas.getContext('2d')
 
-    if (frameAfter && !playing) {
-      const image = frameAfter.sprite.image
-      const x = xcenter - frameAfter.origin.x
-      const y = ycenter - frameAfter.origin.y
+    for (const frame of framesAfter) {
+      const image = frame.sprite.image
+      const x = xcenter - frame.origin.x
+      const y = ycenter - frame.origin.y
       context.globalAlpha = 0.25
       context.drawImage(image, x, y)
       context.globalAlpha = 1
@@ -44,10 +50,10 @@ export default () => {
 
     context.drawImage(image, x, y)
 
-    if (frameBefore && !playing) {
-      const image = frameBefore.sprite.image
-      const x = xcenter - frameBefore.origin.x
-      const y = ycenter - frameBefore.origin.y
+    for (const frame of framesBefore) {
+      const image = frame.sprite.image
+      const x = xcenter - frame.origin.x
+      const y = ycenter - frame.origin.y
       context.globalAlpha = 0.25
       context.drawImage(image, x, y)
       context.globalAlpha = 1
@@ -110,7 +116,7 @@ export default () => {
     }
 
     if (xdelta || ydelta) {
-      changeOffset(frame.origin.x - xdelta, frame.origin.y - ydelta)
+      changeOffset(-xdelta, -ydelta)
       m.redraw()
     }
   }
