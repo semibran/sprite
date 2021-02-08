@@ -342,23 +342,27 @@ const AnimsEditor = () => {
   ])
 }
 
-const RightSidebar = () =>
-  m('aside.sidebar.-right', [
+const RightSidebar = () => {
+  const tab = state.anims.tab
+  const selects = state.timeline.selects
+  return m('aside.sidebar.-right', [
     m('.sidebar-header', [
       m('.sidebar-tabs', [
         m('.tab.-anim', {
-          class: state.anims.tab === 'anim' ? '-active' : '',
+          class: tab === 'anim' ? '-active' : '',
           onclick: selectAnimTab('anim')
         }, 'State'),
         m('.tab.-frame', {
-          class: state.anims.tab === 'frame' ? '-active' : '',
+          class: tab === 'frame' ? '-active' : '',
           onclick: selectAnimTab('frame')
         }, 'Frame')
       ])
     ]),
-    state.anims.tab === 'anim' ? AnimTab() : null,
-    state.anims.tab === 'frame' ? FrameTab() : null
+    tab === 'anim' ? AnimTab() : null,
+    tab === 'frame' && selects.length === 1 ? FrameTab() : null,
+    tab === 'frame' && selects.length > 1 ? FramesTab() : null
   ])
+}
 
 const AnimTab = () => {
   const anim = state.anims.select
@@ -418,6 +422,26 @@ const FrameTab = () => {
         ])
       ])
     : null
+}
+
+const FramesTab = () => {
+  const anim = state.anims.select
+  const selects = state.timeline.selects
+  const frames = selects.map(idx => anim.frames[idx])
+  const equalDuration = !frames.find(frame =>
+    frame.duration !== frames[0].duration)
+  const duration = equalDuration ? frames[0].duration : '*'
+  return m('.sidebar-content', [
+    m('section.-duration', [
+      m('h4.sidebar-key', 'Duration'),
+      m('span.sidebar-value', [
+        m('.sidebar-field.-text', [
+          duration,
+          m('span.sidebar-fieldname', duration === 1 ? ' frame' : ' frames')
+        ])
+      ])
+    ])
+  ])
 }
 
 const CreateWindow = () =>
@@ -531,7 +555,7 @@ const view = () =>
                     m('.thumb.-entry', [
                       m(Thumb, { image: anim.frames[0].sprite.image })
                     ]),
-                    state.anims.editingName
+                    state.anims.select === anim && state.anims.editingName
                       ? m.fragment({ oncreate: (vnode) => vnode.dom.select() }, [
                           m('input.entry-name', {
                             value: anim.name,
