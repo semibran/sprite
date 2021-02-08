@@ -129,9 +129,42 @@ const toggleAnim = () => {
     return false
   }
   if (state.timeline.playing) {
-    state.timeline.playing = false
+    return pauseAnim()
   } else {
-    playAnim()
+    return playAnim()
+  }
+  return true
+}
+
+const stepPrev = () => {
+  const tl = state.timeline
+  pauseAnim()
+  if (tl.frameidx > 0) {
+    tl.frameidx--
+    return true
+  }
+}
+
+const stepNext = () => {
+  const anim = state.anims.list[state.anims.selidx]
+  if (!anim) {
+    return false
+  }
+
+  const tl = state.timeline
+  pauseAnim()
+  if (tl.frameidx < anim.frames.length - 1) {
+    tl.frameidx++
+    return true
+  }
+}
+
+const pauseAnim = () => {
+  const tl = state.timeline
+  tl.playing = false
+  if (tl.timeout) {
+    cancelAnimationFrame(tl.timeout)
+    tl.timeout = null
   }
   return true
 }
@@ -154,9 +187,10 @@ const playAnim = () => {
     } else {
       tl.frameidx++
       tl.timeout = requestAnimationFrame(animate)
-      m.redraw()
     }
+    m.redraw()
   })
+  return true
 }
 
 const createAnim = () => {
@@ -224,7 +258,7 @@ const Timeline = () => {
     ]),
     m('.timeline-controls', [
       m('.panel.-move', [
-        m('.panel-button', [
+        m('.panel-button', { onclick: stepPrev }, [
           m('span.icon.material-icons-round.-step-prev', 'eject')
         ]),
         m('.panel-button', {
@@ -234,7 +268,7 @@ const Timeline = () => {
           m('span.icon.material-icons-round.-play',
             state.timeline.playing ? 'pause' : 'play_arrow')
         ]),
-        m('.panel-button', [
+        m('.panel-button', { onclick: stepNext }, [
           m('span.icon.material-icons-round.-step-next', 'eject')
         ])
       ]),

@@ -1,4 +1,5 @@
 #timeline {
+  user-select: none;
   background: white;
   border-top: thin solid $silver;
   padding: 24px;
@@ -15,7 +16,6 @@
   }
 
   .frames {
-    user-select: none;
     white-space: nowrap;
   }
 
