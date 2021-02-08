@@ -86,6 +86,18 @@ const selectFrame = (i) => (evt) => {
   state.timeline.frameidx = i
 }
 
+const selectAllFrames = () => {
+  const tl = state.timeline
+  const anim = state.anims.select
+  tl.selects = new Array(anim.frames.length).fill(0).map((_, i) => i)
+  tl.frameidx = 0
+}
+
+const deselectAllFrames = () => {
+  const tl = state.timeline
+  tl.selects = [tl.frameidx]
+}
+
 const mergeSelects = () => {
   const sprites = state.sprites
   const selects = state.selects
@@ -291,11 +303,21 @@ const Timeline = () => {
   return m.fragment({
     oncreate: (vnode) => {
       window.addEventListener('keydown', evt => {
-        if (evt.key === ',') {
+        if (evt.key === ' ' && !evt.repeat) {
+          toggleAnim()
+        } else if (evt.key === ',') {
           stepPrev()
           m.redraw()
         } else if (evt.key === '.') {
           stepNext()
+          m.redraw()
+        } else if (evt.code === 'KeyA') {
+          evt.preventDefault()
+          selectAllFrames()
+          m.redraw()
+        } else if (evt.code === 'Escape') {
+          evt.preventDefault()
+          deselectAllFrames()
           m.redraw()
         }
       })
@@ -339,18 +361,25 @@ const Timeline = () => {
       onkeydown: (evt) => evt.preventDefault()
     }, [
       m('.frames', anim
-        ? anim.frames.map((frame, i) =>
-            m('.frame', {
+        ? anim.frames.map((frame, i) => {
+            const tl = state.timeline
+            return m.fragment({
+              onupdate: (vnode) => {
+                if (tl.frameidx === i) {
+                  vnode.dom.scrollIntoView()
+                }
+              }
+            }, m('.frame', {
               key: `${i}-${frame.sprite.name}`,
               onclick: selectFrame(i),
-              class: state.timeline.selects.includes(i) ? '-select' : null
+              class: tl.frameidx === i || tl.selects.includes(i) ? '-select' : null
             }, [
               m('.frame-number', i + 1),
               m('.thumb.-frame', [
                 m(Thumb, { image: frame.sprite.image })
               ])
-            ])
-          )
+            ]))
+          })
         : null
       )
     ])
