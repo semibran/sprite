@@ -13,6 +13,7 @@ export default () => {
     frame = vnode.attrs.frame
     frameBefore = vnode.attrs.frameBefore
     frameAfter = vnode.attrs.frameAfter
+    playing = vnode.attrs.playing
     changeOffset = vnode.attrs.onchangeoffset
     resize(canvas)
 
@@ -22,7 +23,7 @@ export default () => {
 
     const context = canvas.getContext('2d')
 
-    if (frameAfter) {
+    if (frameAfter && !playing) {
       const image = frameAfter.sprite.image
       const x = xcenter - frameAfter.origin.x
       const y = ycenter - frameAfter.origin.y
@@ -35,17 +36,18 @@ export default () => {
     const x = xcenter - frame.origin.x
     const y = ycenter - frame.origin.y
 
-    if (presspos) {
-      context.strokeStyle = '#68e'
+    if (!playing) {
+      context.strokeStyle = presspos ? '#cdf' : '#68e'
       context.strokeRect(x - 0.5, y - 0.5, image.width + 1, image.height + 1)
     }
+
     context.drawImage(image, x, y)
 
-    if (frameBefore) {
+    if (frameBefore && !playing) {
       const image = frameBefore.sprite.image
       const x = xcenter - frameBefore.origin.x
       const y = ycenter - frameBefore.origin.y
-      context.globalAlpha = 0.5
+      context.globalAlpha = 0.25
       context.drawImage(image, x, y)
       context.globalAlpha = 1
     }
@@ -80,6 +82,38 @@ export default () => {
     m.redraw()
   }
 
+  const onkeydown = (evt) => {
+    const left = evt.code === 'ArrowLeft'
+    const right = evt.code === 'ArrowRight'
+    const up = evt.code === 'ArrowUp'
+    const down = evt.code === 'ArrowDown'
+    const shift = evt.shiftKey
+    let xdelta = 0
+    let ydelta = 0
+
+    if (left && !right) {
+      xdelta = -1
+    } else if (right && !left) {
+      xdelta = 1
+    }
+
+    if (up && !down) {
+      ydelta = -1
+    } else if (down && !up) {
+      ydelta = 1
+    }
+
+    if (shift) {
+      xdelta *= 10
+      ydelta *= 10
+    }
+
+    if (xdelta || ydelta) {
+      changeOffset(frame.origin.x - xdelta, frame.origin.y - ydelta)
+      m.redraw()
+    }
+  }
+
   return {
     oncreate: (vnode) => {
       const canvas = vnode.dom
@@ -88,6 +122,7 @@ export default () => {
       canvas.addEventListener('mousedown', onmousedown)
       window.addEventListener('mousemove', onmousemove)
       window.addEventListener('mouseup', onmouseup)
+      window.addEventListener('keydown', onkeydown)
     },
     onupdate: update,
     view: () => m('canvas')

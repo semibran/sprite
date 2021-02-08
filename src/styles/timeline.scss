@@ -6,6 +6,7 @@
   width: 100%;
 
   .timeline-frames {
+    margin-top: 8px;
     background: $white;
     border: thin solid $silver;
     border-radius: 4px;
@@ -59,7 +60,6 @@
   }
 
   .timeline-controls {
-    margin-top: 8px;
     display: flex;
   }
 

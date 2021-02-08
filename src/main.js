@@ -289,24 +289,6 @@ const Upload = () =>
 const Timeline = () => {
   const anim = state.tab === 'anims' && state.anims.select
   return m('#timeline', [
-    m('.timeline-meta'),
-    m('.timeline-frames', [
-      m('.frames', anim
-        ? anim.frames.map((frame, i) =>
-            m('.frame', {
-              key: `${i}-${frame.sprite.name}`,
-              onclick: selectFrame(i),
-              class: state.timeline.selects.includes(i) ? '-select' : null
-            }, [
-              m('.frame-number', i + 1),
-              m('.thumb.-frame', [
-                m(Thumb, { image: frame.sprite.image })
-              ])
-            ])
-          )
-        : null
-      )
-    ]),
     m('.timeline-controls', [
       m('.panel.-move', [
         m('.panel-button', { onclick: stepPrev }, [
@@ -339,6 +321,23 @@ const Timeline = () => {
           m('span.icon.material-icons-round.-small', 'filter_none')
         ])
       ])
+    ]),
+    m('.timeline-frames', [
+      m('.frames', anim
+        ? anim.frames.map((frame, i) =>
+            m('.frame', {
+              key: `${i}-${frame.sprite.name}`,
+              onclick: selectFrame(i),
+              class: state.timeline.selects.includes(i) ? '-select' : null
+            }, [
+              m('.frame-number', i + 1),
+              m('.thumb.-frame', [
+                m(Thumb, { image: frame.sprite.image })
+              ])
+            ])
+          )
+        : null
+      )
     ])
   ])
 }
@@ -349,14 +348,15 @@ const AnimsEditor = () => {
   const frame = anim && anim.frames[tl.frameidx]
   const frameBefore = anim && anim.frames[tl.frameidx - 1]
   const frameAfter = anim && anim.frames[tl.frameidx + 1]
-  const onionSkin = tl.onionSkin && !tl.playing
+  const onionSkin = tl.onionSkin
   return m('.editor-column', [
     m('#editor.-anims', [
       state.anims.list.length
         ? m(AnimCanvas, {
             frame,
-            frameBefore: onionSkin ? frameBefore : null,
-            frameAfter: onionSkin ? frameAfter : null,
+            frameBefore: tl.onionSkin ? frameBefore : null,
+            frameAfter: tl.onionSkin ? frameAfter : null,
+            playing: tl.playing,
             onchangeoffset: setFrameOrigin
           })
         : null
