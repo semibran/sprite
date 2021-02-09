@@ -18,14 +18,14 @@ const state = {
   anims: {
     tab: 'frame',
     list: [],
-    select: 0,
+    select: null,
     editingName: false
   },
   timeline: {
     playing: false,
-    repeat: true,
+    repeat: false,
     onionSkin: true,
-    frameidx: 0,
+    pos: 0,
     selects: []
   }
 }
@@ -83,19 +83,19 @@ const selectAnim = (i) => (evt) => {
 
 const selectFrame = (i) => (evt) => {
   select(state.timeline.selects, i)(evt)
-  state.timeline.frameidx = i
+  state.timeline.pos = i
 }
 
 const selectAllFrames = () => {
   const tl = state.timeline
   const anim = state.anims.select
   tl.selects = new Array(anim.frames.length).fill(0).map((_, i) => i)
-  tl.frameidx = 0
+  tl.pos = 0
 }
 
 const deselectAllFrames = () => {
   const tl = state.timeline
-  tl.selects = [tl.frameidx]
+  tl.selects = [tl.pos]
 }
 
 const mergeSelects = () => {
@@ -137,6 +137,23 @@ const endNameEdit = (evt) => {
   state.anims.select.name = evt.target.value
 }
 
+const getAnimDuration = (anim) => {
+  return anim.frames.reduce((d, frame) => d + frame.duration, 0)
+}
+
+const getFrameAt = (anim, t) => {
+  let f = 0
+  let g = 0
+  let frame = anim.frames[0]
+  for (let i = 0; i < t; i++) {
+    if (++g >= frame.duration) {
+      frame = anim.frames[++f]
+      g = 0
+    }
+  }
+  return anim.frames[f]
+}
+
 const toggleAnim = () => {
   if (state.timeline.playing) {
     return pauseAnim()
@@ -148,10 +165,10 @@ const toggleAnim = () => {
 const stepPrev = () => {
   const tl = state.timeline
   pauseAnim()
-  if (tl.frameidx > 0) {
-    tl.frameidx--
+  if (tl.pos > 0) {
+    tl.pos--
     if (tl.selects.length >= 1) {
-      tl.selects = [tl.frameidx]
+      tl.selects = [tl.pos]
     }
     return true
   }
@@ -165,10 +182,10 @@ const stepNext = () => {
 
   const tl = state.timeline
   pauseAnim()
-  if (tl.frameidx < anim.frames.length - 1) {
-    tl.frameidx++
+  if (tl.pos < anim.frames.length - 1) {
+    tl.pos++
     if (tl.selects.length >= 1) {
-      tl.selects = [tl.frameidx]
+      tl.selects = [tl.pos]
     }
     return true
   }
@@ -193,15 +210,15 @@ const playAnim = () => {
 
   const tl = state.timeline
   tl.playing = true
-  if (tl.frameidx === anim.frames.length - 1) {
-    tl.frameidx = 0
+  if (tl.pos === anim.frames.length - 1) {
+    tl.pos = 0
   }
 
   tl.timeout = setTimeout(function animate () {
-    if (tl.frameidx < anim.frames.length - 1) {
-      tl.frameidx++
+    if (tl.pos < anim.frames.length - 1) {
+      tl.pos++
     } else if (tl.repeat) {
-      tl.frameidx = 0
+      tl.pos = 0
     } else {
       tl.playing = false
     }
@@ -278,7 +295,7 @@ const selectTimelineOrigin = (evt) => {
 
 const setFrameOrigin = (x, y) => {
   const anim = state.anims.select
-  const frame = anim && anim.frames[state.timeline.frameidx]
+  const frame = anim && anim.frames[state.timeline.pos]
   if (x != null) frame.origin.x = x
   if (y != null) frame.origin.y = y
 }
@@ -317,7 +334,9 @@ const Upload = () =>
   ])
 
 const Timeline = () => {
-  const anim = state.tab === 'anims' && state.anims.select
+  const anim = state.anims.select
+  const tl = state.timeline
+  const duration = getAnimDuration(anim)
   return m.fragment({
     oncreate: (vnode) => {
       window.addEventListener('keydown', (evt) => {
@@ -372,35 +391,41 @@ const Timeline = () => {
         ])
       ])
     ]),
-    m('.timeline-frames', {
-      tabindex: '0',
-      onkeydown: (evt) => evt.preventDefault()
-    }, [
-      m('.frames', anim
-        ? anim.frames.map((frame, i) => {
-            const tl = state.timeline
-            return m.fragment({
-              onupdate: (vnode) => {
-                if (tl.frameidx === i) {
-                  vnode.dom.scrollIntoView()
-                }
+    m('.timeline', [
+      m('table.timeline-frames', {
+        tabindex: '0',
+        onkeydown: (evt) => evt.preventDefault()
+      }, [
+        m('tr.frame-numbers', new Array(duration).fill(0).map((_, i) =>
+          m('th.frame-number', {
+            class: [
+              tl.pos === i && '-focus',
+              tl.selects.includes(i) && '-select'
+            ].filter(x => x).join(' ')
+          }, i + 1)
+        )),
+        m('tr.frames', anim.frames.map((frame, i) =>
+          m.fragment({
+            onupdate: (vnode) => {
+              if (tl.pos === i) {
+                vnode.dom.scrollIntoView()
               }
-            }, m('.frame', {
-              key: `${i}-${frame.sprite.name}`,
-              onclick: selectFrame(i),
-              class: [
-                tl.frameidx === i && '-focus',
-                tl.selects.includes(i) && '-select'
-              ].filter(x => x).join(' ')
-            }, [
-              m('.frame-number', i + 1),
-              m('.thumb.-frame', [
-                m(Thumb, { image: frame.sprite.image })
-              ])
-            ]))
-          })
-        : null
-      )
+            }
+          }, m('td.frame', {
+            key: `${i}-${frame.sprite.name}`,
+            class: [
+              tl.pos === i && '-focus',
+              tl.selects.includes(i) && '-select'
+            ].filter(x => x).join(' '),
+            colspan: frame.duration > 1 ? frame.duration : null,
+            onclick: selectFrame(i)
+          }, [
+            m('.thumb.-frame', [
+              m(Thumb, { image: frame.sprite.image })
+            ])
+          ]))
+        ))
+      ])
     ])
   ]))
 }
@@ -409,13 +434,13 @@ const AnimsEditor = () => {
   const tl = state.timeline
   const anim = state.anims.select
   const selects = tl.selects
-  const frame = anim && anim.frames[tl.frameidx]
+  const frame = anim && anim.frames[tl.pos]
   const frames = anim && (selects.length > 1
     ? selects.map(idx => anim.frames[idx])
     : [
-        anim.frames[tl.frameidx - 1],
+        anim.frames[tl.pos - 1],
         frame,
-        anim.frames[tl.frameidx + 1]
+        anim.frames[tl.pos + 1]
       ].filter(x => x)
   )
   return m('.editor-column', [
@@ -471,7 +496,7 @@ const AnimTab = () => {
 
 const FrameTab = () => {
   const anim = state.anims.select
-  const frame = anim && anim.frames[state.timeline.frameidx]
+  const frame = anim && anim.frames[state.timeline.pos]
   return frame
     ? m('.sidebar-content', [
         m('section.-sprite', [
