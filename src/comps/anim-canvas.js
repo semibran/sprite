@@ -45,7 +45,7 @@ export default () => {
 
     if (!playing) {
       context.strokeStyle = presspos ? '#cdf' : '#68e'
-      context.strokeRect(x - 0.5, y - 0.5, image.width + 1, image.height + 1)
+      context.strokeRect(x + 0.5, y + 0.5, image.width - 1, image.height - 1)
     }
 
     context.drawImage(image, x, y)

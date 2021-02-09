@@ -98,6 +98,29 @@ const deselectAllFrames = () => {
   tl.selects = [tl.pos]
 }
 
+const deleteFrame = () => {
+  const tl = state.timeline
+  const anim = state.anims.select
+  if (tl.selects.length) {
+    tl.selects.sort()
+    const frames = getFramesAt(anim, tl.selects)
+    for (let i = anim.frames.length; i--;) {
+      if (frames.includes(anim.frames[i])) {
+        anim.frames.splice(i, 1)
+      }
+    }
+    const idx = Math.max(0, tl.selects[0] - 1)
+    tl.selects = [idx]
+    tl.pos = idx
+  } else {
+    const frame = getFrameAt(anim, tl.pos)
+    const idx = getIndexOfFrame(anim, frame)
+    anim.frames.splice(idx, 1)
+    tl.selects = [idx - 1]
+    tl.pos = Math.max(0, idx - 1)
+  }
+}
+
 const mergeSelects = () => {
   const sprites = state.sprites
   const selects = state.selects
@@ -413,36 +436,49 @@ const Timeline = () => {
     }
   }, m('#timeline', [
     m('.timeline-controls', [
-      m('.panel.-move', [
-        m('.panel-button', { onclick: stepPrev }, [
-          m('span.icon.material-icons-round.-step-prev', 'eject')
+      m('.controls-lhs', [
+        m('.panel.-move', [
+          m('.panel-button', { onclick: stepPrev }, [
+            m('span.icon.material-icons-round.-step-prev', 'eject')
+          ]),
+          m('.panel-button', {
+            class: state.timeline.playing ? '-select' : '',
+            onclick: toggleAnim
+          }, [
+            m('span.icon.material-icons-round.-play',
+              state.timeline.playing ? 'pause' : 'play_arrow')
+          ]),
+          m('.panel-button', { onclick: stepNext }, [
+            m('span.icon.material-icons-round.-step-next', 'eject')
+          ])
         ]),
-        m('.panel-button', {
-          class: state.timeline.playing ? '-select' : '',
-          onclick: toggleAnim
-        }, [
-          m('span.icon.material-icons-round.-play',
-            state.timeline.playing ? 'pause' : 'play_arrow')
+        m('.panel.-repeat', [
+          m('.panel-button', {
+            class: state.timeline.repeat ? '-select' : '',
+            onclick: toggleRepeat
+          }, [
+            m('span.icon.material-icons-round.-small', 'repeat')
+          ])
         ]),
-        m('.panel-button', { onclick: stepNext }, [
-          m('span.icon.material-icons-round.-step-next', 'eject')
+        m('.panel.-onion-skin', [
+          m('.panel-button', {
+            class: state.timeline.onionSkin ? '-select' : '',
+            onclick: toggleOnionSkin
+          }, [
+            m('span.icon.material-icons-round.-small', 'auto_awesome_motion')
+          ])
         ])
       ]),
-      m('.panel.-repeat', [
-        m('.panel-button', {
-          class: state.timeline.repeat ? '-select' : '',
-          onclick: toggleRepeat
-        }, [
-          m('span.icon.material-icons-round.-small', 'repeat')
-        ])
-      ]),
-      m('.panel.-onion-skin', [
-        m('.panel-button', {
-          class: state.timeline.onionSkin ? '-select' : '',
-          onclick: toggleOnionSkin
-        }, [
-          m('span.icon.material-icons-round.-small', 'filter_none')
-        ])
+      m('.controls-rhs', [
+        m('.action.-add.icon.material-icons-round',
+          // { onclick: addFrame },
+          'add'),
+        m('.action.-clone.icon.-small.material-icons-round',
+          // { onclick: cloneFrame },
+          'filter_none'),
+        m('.action.-remove.icon.material-icons-round', {
+          onclick: deleteFrame
+        }, 'delete_outline')
       ])
     ]),
     m('.timeline', [
@@ -458,8 +494,8 @@ const Timeline = () => {
               }
             }
           }, m('th.frame-number', {
-            class: (tl.pos === i ? '-focus' : null)
-              + (tl.selects.includes(i) ? ' -select' : null),
+            class: (tl.pos === i ? '-focus' : '')
+              + (tl.selects.includes(i) ? ' -select' : ''),
             onclick: selectFrame(i)
           }, i + 1))
         )),

@@ -52,11 +52,11 @@ button.-alt {
   background: $white;
   color: $charcoal;
   border-color: $silver;
-}
 
-button.-alt:hover {
-  background: $silver;
-  border-color: $lightgray;
+  &:hover {
+    background: $smoke;
+    border-color: $lightgray;
+  }
 }
 
 button .icon {

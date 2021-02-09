@@ -37,6 +37,7 @@
 
     &:hover {
       background: $smoke;
+      border-color: $lightgray;
     }
 
     &.-select {
@@ -58,6 +59,10 @@
     border: thin solid $silver;
     border-radius: 4px;
 
+    &:hover {
+      border-color: $lightgray;
+    }
+
     &.-select, &.-focus {
       border-color: $blue;
     }
@@ -65,6 +70,19 @@
 
   .timeline-controls {
     display: flex;
+    justify-content: space-between;
+  }
+
+  .controls-lhs, .controls-rhs {
+    display: flex;
+  }
+
+  .controls-rhs {
+    align-items: center;
+  }
+
+  .controls-rhs .icon + .icon {
+    margin-left: 8px;
   }
 
   .panel {
