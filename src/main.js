@@ -181,15 +181,27 @@ const toggleAnim = () => {
 }
 
 const stepPrev = () => {
+  const anim = state.anims.select
+  if (!anim) {
+    return false
+  }
+
   const tl = state.timeline
+  const lastFrame = getAnimDuration(anim) - 1
   pauseAnim()
-  if (tl.pos > 0) {
-    tl.pos--
+  if (tl.pos >= 0) {
+    if (tl.pos > 0) {
+      tl.pos--
+    } else {
+      tl.pos = lastFrame
+    }
     if (tl.selects.length >= 1) {
       tl.selects = [tl.pos]
     }
     return true
   }
+
+  return false
 }
 
 const stepNext = () => {
