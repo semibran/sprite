@@ -235,10 +235,19 @@ header {
   }
 }
 
+.sidebar-input.-number {
+  width: 32px;
+}
+
 .sidebar-content {
   padding: 8px 0;
   flex: 1;
   overflow-y: auto;
+
+  .thumb {
+    background: $white;
+    border: thin solid $silver;
+  }
 
   &.-empty {
     display: flex;
@@ -306,8 +315,6 @@ header {
 }
 
 .thumb {
-  background: $white;
-  border: thin solid $silver;
   border-radius: 4px;
   width: 64px;
   height: 64px;

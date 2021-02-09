@@ -31,7 +31,7 @@
     text-align: center;
     font-size: 12px;
     line-height: 20px;
-    width: 100%;
+    min-width: 64px;
     height: 20px;
   }
 
@@ -49,26 +49,16 @@
 
   .frame {
     cursor: pointer;
-    vertical-align: top;
-
-    .thumb {
-      background: white;
-    }
-  }
-
-  .frame.-select {
+    background: white;
+    border: thin solid $silver;
     border-radius: 4px;
-    background: $lightblue;
-
-    .thumb {
-      border-color: $blue;
-    }
   }
 
-  .frame.-focus {
-    .thumb {
-      border-color: $blue;
-    }
+  .frame .thumb {
+  }
+
+  .frame.-select, .frame.-focus {
+    border-color: $blue;
   }
 
   .timeline-controls {
