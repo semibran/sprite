@@ -105,15 +105,15 @@ export default function slice (canvas) {
         const subimg = subctx.getImageData(0, top, subcvs.width, height)
         const clears = findClearRows(subimg)
         subcvs.height = height
-        if (clears.length > 1) {
-          subcvs.width += 2
-          subcvs.height += 2
-          subctx.putImageData(subimg, 1, 1)
-          rects.push(...slice(subcvs).map(([x, y, width, height]) => [x + subx, y + suby, width, height]))
-        } else {
-          subctx.putImageData(subimg, 0, 0)
-          rects.push([subx, suby + top, subcvs.width, height])
-        }
+        // if (clears.length > 1) {
+        //   subcvs.width += 2
+        //   subcvs.height += 2
+        //   subctx.putImageData(subimg, 1, 1)
+        //   rects.push(...slice(subcvs).map(([x, y, width, height]) => [x + subx, y + suby, width, height]))
+        // } else {
+        //   subctx.putImageData(subimg, 0, 0)
+        rects.push([subx, suby + top, subcvs.width, height])
+        // }
       }
     }
   }

@@ -85,6 +85,7 @@ export default () => {
   }
 
   const onmouseup = (evt) => {
+    if (!presspos) return
     presspos = null
     m.redraw()
   }

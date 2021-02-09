@@ -150,6 +150,9 @@ const stepPrev = () => {
   pauseAnim()
   if (tl.frameidx > 0) {
     tl.frameidx--
+    if (tl.selects.length >= 1) {
+      tl.selects = [tl.frameidx]
+    }
     return true
   }
 }
@@ -164,6 +167,9 @@ const stepNext = () => {
   pauseAnim()
   if (tl.frameidx < anim.frames.length - 1) {
     tl.frameidx++
+    if (tl.selects.length >= 1) {
+      tl.selects = [tl.frameidx]
+    }
     return true
   }
 }
@@ -174,6 +180,7 @@ const pauseAnim = () => {
   if (tl.timeout) {
     clearTimeout(tl.timeout)
     tl.timeout = null
+    m.redraw()
   }
   return true
 }
@@ -233,6 +240,7 @@ const createAnim = () => {
   }
   state.anims.list.push(anim)
   state.anims.select = anim
+  state.selects.length = 0
   return true
 }
 
@@ -328,7 +336,7 @@ const Timeline = () => {
         } else if (evt.key === 'Shift') {
           evt.redraw = false
         }
-      }, true)
+      }, false)
     }
   }, m('#timeline', [
     m('.timeline-controls', [
@@ -380,7 +388,10 @@ const Timeline = () => {
             }, m('.frame', {
               key: `${i}-${frame.sprite.name}`,
               onclick: selectFrame(i),
-              class: tl.frameidx === i || tl.selects.includes(i) ? '-select' : null
+              class: [
+                tl.frameidx === i && '-focus',
+                tl.selects.includes(i) && '-select'
+              ].filter(x => x).join(' ')
             }, [
               m('.frame-number', i + 1),
               m('.thumb.-frame', [
@@ -398,8 +409,15 @@ const AnimsEditor = () => {
   const tl = state.timeline
   const anim = state.anims.select
   const selects = tl.selects
-  const frames = anim && selects.map(idx => anim.frames[idx])
   const frame = anim && anim.frames[tl.frameidx]
+  const frames = anim && (selects.length > 1
+    ? selects.map(idx => anim.frames[idx])
+    : [
+        anim.frames[tl.frameidx - 1],
+        frame,
+        anim.frames[tl.frameidx + 1]
+      ].filter(x => x)
+  )
   return m('.editor-column', [
     m('#editor.-anims', [
       state.anims.list.length
@@ -432,7 +450,7 @@ const RightSidebar = () => {
       ])
     ]),
     tab === 'anim' ? AnimTab() : null,
-    tab === 'frame' && selects.length === 1 ? FrameTab() : null,
+    tab === 'frame' && selects.length <= 1 ? FrameTab() : null,
     tab === 'frame' && selects.length > 1 ? FramesTab() : null
   ])
 }
