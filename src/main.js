@@ -199,21 +199,28 @@ const stepNext = () => {
   }
 
   const tl = state.timeline
+  const lastFrame = getAnimDuration(anim) - 1
   pauseAnim()
-  if (tl.pos < getAnimDuration(anim) - 1) {
-    tl.pos++
+  if (tl.pos <= lastFrame) {
+    if (tl.pos < lastFrame) {
+      tl.pos++
+    } else {
+      tl.pos = 0
+    }
     if (tl.selects.length >= 1) {
       tl.selects = [tl.pos]
     }
     return true
   }
+
+  return false
 }
 
 const pauseAnim = () => {
   const tl = state.timeline
   tl.playing = false
   if (tl.timeout) {
-    clearTimeout(tl.timeout)
+    cancelAnimationFrame(tl.timeout)
     tl.timeout = null
     m.redraw()
   }
@@ -233,7 +240,7 @@ const playAnim = () => {
     tl.pos = 0
   }
 
-  tl.timeout = setTimeout(function animate () {
+  tl.timeout = requestAnimationFrame(function animate () {
     if (tl.pos < duration - 1) {
       tl.pos++
     } else if (tl.repeat) {
@@ -242,10 +249,10 @@ const playAnim = () => {
       tl.playing = false
     }
     if (tl.playing) {
-      tl.timeout = setTimeout(animate, 34)
+      tl.timeout = requestAnimationFrame(animate)
     }
     m.redraw()
-  }, 34)
+  })
   return true
 }
 
@@ -331,6 +338,15 @@ const moveFrameOrigin = (dx, dy) => {
 
 const changeFrameDuration = (frame) => (evt) => {
   frame.duration = parseInt(evt.target.value)
+}
+
+const changeFramesDuration = (evt) => {
+  const tl = state.timeline
+  const anim = state.anims.select
+  const frames = [...new Set(tl.selects.map(idx => getFrameAt(anim, idx)))]
+  for (const frame of frames) {
+    frame.duration = parseInt(evt.target.value)
+  }
 }
 
 const openWindow = (type) => () => {
@@ -439,7 +455,7 @@ const Timeline = () => {
             key: `${i}-${frame.sprite.name}`,
             class: [
               getFrameAt(anim, tl.pos) === frame && '-focus',
-              tl.selects.includes(i) && '-select'
+              tl.selects.includes(anim.frames.indexOf(getFrameAt(anim, i))) && '-select'
             ].filter(x => x).join(' '),
             colspan: frame.duration > 1 ? frame.duration : null,
             onclick: selectFrame(getIndexOfFrame(anim, frame))
@@ -536,8 +552,10 @@ const FrameTab = () => {
               m('input.sidebar-input.-number', {
                 type: 'number',
                 value: frame.duration,
+                min: 1,
+                max: 100,
                 onchange: changeFrameDuration(frame)
-              }, frame.duration),
+              }),
               m('span.sidebar-fieldname',
                 frame.duration === 1 ? ' frame' : ' frames')
             ])
@@ -580,11 +598,19 @@ const FramesTab = () => {
       `${selects.length} frames selected`
     ]),
     m('section.-duration', [
-      m('h4.sidebar-key', 'Duration'),
+      m('h4.sidebar-key', 'Speed'),
       m('span.sidebar-value', [
         m('.sidebar-field.-text', [
-          duration,
-          m('span.sidebar-fieldname', duration === 1 ? ' frame' : ' frames')
+          duration === '*'
+            ? duration
+            : m('input.sidebar-input.-number', {
+              type: 'number',
+              value: duration,
+              min: 1,
+              max: 100,
+              onchange: changeFramesDuration
+            }),
+          m('span.sidebar-fieldname', duration === 1 ? ' frame/tick' : ' frames/tick')
         ])
       ])
     ]),
@@ -650,7 +676,7 @@ const CreateWindow = () =>
     ])
   ])
 
-loadImage('../tmp/test.gif')
+loadImage('../tmp/copen.png')
   .then(setImage)
   .catch(console.error)
 
