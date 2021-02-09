@@ -25,6 +25,7 @@
   }
 
   .frame-number {
+    cursor: pointer;
     color: $lightgray;
     border: thin solid $silver;
     border-radius: 4px;
@@ -33,18 +34,22 @@
     line-height: 20px;
     min-width: 64px;
     height: 20px;
-  }
 
-  .frame-number.-select {
-    background: $lightblue;
-    color: $blue;
-    border-color: $blue;
-  }
+    &:hover {
+      background: $smoke;
+    }
 
-  .frame-number.-focus {
-    background: $blue;
-    color: white;
-    border-color: $blue;
+    &.-select {
+      background: $lightblue;
+      color: $blue;
+      border-color: $blue;
+    }
+
+    &.-focus {
+      background: $blue;
+      color: white;
+      border-color: $blue;
+    }
   }
 
   .frame {
@@ -52,10 +57,10 @@
     background: white;
     border: thin solid $silver;
     border-radius: 4px;
-  }
 
-  .frame.-select, .frame.-focus {
-    border-color: $blue;
+    &.-select, &.-focus {
+      border-color: $blue;
+    }
   }
 
   .timeline-controls {

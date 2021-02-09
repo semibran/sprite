@@ -5,6 +5,7 @@ $dimgray: #3a3a3a;
 $gray: #666;
 $lightgray: #999;
 $silver: #ccc;
+$smoke: #e8e8e8;
 $white: #f3f3f3;
 $lightblue: #def;
 $skyblue: #cdf;
@@ -84,6 +85,12 @@ button[disabled] {
 
 .action {
   cursor: pointer;
+}
+
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
 
 ::-webkit-scrollbar {

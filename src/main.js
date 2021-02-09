@@ -157,6 +157,9 @@ const getFrameAt = (anim, t) => {
   return anim.frames[f]
 }
 
+const getFramesAt = (anim, ts) =>
+  [...new Set(ts.map(t => getFrameAt(anim, t)).filter(x => x))]
+
 const getIndexOfFrame = (anim, frame) => {
   let f = 0
   let g = 0
@@ -311,7 +314,7 @@ const handleFrameOrigin = (axis) => (evt) => {
 const selectTimelineOrigin = (evt) => {
   const tl = state.timeline
   const anim = state.anims.select
-  const frames = anim && tl.selects.map(idx => getFrameAt(anim, idx))
+  const frames = anim && getFramesAt(anim, tl.selects)
   const [xpos, ypos] = evt.target.value.split('-')
   for (const frame of frames) {
     if (xpos === 'left') {
@@ -341,7 +344,7 @@ const setFrameOrigin = (x, y) => {
 const moveFrameOrigin = (dx, dy) => {
   const tl = state.timeline
   const anim = state.anims.select
-  const frames = [...new Set(tl.selects.map(idx => getFrameAt(anim, idx)))]
+  const frames = getFramesAt(anim, tl.selects)
   for (const frame of frames) {
     frame.origin.x += dx
     frame.origin.y += dy
@@ -355,7 +358,7 @@ const changeFrameDuration = (frame) => (evt) => {
 const changeFramesDuration = (evt) => {
   const tl = state.timeline
   const anim = state.anims.select
-  const frames = [...new Set(tl.selects.map(idx => getFrameAt(anim, idx)))]
+  const frames = getFramesAt(anim, tl.selects)
   for (const frame of frames) {
     frame.duration = parseInt(evt.target.value)
   }
@@ -448,34 +451,30 @@ const Timeline = () => {
         onkeydown: (evt) => evt.preventDefault()
       }, [
         m('tr.frame-numbers', new Array(duration).fill(0).map((_, i) =>
-          m('th.frame-number', {
-            class: [
-              tl.pos === i && '-focus',
-              tl.selects.includes(i) && '-select'
-            ].filter(x => x).join(' '),
-            onclick: selectFrame(i)
-          }, i + 1)
-        )),
-        m('tr.frames', anim.frames.map((frame, i) =>
           m.fragment({
             onupdate: (vnode) => {
-              if (getFrameAt(anim, tl.pos) === frame) {
+              if (tl.pos === i) {
                 vnode.dom.scrollIntoView()
               }
             }
-          }, m('td.frame', {
+          }, m('th.frame-number', {
+            class: (tl.pos === i ? '-focus' : null)
+              + (tl.selects.includes(i) ? ' -select' : null),
+            onclick: selectFrame(i)
+          }, i + 1))
+        )),
+        m('tr.frames', anim.frames.map((frame, i) =>
+          m('td.frame', {
             key: `${i}-${frame.sprite.name}`,
-            class: [
-              getFrameAt(anim, tl.pos) === frame && '-focus',
-              tl.selects.includes(anim.frames.indexOf(getFrameAt(anim, i))) && '-select'
-            ].filter(x => x).join(' '),
+            class: (getFrameAt(anim, tl.pos) === frame ? '-focus' : '')
+              + (getFramesAt(anim, tl.selects).includes(frame) ? ' -select' : ''),
             colspan: frame.duration > 1 ? frame.duration : null,
             onclick: selectFrame(getIndexOfFrame(anim, frame))
           }, [
             m('.thumb.-frame', [
               m(Thumb, { image: frame.sprite.image })
             ])
-          ]))
+          ])
         ))
       ])
     ])
@@ -488,12 +487,8 @@ const AnimsEditor = () => {
   const selects = tl.selects
   const frame = anim && getFrameAt(anim, tl.pos)
   const frames = anim && (selects.length > 1
-    ? selects.map(idx => getFrameAt(anim, idx))
-    : [
-        getFrameAt(anim, tl.pos - 1),
-        frame,
-        getFrameAt(anim, tl.pos + 1)
-      ].filter(x => x)
+    ? getFramesAt(anim, selects)
+    : getFramesAt(anim, [tl.pos - 1, tl.pos, tl.pos + 1])
   )
   return m('.editor-column', [
     m('#editor.-anims', [
@@ -601,10 +596,11 @@ const FrameTab = () => {
 const FramesTab = () => {
   const anim = state.anims.select
   const selects = state.timeline.selects
-  const frames = selects.map(idx => getFrameAt(anim, idx))
-  const equalDuration = !frames.find(frame =>
-    frame.duration !== frames[0].duration)
-  const duration = equalDuration ? frames[0].duration : '*'
+  const frames = getFramesAt(anim, selects)
+  const equalDuration = !frames.find(frame => frame.duration !== frames[0].duration)
+  const duration = equalDuration
+    ? frames[0].duration
+    : frames.reduce((d, frame) => frame.duration < d ? frame.duration : d, Infinity)
   return m('.sidebar-content', [
     m('section.-desc', [
       `${selects.length} frames selected`
@@ -613,15 +609,13 @@ const FramesTab = () => {
       m('h4.sidebar-key', 'Speed'),
       m('span.sidebar-value', [
         m('.sidebar-field.-text', [
-          duration === '*'
-            ? duration
-            : m('input.sidebar-input.-number', {
-              type: 'number',
-              value: duration,
-              min: 1,
-              max: 100,
-              onchange: changeFramesDuration
-            }),
+          m('input.sidebar-input.-number', {
+            type: 'number',
+            value: duration,
+            min: 1,
+            max: 100,
+            onchange: changeFramesDuration
+          }),
           m('span.sidebar-fieldname', duration === 1 ? ' frame/tick' : ' frames/tick')
         ])
       ])
