@@ -10,8 +10,7 @@ import slice from './lib/slice'
 import merge from './lib/merge'
 import combineReducers from './lib/combine-reducers'
 
-import SpriteCanvas from './comps/sprite-canvas'
-import AnimCanvas from './comps/anim-canvas'
+import Editor from './comps/editor'
 import LeftSidebar, {
   selectTab,
   selectSprite,
@@ -20,6 +19,8 @@ import LeftSidebar, {
   startRenameAnim,
   renameAnim
 } from './comps/sidebar-left'
+
+window.m = m
 
 const cache = { image: null }
 
@@ -298,27 +299,6 @@ const toggleOnionSkin = () => {
   tl.onionSkin = !tl.onionSkin
 }
 
-// const createAnim = () => {
-//   if (!state.selects.length) {
-//     return false
-//   }
-
-//   const anim = {
-//     name: 'untitled',
-//     loop: false,
-//     next: null,
-//     frames: state.selects.map(idx => ({
-//       sprite: state.sprites[idx],
-//       origin: { x: 0, y: 0 },
-//       duration: 1
-//     }))
-//   }
-//   state.anims.list.push(anim)
-//   state.anims.select = anim
-//   state.selects.length = 0
-//   return true
-// }
-
 const handleFrameOrigin = (axis) => (evt) => {
   const val = parseInt(evt.target.value)
   if (axis === 'x') {
@@ -388,21 +368,6 @@ const openWindow = (type) => () => {
 const closeWindow = () => {
   state.window = null
 }
-
-const Upload = () =>
-  m('.upload-wrap', [
-    m('label.button.upload-button', { for: 'upload' }, [
-      m('span.icon.material-icons-round', 'publish'),
-      'Select an image',
-      m('input#upload', {
-        type: 'file',
-        accept: 'image/png, image/gif',
-        multiple: false,
-        onchange: handleImage
-      })
-    ]),
-    m('span.upload-text', 'Accepted formats: .png, .gif')
-  ])
 
 const Timeline = () => {
   const anim = state.anims.select
@@ -516,42 +481,6 @@ const Timeline = () => {
       ])
     ])
   ]))
-}
-
-const SpritesEditor = () => {
-  return m('#editor.-sprites', [
-    !state.image
-      ? Upload()
-      : m(SpriteCanvas, {
-        image: state.image,
-        rects: state.sprites.map(sprite => sprite.rect),
-        selects: state.selects
-      })
-  ])
-}
-
-const AnimsEditor = () => {
-  const tl = state.timeline
-  const anim = state.anims.select
-  const selects = tl.selects
-  const frame = anim && getFrameAt(anim, tl.pos)
-  const frames = anim && (selects.length > 1
-    ? getFramesAt(anim, selects)
-    : getFramesAt(anim, [tl.pos - 1, tl.pos, tl.pos + 1])
-  )
-  return m('.editor-column', [
-    m('#editor.-anims', [
-      state.anims.list.length
-        ? m(AnimCanvas, {
-            frame,
-            frames: tl.onionSkin ? frames : [],
-            playing: tl.playing,
-            onchangeoffset: moveFrameOrigin
-          })
-        : null
-    ]),
-    anim ? Timeline() : null
-  ])
 }
 
 const RightSidebar = () => {
@@ -744,9 +673,7 @@ const App = (state, dispatch) =>
     ]),
     m('.content', [
       LeftSidebar(state, dispatch),
-      // state.tab === 'sprites' ? SpriteEditor() : null,
-      // state.tab === 'anims' ? AnimsEditor() : null,
-      // state.tab === 'anims' ? RightSidebar() : null
+      Editor(state, dispatch)
     ]),
     // state.window ? m('.overlay', { onclick: closeWindow }) : null,
     // state.window === 'create' ? CreateWindow() : null
