@@ -105,6 +105,10 @@ input[type=number]::-webkit-outer-spin-button {
   border: 2px solid transparent;
 }
 
+canvas {
+  image-rendering: pixelated;
+}
+
 .app {
   height: 100vh;
   display: flex;

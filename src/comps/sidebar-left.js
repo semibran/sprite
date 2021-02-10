@@ -1,5 +1,6 @@
 
 import m from 'mithril'
+import extract from 'img-extract'
 import Thumb from './thumb'
 
 export default function LeftSidebar (state, dispatch) {
@@ -32,15 +33,18 @@ export default function LeftSidebar (state, dispatch) {
 }
 
 function SpritesTab (state, dispatch) {
-  return state.sprites.length
-    ? m('.sidebar-content', state.sprites.map((sprite, i) =>
+  const image = state.image
+  const sprites = state.sprites.list
+  const selects = state.sprites.selects
+  return sprites.length
+    ? m('.sidebar-content', sprites.map((sprite, i) =>
         m('.entry', {
           key: `${i}-${sprite.name}-${sprite.rect[2]},${sprite.rect[3]}`,
           // onclick: select(state.selects, i),
-          class: state.selects.includes(i) ? '-select' : null
+          class: selects.includes(i) ? '-select' : null
         }, [
           m('.thumb.-entry', [
-            m(Thumb, { image: sprite.image })
+            m(Thumb, { image: extract(image, ...sprite.rect) })
           ]),
           m('.entry-name', sprite.name)
         ])
@@ -51,8 +55,9 @@ function SpritesTab (state, dispatch) {
 }
 
 function SpritesFooter (state, dispatch) {
-  const canSplit = state.selects.length === 1
-  const canMerge = state.selects.length >= 2
+  const selects = state.sprites.selects
+  const canSplit = selects.length === 1
+  const canMerge = selects.length >= 2
   return m('.sidebar-footer', [
     m('button.-split', {
       disabled: canSplit,

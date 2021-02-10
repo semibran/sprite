@@ -13,18 +13,22 @@ import SpriteCanvas from './comps/sprite-canvas'
 import AnimCanvas from './comps/anim-canvas'
 import LeftSidebar from './comps/sidebar-left'
 
+const cache = { image: null }
+
 const initialState = {
   sprname: 'untitled',
   tab: 'sprites',
-  image: null,
   window: null,
-  selects: [],
-  sprites: [],
+  sprites: {
+    list: [],
+    selects: [],
+    editname: false,
+  },
   anims: {
-    tab: 'frame',
     list: [],
     select: null,
-    editingName: false
+    editname: false,
+    tab: 'frame'
   },
   timeline: {
     playing: false,
@@ -36,64 +40,30 @@ const initialState = {
 }
 
 const reducer = (state = initialState, action) => {
-  switch (action.type) {
-    case 'setImage': return ((image) => {
-      const canvas = clone(image)
-      return {
-        ...state,
-        image: canvas,
-        sprites: slice(canvas).map((rect, i) => ({
-          name: `${state.sprname}_${i}`,
-          image: extract(action.payload, ...rect),
-          rect
-        }))
+  if (action.type === 'setImage') {
+    const canvas = clone(cache.image)
+    return {
+      ...state,
+      sprites: {
+        ...state.sprites,
+        list: slice(canvas).map((rect, i) => (
+          { name: `${state.sprname}_${i}`, rect }
+        ))
       }
-    })(action.payload)
-    case 'selectTab': return { ...state, tab: action.payload }
-    default: return state
+    }
   }
-}
 
-const fetchImage = (url) => async (dispatch, getState) => {
-  const image = await loadImage(url)
-  store.dispatch({ type: 'setImage', payload: image })
-  m.redraw()
+  return state
 }
 
 const enhancer = applyMiddleware(thunk)
 const store = createStore(reducer, enhancer)
-store.dispatch(fetchImage('../tmp/copen.png'))
 
-const select = (items, i) => (evt) => {
-  if (evt.detail === 2) {
-    return false
-  }
-  const shift = evt.shiftKey
-  const ctrl = evt.ctrlKey || evt.metaKey
-  const idx = items.indexOf(i)
-  const prev = items[items.length - 1]
-  if (shift && !ctrl && prev != null && prev !== i) {
-    const dir = i > prev ? 1 : -1
-    for (let j = prev; j !== i;) {
-      j += dir
-      if (items.indexOf(j) === -1) {
-        items.push(j)
-      }
-    }
-  } else if (ctrl && !shift) {
-    if (idx === -1) {
-      items.push(i)
-    } else {
-      items.splice(idx, 1)
-    }
-  } else if (idx === -1 || items.length > 1) {
-    items[0] = i
-    items.length = 1
-  } else {
-    items.length = 0
-  }
-  return true
-}
+loadImage('../tmp/copen.png').then((image) => {
+  cache.image = image
+  store.dispatch({ type: 'setImage' })
+  m.redraw()
+})
 
 const selectAnim = (i) => (evt) => {
   state.anims.select = state.anims.list[i]
@@ -778,6 +748,6 @@ const App = (state, dispatch) =>
   ])
 
 m.mount(document.body, () => ({
-  view: () => App(store.getState(),
+  view: () => App({ ...store.getState(), ...cache },
     (type, payload) => () => store.dispatch({ type, payload }))
 }))
