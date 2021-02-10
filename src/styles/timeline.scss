@@ -53,6 +53,10 @@
     }
   }
 
+  .frame-number.-add {
+    visibility: hidden;
+  }
+
   .frame {
     cursor: pointer;
     background: white;
@@ -66,6 +70,18 @@
     &.-select, &.-focus {
       border-color: $blue;
     }
+  }
+
+  .frame.-add {
+    background: none;
+    border: 2px dashed $silver;
+    color: $lightgray;
+    text-align: center;
+  }
+
+  .frame-text {
+    margin-top: -4px;
+    font-size: 12px;
   }
 
   .timeline-controls {

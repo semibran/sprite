@@ -416,6 +416,7 @@ const Timeline = () => {
   const duration = getAnimDuration(anim)
   return m.fragment({
     oncreate: (vnode) => {
+      console.log('created timeline')
       window.addEventListener('keydown', (evt) => {
         if (evt.key === ' ' && !evt.repeat) {
           toggleAnim()
@@ -494,16 +495,18 @@ const Timeline = () => {
               }
             }
           }, m('th.frame-number', {
-            class: (tl.pos === i ? '-focus' : '')
-              + (tl.selects.includes(i) ? ' -select' : ''),
+            class: (tl.pos === i ? '-focus' : '') +
+              (tl.selects.includes(i) ? ' -select' : ''),
             onclick: selectFrame(i)
           }, i + 1))
-        )),
+        ).concat([
+          m('th.frame-number.-add')
+        ])),
         m('tr.frames', anim.frames.map((frame, i) =>
           m('td.frame', {
             key: `${i}-${frame.sprite.name}`,
-            class: (getFrameAt(anim, tl.pos) === frame ? '-focus' : '')
-              + (getFramesAt(anim, tl.selects).includes(frame) ? ' -select' : ''),
+            class: (getFrameAt(anim, tl.pos) === frame ? '-focus' : '') +
+              (getFramesAt(anim, tl.selects).includes(frame) ? ' -select' : ''),
             colspan: frame.duration > 1 ? frame.duration : null,
             onclick: selectFrame(getIndexOfFrame(anim, frame))
           }, [
@@ -511,7 +514,12 @@ const Timeline = () => {
               m(Thumb, { image: frame.sprite.image })
             ])
           ])
-        ))
+        ).concat([
+          m('td.frame.-add', { key: 'add' }, [
+            m('.icon.-small.material-icons-round', 'add'),
+            m('.frame-text', 'Add')
+          ])
+        ]))
       ])
     ])
   ]))
