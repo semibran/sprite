@@ -87,6 +87,14 @@ button[disabled] {
   cursor: pointer;
 }
 
+.action.-disabled {
+  cursor: default;
+}
+
+.icon.-disabled {
+  color: $silver;
+}
+
 input[type=number]::-webkit-inner-spin-button,
 input[type=number]::-webkit-outer-spin-button {
   -webkit-appearance: none;
@@ -256,8 +264,7 @@ header {
   overflow-y: auto;
 
   .thumb {
-    background: $white;
-    border: thin solid $silver;
+    border: thin solid $gray;
   }
 
   &.-empty {
@@ -314,7 +321,6 @@ header {
       }
 
       .thumb {
-        background: white;
         border-color: $blue;
       }
     }
@@ -326,17 +332,41 @@ header {
 }
 
 .thumb {
+  background: #ccc;
   border-radius: 4px;
   width: 64px;
   height: 64px;
   display: flex;
   align-items: center;
   justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.thumb::before, .thumb::after {
+  content: '';
+  display: block;
+  background: #999;
+  position: absolute;
+  width: 50%;
+  height: 50%;
+}
+
+.thumb::before {
+  left: 50%;
+  top: 0;
+}
+
+.thumb::after {
+  left: 0;
+  top: 50%;
 }
 
 .thumb canvas {
   max-width: 64px;
   max-height: 64px;
+  position: relative;
+  z-index: 1;
 }
 
 .sidebar-footer {

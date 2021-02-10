@@ -65,10 +65,10 @@ export default function Timeline (state, dispatch) {
         m('.action.-add.icon.material-icons-round',
           // { onclick: addFrame },
           'add'),
-        m('.action.-clone.icon.-small.material-icons-round',
+        m('.action.-clone.icon.-small.-disabled.material-icons-round',
           // { onclick: cloneFrame },
           'filter_none'),
-        m('.action.-remove.icon.material-icons-round', {
+        m('.action.-remove.icon.-disabled.material-icons-round', {
           // onclick: deleteFrame
         }, 'delete_outline')
       ])
