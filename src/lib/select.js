@@ -1,12 +1,7 @@
-export default function select (items, i, evt) {
-  if (evt.detail === 2) {
-    return false
-  }
-  const shift = evt.shiftKey
-  const ctrl = evt.ctrlKey || evt.metaKey
+export default function select (items, i, opts) {
   const idx = items.indexOf(i)
   const prev = items[items.length - 1]
-  if (shift && !ctrl && prev != null && prev !== i) {
+  if (opts.shift && !opts.ctrl && prev != null && prev !== i) {
     const dir = i > prev ? 1 : -1
     for (let j = prev; j !== i;) {
       j += dir
@@ -14,7 +9,7 @@ export default function select (items, i, evt) {
         items.push(j)
       }
     }
-  } else if (ctrl && !shift) {
+  } else if (opts.ctrl && !opts.shift) {
     if (idx === -1) {
       items.push(i)
     } else {

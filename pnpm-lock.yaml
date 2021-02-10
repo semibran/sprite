@@ -1,6 +1,7 @@
 dependencies:
   img-extract: 1.0.0
   img-load: 2.0.0
+  lodash.clonedeep: 4.5.0
   mithril: 2.0.4
   redux: 4.0.5
   redux-thunk: 2.3.0
@@ -1878,6 +1879,10 @@ packages:
     optional: true
     resolution:
       integrity: sha512-t7hw9pI+WvuwNJXwk5zVHpyhIqzg2qTlklJOf0mVxGSbe3Fp2VieZcduNYjaLDoy6p9uGpQEGWG87WpMKlNq8g==
+  /lodash.clonedeep/4.5.0:
+    dev: false
+    resolution:
+      integrity: sha1-4j8/nE+Pvd6HJSnBBxhXoIblzO8=
   /lodash.debounce/4.0.8:
     dev: true
     resolution:
@@ -3326,6 +3331,7 @@ specifiers:
   html-minifier: ^4.0.0
   img-extract: ^1.0.0
   img-load: ^2.0.0
+  lodash.clonedeep: ^4.5.0
   mithril: ^2.0.4
   redux: ^4.0.5
   redux-thunk: ^2.3.0

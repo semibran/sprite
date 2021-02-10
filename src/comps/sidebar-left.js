@@ -1,7 +1,8 @@
 
 import m from 'mithril'
-import extract from 'img-extract'
-import Thumb from './thumb'
+import SpritesTab, { selectSprite } from './sprites-tab'
+
+export { selectSprite }
 
 export default function LeftSidebar (state, dispatch) {
   return m('aside.sidebar.-left', [
@@ -10,7 +11,7 @@ export default function LeftSidebar (state, dispatch) {
         m('.tab.-sprites', {
           class: state.tab === 'sprites' ? '-active' : '',
           onclick: dispatch('selectTab', 'sprites')
-        }, `Sprites (${state.sprites.length})`),
+        }, `Sprites (${state.sprites.list.length})`),
         m('.tab.-anims', {
           class: state.tab === 'anims' ? '-active' : '',
           onclick: dispatch('selectTab', 'anims')
@@ -32,35 +33,13 @@ export default function LeftSidebar (state, dispatch) {
   ])
 }
 
-function SpritesTab (state, dispatch) {
-  const image = state.image
-  const sprites = state.sprites.list
-  const selects = state.sprites.selects
-  return sprites.length
-    ? m('.sidebar-content', sprites.map((sprite, i) =>
-        m('.entry', {
-          key: `${i}-${sprite.name}-${sprite.rect[2]},${sprite.rect[3]}`,
-          // onclick: select(state.selects, i),
-          class: selects.includes(i) ? '-select' : null
-        }, [
-          m('.thumb.-entry', [
-            m(Thumb, { image: extract(image, ...sprite.rect) })
-          ]),
-          m('.entry-name', sprite.name)
-        ])
-      ))
-    : m('.sidebar-content.-empty', [
-      m('.sidebar-notice', 'No sprites registered.')
-    ])
-}
-
 function SpritesFooter (state, dispatch) {
   const selects = state.sprites.selects
   const canSplit = selects.length === 1
   const canMerge = selects.length >= 2
   return m('.sidebar-footer', [
     m('button.-split', {
-      disabled: canSplit,
+      disabled: !canSplit,
       onclick: canSplit && dispatch('splitSelects')
     }, [
       m('span.icon.material-icons-round', 'vertical_split'),

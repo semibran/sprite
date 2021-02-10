@@ -8,10 +8,11 @@ import loadImage from 'img-load'
 import clone from './lib/img-clone'
 import slice from './lib/slice'
 import merge from './lib/merge'
+import combineReducers from './lib/combine-reducers'
 
 import SpriteCanvas from './comps/sprite-canvas'
 import AnimCanvas from './comps/anim-canvas'
-import LeftSidebar from './comps/sidebar-left'
+import LeftSidebar, { selectSprite } from './comps/sidebar-left'
 
 const cache = { image: null }
 
@@ -39,25 +40,26 @@ const initialState = {
   }
 }
 
-const reducer = (state = initialState, action) => {
-  if (action.type === 'setImage') {
-    const canvas = clone(cache.image)
-    return {
-      ...state,
-      sprites: {
-        ...state.sprites,
-        list: slice(canvas).map((rect, i) => (
-          { name: `${state.sprname}_${i}`, rect }
-        ))
-      }
+const setImage = (state) => {
+  const canvas = clone(cache.image)
+  return {
+    ...state,
+    sprites: {
+      ...state.sprites,
+      list: slice(canvas).map((rect, i) => (
+        { name: `${state.sprname}_${i}`, rect }
+      ))
     }
   }
-
-  return state
 }
 
+const reducers = combineReducers({
+  setImage,
+  selectSprite
+}, initialState)
+
 const enhancer = applyMiddleware(thunk)
-const store = createStore(reducer, enhancer)
+const store = createStore(reducers, enhancer)
 
 loadImage('../tmp/copen.png').then((image) => {
   cache.image = image
@@ -749,5 +751,5 @@ const App = (state, dispatch) =>
 
 m.mount(document.body, () => ({
   view: () => App({ ...store.getState(), ...cache },
-    (type, payload) => () => store.dispatch({ type, payload }))
+    (fn, payload) => () => store.dispatch({ type: fn.name, payload }))
 }))
