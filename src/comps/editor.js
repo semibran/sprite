@@ -2,6 +2,8 @@
 import m from 'mithril'
 import SpritesCanvas from './sprites-canvas'
 import AnimsCanvas from './anims-canvas'
+import Timeline from './timeline'
+import RightSidebar from './sidebar-right'
 
 export default function Editor (state, dispatch) {
   return [
@@ -51,9 +53,9 @@ function AnimsEditor (state, dispatch) {
       state.anims.list.length
         ? m(AnimsCanvas, {
             frame,
-            frames: tl.onionSkin ? frames : [],
+            frames: tl.onionSkin && frames || [],
             playing: tl.playing,
-            onchangeoffset: moveFrameOrigin
+            // onchangeoffset: moveFrameOrigin
           })
         : null
     ]),

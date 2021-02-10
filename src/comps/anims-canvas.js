@@ -39,16 +39,18 @@ export default () => {
       context.globalAlpha = 1
     }
 
-    const image = frame.sprite.image
-    const x = xcenter - frame.origin.x
-    const y = ycenter - frame.origin.y
+    if (frame) {
+      const image = frame.sprite.image
+      const x = xcenter - frame.origin.x
+      const y = ycenter - frame.origin.y
 
-    if (!playing) {
-      context.strokeStyle = presspos ? '#cdf' : '#68e'
-      context.strokeRect(x + 0.5, y + 0.5, image.width - 1, image.height - 1)
+      if (!playing) {
+        context.strokeStyle = presspos ? '#cdf' : '#68e'
+        context.strokeRect(x + 0.5, y + 0.5, image.width - 1, image.height - 1)
+      }
+
+      context.drawImage(image, x, y)
     }
-
-    context.drawImage(image, x, y)
 
     for (const frame of framesBefore) {
       const image = frame.sprite.image
