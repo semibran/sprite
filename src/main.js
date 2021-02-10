@@ -1,14 +1,19 @@
+
 import m from 'mithril'
+import { createStore, applyMiddleware } from 'redux'
+import thunk from 'redux-thunk'
 import extract from 'img-extract'
 import loadImage from 'img-load'
-import SpriteCanvas from './comps/sprite-canvas'
-import AnimCanvas from './comps/anim-canvas'
-import Thumb from './comps/thumb'
+
 import clone from './lib/img-clone'
 import slice from './lib/slice'
 import merge from './lib/merge'
 
-const state = {
+import SpriteCanvas from './comps/sprite-canvas'
+import AnimCanvas from './comps/anim-canvas'
+import LeftSidebar from './comps/sidebar-left'
+
+const initialState = {
   sprname: 'untitled',
   tab: 'sprites',
   image: null,
@@ -30,21 +35,34 @@ const state = {
   }
 }
 
-const handleImage = async (evt) => {
-  const url = URL.createObjectURL(evt.target.files[0])
-  const image = await loadImage(url)
-  setImage(image)
+const reducer = (state = initialState, action) => {
+  switch (action.type) {
+    case 'setImage': return ((image) => {
+      const canvas = clone(image)
+      return {
+        ...state,
+        image: canvas,
+        sprites: slice(canvas).map((rect, i) => ({
+          name: `${state.sprname}_${i}`,
+          image: extract(action.payload, ...rect),
+          rect
+        }))
+      }
+    })(action.payload)
+    case 'selectTab': return { ...state, tab: action.payload }
+    default: return state
+  }
 }
 
-const setImage = (image) => {
-  state.image = clone(image)
-  state.sprites = slice(state.image).map((rect, i) => ({
-    name: `${state.sprname}_${i}`,
-    image: extract(image, ...rect),
-    rect: rect
-  }))
+const fetchImage = (url) => async (dispatch, getState) => {
+  const image = await loadImage(url)
+  store.dispatch({ type: 'setImage', payload: image })
   m.redraw()
 }
+
+const enhancer = applyMiddleware(thunk)
+const store = createStore(reducer, enhancer)
+store.dispatch(fetchImage('../tmp/copen.png'))
 
 const select = (items, i) => (evt) => {
   if (evt.detail === 2) {
@@ -525,6 +543,18 @@ const Timeline = () => {
   ]))
 }
 
+const SpritesEditor = () => {
+  return m('#editor.-sprites', [
+    !state.image
+      ? Upload()
+      : m(SpriteCanvas, {
+        image: state.image,
+        rects: state.sprites.map(sprite => sprite.rect),
+        selects: state.selects
+      })
+  ])
+}
+
 const AnimsEditor = () => {
   const tl = state.timeline
   const anim = state.anims.select
@@ -726,11 +756,7 @@ const CreateWindow = () =>
     ])
   ])
 
-loadImage('../tmp/copen.png')
-  .then(setImage)
-  .catch(console.error)
-
-const view = () =>
+const App = (state, dispatch) =>
   m('main.app', [
     m('header', [
       m('.header-block', [
@@ -742,115 +768,16 @@ const view = () =>
       ])
     ]),
     m('.content', [
-      m('aside.sidebar.-left', [
-        m('.sidebar-header', [
-          m('.sidebar-tabs', [
-            m('.tab.-sprites', {
-              class: state.tab === 'sprites' ? '-active' : '',
-              onclick: selectTab('sprites')
-            }, [`Sprites (${state.sprites.length})`]),
-            m('.tab.-anims', {
-              class: state.tab === 'anims' ? '-active' : '',
-              onclick: selectTab('anims')
-            }, ['States'])
-          ]),
-          m('.sidebar-subheader', [
-            m('label.sidebar-search', { for: 'search' }, [
-              m('span.icon.material-icons-round', 'search'),
-              m('input', { id: 'search', placeholder: 'Search' })
-            ]),
-            m('.action.-add.material-icons-round',
-              { onclick: openWindow('create') },
-              'add')
-          ])
-        ]),
-        state.tab === 'sprites'
-          ? state.sprites.length
-              ? m('.sidebar-content', state.sprites.map((sprite, i) =>
-                  m('.entry', {
-                    key: `${i}-${sprite.name}-${sprite.rect[2]},${sprite.rect[3]}`,
-                    onclick: select(state.selects, i),
-                    class: state.selects.includes(i) ? '-select' : null
-                  }, [
-                    m('.thumb.-entry', [
-                      m(Thumb, { image: sprite.image })
-                    ]),
-                    m('.entry-name', sprite.name)
-                  ])
-                ))
-              : m('.sidebar-content.-empty', [
-                m('.sidebar-notice', 'No sprites registered.')
-              ])
-          : null,
-        state.tab === 'anims'
-          ? state.anims.list.length
-              ? m('.sidebar-content', state.anims.list.map((anim, i) =>
-                  m('.entry', {
-                    key: i + '-' + anim.name,
-                    onclick: selectAnim(i),
-                    class: state.anims.select === anim ? '-select' : null
-                  }, [
-                    m('.thumb.-entry', [
-                      m(Thumb, { image: anim.frames[0].sprite.image })
-                    ]),
-                    state.anims.select === anim && state.anims.editingName
-                      ? m.fragment({ oncreate: (vnode) => vnode.dom.select() }, [
-                          m('input.entry-name', {
-                            value: anim.name,
-                            onblur: endNameEdit
-                          })
-                        ])
-                      : m('.entry-name', { ondblclick: startNameEdit }, anim.name)
-                  ])
-                ))
-              : m('.sidebar-content.-empty', [
-                m('.sidebar-notice', [
-                  'No states registered.',
-                  m('button.-create', { onclick: openWindow('create') }, [
-                    m('span.icon.material-icons-round', 'add'),
-                    'Create'
-                  ])
-                ])
-              ])
-          : null,
-        state.tab === 'sprites'
-          ? m('.sidebar-footer', [
-              m('button.-split', { disabled: true }, [
-                m('span.icon.material-icons-round', 'vertical_split'),
-                'Split'
-              ]),
-              m('button.-merge', {
-                disabled: state.selects.length < 2,
-                onclick: state.selects.length >= 2 && mergeSelects
-              }, [
-                m('span.icon.material-icons-round', 'aspect_ratio'),
-                'Merge'
-              ])
-            ])
-          : null
-      ]),
-      state.tab === 'sprites'
-        ? m('#editor.-sprites', [
-            !state.image
-              ? Upload()
-              : m(SpriteCanvas, {
-                image: state.image,
-                rects: state.sprites.map(sprite => sprite.rect),
-                selects: state.selects
-              })
-          ])
-        : null,
-      state.tab === 'anims' ? AnimsEditor() : null,
-      state.tab === 'anims'
-        ? RightSidebar()
-        : null
+      LeftSidebar(state, dispatch),
+      // state.tab === 'sprites' ? SpriteEditor() : null,
+      // state.tab === 'anims' ? AnimsEditor() : null,
+      // state.tab === 'anims' ? RightSidebar() : null
     ]),
-    state.window !== null
-      ? m('.overlay', { onclick: closeWindow })
-      : null,
-    state.window === 'create'
-      ? CreateWindow()
-      : null
+    // state.window ? m('.overlay', { onclick: closeWindow }) : null,
+    // state.window === 'create' ? CreateWindow() : null
   ])
 
-m.mount(document.body, () => ({ view }))
+m.mount(document.body, () => ({
+  view: () => App(store.getState(),
+    (type, payload) => () => store.dispatch({ type, payload }))
+}))
