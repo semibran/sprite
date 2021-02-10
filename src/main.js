@@ -20,8 +20,6 @@ import LeftSidebar, {
   renameAnim
 } from './comps/sidebar-left'
 
-window.m = m
-
 const cache = { image: null }
 
 const initialState = {
@@ -37,12 +35,12 @@ const initialState = {
     list: [],
     selects: [],
     editname: false,
-    tab: 'frame'
+    tab: 'anim'
   },
   timeline: {
     playing: false,
     repeat: false,
-    onionSkin: true,
+    onionskin: false,
     pos: 0,
     selects: []
   }
@@ -140,57 +138,6 @@ const mergeSelects = () => {
   sprite.image = extract(state.image, ...rect)
   selects.length = 0
   return true
-}
-
-const selectAnimTab = (tab) => () => {
-  state.anims.tab = tab
-}
-
-const startNameEdit = (evt) => {
-  state.anims.editingName = true
-}
-
-const endNameEdit = (evt) => {
-  state.anims.editingName = false
-  state.anims.select.name = evt.target.value
-}
-
-const getAnimDuration = (anim) => {
-  return anim.frames.reduce((d, frame) => d + frame.duration, 0)
-}
-
-const getFrameAt = (anim, t) => {
-  let f = 0
-  let g = 0
-  let frame = anim.frames[0]
-  for (let i = 0; i < t; i++) {
-    if (++g >= frame.duration) {
-      frame = anim.frames[++f]
-      g = 0
-      if (!frame) {
-        return null
-      }
-    }
-  }
-  return anim.frames[f]
-}
-
-const getFramesAt = (anim, ts) =>
-  [...new Set(ts.map(t => getFrameAt(anim, t)).filter(x => x))]
-
-const getIndexOfFrame = (anim, frame) => {
-  let f = 0
-  let g = 0
-  const d = getAnimDuration(anim)
-  for (let i = 0; i < d; i++) {
-    if (anim.frames[f] === frame) {
-      return i
-    }
-    if (++g >= anim.frames[f].duration) {
-      f++
-      g = 0
-    }
-  }
 }
 
 const toggleAnim = () => {
@@ -296,7 +243,7 @@ const toggleRepeat = () => {
 
 const toggleOnionSkin = () => {
   const tl = state.timeline
-  tl.onionSkin = !tl.onionSkin
+  tl.onionskin = !tl.onionskin
 }
 
 const handleFrameOrigin = (axis) => (evt) => {

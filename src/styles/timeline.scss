@@ -2,7 +2,7 @@
   user-select: none;
   background: white;
   border-top: thin solid $silver;
-  padding: 24px;
+  padding: 16px 24px;
   width: 100%;
 
   .timeline {
@@ -62,6 +62,7 @@
     background: white;
     border: thin solid $silver;
     border-radius: 4px;
+    height: 64px;
 
     &:hover {
       border-color: $lightgray;

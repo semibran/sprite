@@ -15,6 +15,7 @@ export function createAnim (state) {
     name: 'untitled',
     loop: false,
     next: null,
+    speed: 1,
     frames: []
   }
   return {

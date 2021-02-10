@@ -1,52 +1,53 @@
 
 import m from 'mithril'
+import { getSelectedAnim, getAnimDuration } from '../app/helpers'
 
 export default function Timeline (state, dispatch) {
-  const anim = state.anims.select
   const tl = state.timeline
+  const anim = getSelectedAnim(state)
   const duration = getAnimDuration(anim)
   return m.fragment({
     oncreate: (vnode) => {
-      window.addEventListener('keydown', (evt) => {
-        if (evt.key === ' ' && !evt.repeat) {
-          toggleAnim()
-        } else if (evt.key === ',') {
-          stepPrev()
-        } else if (evt.key === '.') {
-          stepNext()
-        } else if (evt.code === 'KeyA' && (evt.ctrlKey || evt.metaKey)) {
-          evt.preventDefault()
-          selectAllFrames()
-        } else if (evt.code === 'Escape') {
-          evt.preventDefault()
-          deselectAllFrames()
-        } else if (evt.key === 'Shift') {
-          evt.redraw = false
-        }
-      }, true)
+      // window.addEventListener('keydown', (evt) => {
+      //   if (evt.key === ' ' && !evt.repeat) {
+      //     toggleAnim()
+      //   } else if (evt.key === ',') {
+      //     stepPrev()
+      //   } else if (evt.key === '.') {
+      //     stepNext()
+      //   } else if (evt.code === 'KeyA' && (evt.ctrlKey || evt.metaKey)) {
+      //     evt.preventDefault()
+      //     selectAllFrames()
+      //   } else if (evt.code === 'Escape') {
+      //     evt.preventDefault()
+      //     deselectAllFrames()
+      //   } else if (evt.key === 'Shift') {
+      //     evt.redraw = false
+      //   }
+      // }, true)
     }
   }, m('#timeline', [
     m('.timeline-controls', [
       m('.controls-lhs', [
         m('.panel.-move', [
-          m('.panel-button', { onclick: stepPrev }, [
+          m('.panel-button', /* { onclick: stepPrev }, */ [
             m('span.icon.material-icons-round.-step-prev', 'eject')
           ]),
           m('.panel-button', {
             class: state.timeline.playing ? '-select' : '',
-            onclick: toggleAnim
+            // onclick: toggleAnim
           }, [
             m('span.icon.material-icons-round.-play',
               state.timeline.playing ? 'pause' : 'play_arrow')
           ]),
-          m('.panel-button', { onclick: stepNext }, [
+          m('.panel-button', /* { onclick: stepNext }, */ [
             m('span.icon.material-icons-round.-step-next', 'eject')
           ])
         ]),
         m('.panel.-repeat', [
           m('.panel-button', {
             class: state.timeline.repeat ? '-select' : '',
-            onclick: toggleRepeat
+            // onclick: toggleRepeat
           }, [
             m('span.icon.material-icons-round.-small', 'repeat')
           ])
@@ -54,7 +55,7 @@ export default function Timeline (state, dispatch) {
         m('.panel.-onion-skin', [
           m('.panel-button', {
             class: state.timeline.onionSkin ? '-select' : '',
-            onclick: toggleOnionSkin
+            // onclick: toggleOnionSkin
           }, [
             m('span.icon.material-icons-round.-small', 'auto_awesome_motion')
           ])
@@ -68,7 +69,7 @@ export default function Timeline (state, dispatch) {
           // { onclick: cloneFrame },
           'filter_none'),
         m('.action.-remove.icon.material-icons-round', {
-          onclick: deleteFrame
+          // onclick: deleteFrame
         }, 'delete_outline')
       ])
     ]),

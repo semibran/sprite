@@ -394,7 +394,6 @@ input.-sidebar-field {
   display: flex;
   flex-direction: column;
   flex: 1;
-  max-width: calc(100vw - #{$sidebar-left-width} - #{$sidebar-right-width});
 }
 
 #editor {

@@ -34,13 +34,39 @@ export default function SidebarRight (state, dispatch) {
 }
 
 function AnimTab (state, dispatch) {
-  const anim = state.anims.select
+  const anim = state.anims.list[state.anims.selects[state.anims.selects.length - 1]]
   return anim
     ? m('.sidebar-content', [
         m('section.-name', [
           m('h4.sidebar-key', 'Name'),
           m('span.sidebar-value', [
             m('.sidebar-field', anim.name)
+          ])
+        ]),
+        m('section.-duration', [
+          m('h4.sidebar-key', 'Duration'),
+          m('span.sidebar-value', [
+            m('.sidebar-field.-text', [
+              anim.frames.length,
+              m('span.sidebar-fieldname',
+                anim.frames.length === 1 ? ' frame' : ' frames')
+            ]),
+          ])
+        ]),
+        m('section.-speed', [
+          m('h4.sidebar-key', 'Speed'),
+          m('span.sidebar-value', [
+            m('.sidebar-field.-text', [
+              anim.speed,
+              m('span.sidebar-fieldname',
+                anim.speed === 1 ? ' frame/tick' : ' frames/tick')
+            ]),
+          ])
+        ]),
+        m('section.-repeat', [
+          m('h4.sidebar-key', 'Repeat'),
+          m('span.sidebar-value', [
+            m('.sidebar-field.-text', anim.loop ? 'Yes' : 'No')
           ])
         ])
       ])

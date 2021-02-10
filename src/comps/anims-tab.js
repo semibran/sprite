@@ -14,7 +14,6 @@ export function selectAnim (state, { index, opts }) {
 export function startRenameAnim (state) {
   const anims = state.anims
   const selects = anims.selects
-  console.log(selects)
   return {
     ...state,
     anims: {
