@@ -5,6 +5,12 @@ import extract from 'img-extract'
 import Thumb from './thumb'
 import select from '../lib/select'
 
+export function selectSprite (state, { index, opts }) {
+  state = clone(state)
+  select(state.sprites.selects, index, opts)
+  return state
+}
+
 export default function SpritesTab (state, dispatch) {
   const image = state.image
   const sprites = state.sprites.list
@@ -31,10 +37,4 @@ export default function SpritesTab (state, dispatch) {
     : m('.sidebar-content.-empty', [
       m('.sidebar-notice', 'No sprites registered.')
     ])
-}
-
-export function selectSprite (state, { index, opts }) {
-  state = clone(state)
-  select(state.sprites.selects, index, opts)
-  return state
 }

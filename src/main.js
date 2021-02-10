@@ -1,6 +1,6 @@
 
 import m from 'mithril'
-import { createStore, applyMiddleware } from 'redux'
+import { createStore, applyMiddleware, compose } from 'redux'
 import thunk from 'redux-thunk'
 import extract from 'img-extract'
 import loadImage from 'img-load'
@@ -12,7 +12,14 @@ import combineReducers from './lib/combine-reducers'
 
 import SpriteCanvas from './comps/sprite-canvas'
 import AnimCanvas from './comps/anim-canvas'
-import LeftSidebar, { selectSprite } from './comps/sidebar-left'
+import LeftSidebar, {
+  selectTab,
+  selectSprite,
+  selectAnim,
+  createAnim,
+  startRenameAnim,
+  renameAnim
+} from './comps/sidebar-left'
 
 const cache = { image: null }
 
@@ -27,7 +34,7 @@ const initialState = {
   },
   anims: {
     list: [],
-    select: null,
+    selects: [],
     editname: false,
     tab: 'frame'
   },
@@ -55,10 +62,16 @@ const setImage = (state) => {
 
 const reducers = combineReducers({
   setImage,
-  selectSprite
+  selectTab,
+  selectSprite,
+  selectAnim,
+  createAnim,
+  startRenameAnim,
+  renameAnim
 }, initialState)
 
-const enhancer = applyMiddleware(thunk)
+const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
+const enhancer = composeEnhancers(applyMiddleware(thunk))
 const store = createStore(reducers, enhancer)
 
 loadImage('../tmp/copen.png').then((image) => {
@@ -66,10 +79,6 @@ loadImage('../tmp/copen.png').then((image) => {
   store.dispatch({ type: 'setImage' })
   m.redraw()
 })
-
-const selectAnim = (i) => (evt) => {
-  state.anims.select = state.anims.list[i]
-}
 
 const selectFrame = (i) => (evt) => {
   select(state.timeline.selects, i)(evt)
@@ -130,11 +139,6 @@ const mergeSelects = () => {
   sprite.image = extract(state.image, ...rect)
   selects.length = 0
   return true
-}
-
-const selectTab = (tab) => () => {
-  state.selects.length = 0
-  state.tab = tab
 }
 
 const selectAnimTab = (tab) => () => {
@@ -294,26 +298,26 @@ const toggleOnionSkin = () => {
   tl.onionSkin = !tl.onionSkin
 }
 
-const createAnim = () => {
-  if (!state.selects.length) {
-    return false
-  }
+// const createAnim = () => {
+//   if (!state.selects.length) {
+//     return false
+//   }
 
-  const anim = {
-    name: 'untitled',
-    loop: false,
-    next: null,
-    frames: state.selects.map(idx => ({
-      sprite: state.sprites[idx],
-      origin: { x: 0, y: 0 },
-      duration: 1
-    }))
-  }
-  state.anims.list.push(anim)
-  state.anims.select = anim
-  state.selects.length = 0
-  return true
-}
+//   const anim = {
+//     name: 'untitled',
+//     loop: false,
+//     next: null,
+//     frames: state.selects.map(idx => ({
+//       sprite: state.sprites[idx],
+//       origin: { x: 0, y: 0 },
+//       duration: 1
+//     }))
+//   }
+//   state.anims.list.push(anim)
+//   state.anims.select = anim
+//   state.selects.length = 0
+//   return true
+// }
 
 const handleFrameOrigin = (axis) => (evt) => {
   const val = parseInt(evt.target.value)
@@ -406,7 +410,6 @@ const Timeline = () => {
   const duration = getAnimDuration(anim)
   return m.fragment({
     oncreate: (vnode) => {
-      console.log('created timeline')
       window.addEventListener('keydown', (evt) => {
         if (evt.key === ' ' && !evt.repeat) {
           toggleAnim()

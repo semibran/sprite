@@ -1,8 +1,32 @@
 
 import m from 'mithril'
 import SpritesTab, { selectSprite } from './sprites-tab'
+import AnimsTab, { selectAnim, startRenameAnim, renameAnim } from './anims-tab'
 
-export { selectSprite }
+export { selectSprite, selectAnim, startRenameAnim, renameAnim }
+
+export function selectTab (state, { tab }) {
+  return { ...state, tab }
+}
+
+export function createAnim (state) {
+  const anims = state.anims
+  const anim = {
+    name: 'untitled',
+    loop: false,
+    next: null,
+    frames: []
+  }
+  return {
+    ...state,
+    anims: {
+      ...anims,
+      list: [...anims.list, anim],
+      selects: [anims.list.length],
+      editname: true
+    }
+  }
+}
 
 export default function LeftSidebar (state, dispatch) {
   return m('aside.sidebar.-left', [
@@ -10,11 +34,11 @@ export default function LeftSidebar (state, dispatch) {
       m('.sidebar-tabs', [
         m('.tab.-sprites', {
           class: state.tab === 'sprites' ? '-active' : '',
-          onclick: dispatch('selectTab', 'sprites')
+          onclick: dispatch(selectTab, { tab: 'sprites' })
         }, `Sprites (${state.sprites.list.length})`),
         m('.tab.-anims', {
           class: state.tab === 'anims' ? '-active' : '',
-          onclick: dispatch('selectTab', 'anims')
+          onclick: dispatch(selectTab, { tab: 'anims' })
         }, 'States')
       ]),
       m('.sidebar-subheader', [
@@ -23,7 +47,7 @@ export default function LeftSidebar (state, dispatch) {
           m('input', { id: 'search', placeholder: 'Search' })
         ]),
         m('.action.-add.material-icons-round',
-          { onclick: dispatch('openWindow', 'create') },
+          { onclick: dispatch(createAnim) },
           'add')
       ])
     ]),
@@ -53,40 +77,4 @@ function SpritesFooter (state, dispatch) {
       'Merge'
     ])
   ])
-}
-
-function AnimsTab (state, dispatch) {
-  return state.anims.list.length
-    ? m('.sidebar-content', state.anims.list.map((anim, i) =>
-        m('.entry', {
-          key: i + '-' + anim.name,
-          // onclick: selectAnim(i),
-          class: state.anims.select === anim ? '-select' : null
-        }, [
-          m('.thumb.-entry', [
-            m(Thumb, { image: anim.frames[0].sprite.image })
-          ]),
-          state.anims.select === anim && state.anims.editingName
-            ? m.fragment({ oncreate: (vnode) => vnode.dom.select() }, [
-                m('input.entry-name', {
-                  value: anim.name,
-                  // onblur: endNameEdit
-                })
-              ])
-            : m('.entry-name',
-              // { ondblclick: startNameEdit },
-              anim.name)
-        ])
-      ))
-    : m('.sidebar-content.-empty', [
-      m('.sidebar-notice', [
-        'No states registered.',
-        m('button.-create', {
-          // onclick: openWindow('create')
-        }, [
-          m('span.icon.material-icons-round', 'add'),
-          'Create'
-        ])
-      ])
-    ])
 }
