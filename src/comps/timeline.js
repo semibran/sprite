@@ -5,7 +5,8 @@ import {
   getFrameAt,
   getFramesAt,
   getSelectedAnim,
-  getAnimDuration
+  getAnimDuration,
+  getIndexOfFrame
 } from '../app/helpers'
 import Thumb from './thumb'
 
@@ -108,13 +109,20 @@ export default function Timeline (state, dispatch) {
         ).concat([
           m('th.frame-number.-add')
         ])),
-        m('tr.frames', anim.frames.map((frame, i) =>
-          m('td.frame', {
+        m('tr.frames', anim.frames.map((frame, i) => {
+          const pos = getIndexOfFrame(anim, frame)
+          return m('td.frame', {
             key: frame.sprite ? `${i}-${frame.sprite.name}` : i,
             class: (getFrameAt(anim, tl.pos) === frame ? '-focus' : '') +
               (getFramesAt(anim, tl.selects).includes(frame) ? ' -select' : ''),
             colspan: frame.duration > 1 ? frame.duration : null,
-            // onclick: selectFrame(getIndexOfFrame(anim, frame))
+            onclick: (evt) => tl.pos !== pos && dispatch('selectFrame', {
+              index: pos,
+              opts: {
+                ctrl: evt.ctrlKey || evt.metaKey,
+                shift: evt.shiftKey
+              }
+            })()
           }, [
             m('.thumb.-frame', [
               frame.sprite
@@ -122,7 +130,7 @@ export default function Timeline (state, dispatch) {
                 : null
             ])
           ])
-        ).concat([
+        }).concat([
           m('td.frame.-add', {
             key: 'add',
             onclick: dispatch('openWindow', { type: 'add' })

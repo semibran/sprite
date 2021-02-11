@@ -11,13 +11,16 @@ export default () => {
   let presspos = null
   let changeOffset = null
 
-  const update = (vnode) => {
+  const cache = (vnode) => {
     canvas = vnode.dom
     sheet = vnode.attrs.image
     frame = vnode.attrs.frame
     frames = vnode.attrs.frames
     playing = vnode.attrs.playing
     changeOffset = vnode.attrs.onchangeoffset
+  }
+
+  const update = () => {
     resize(canvas)
 
     const xcenter = Math.round(canvas.width / 2)
@@ -43,7 +46,6 @@ export default () => {
       context.globalAlpha = 1
     }
 
-    console.log(vnode.attrs)
     if (frame && frame.sprite) {
       const image = extract(sheet, ...frame.sprite.rect)
       const x = xcenter - frame.origin.x
@@ -67,7 +69,10 @@ export default () => {
     }
   }
 
-  const onresize = (vnode) => () => update(vnode)
+  const onupdate = (vnode) => {
+    cache(vnode)
+    update()
+  }
 
   const onmousedown = (evt) => {
     if (!frame || !frame.sprite) return
@@ -133,14 +138,14 @@ export default () => {
   return {
     oncreate: (vnode) => {
       const canvas = vnode.dom
-      update(vnode)
-      window.addEventListener('resize', onresize(vnode))
+      onupdate(vnode)
+      window.addEventListener('resize', update)
       canvas.addEventListener('mousedown', onmousedown)
       window.addEventListener('mousemove', onmousemove)
       window.addEventListener('mouseup', onmouseup)
       window.addEventListener('keydown', onkeydown)
     },
-    onupdate: update,
+    onupdate,
     view: () => m('canvas')
   }
 }

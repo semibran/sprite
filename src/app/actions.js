@@ -26,6 +26,14 @@ export const selectAnim = (state, { index, opts }) => {
   return state
 }
 
+export const selectFrame = (state, { index, opts }) => {
+  const newState = clone(state)
+  const tl = newState.timeline
+  tl.pos = index
+  select(tl.selects, index, opts)
+  return newState
+}
+
 export const createAnim = (state) => {
   const anims = state.anims
   const anim = {
