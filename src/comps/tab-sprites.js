@@ -1,6 +1,5 @@
 
 import m from 'mithril'
-import clone from 'lodash.clonedeep'
 import extract from 'img-extract'
 import Thumb from './thumb'
 

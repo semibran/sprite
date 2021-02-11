@@ -1,5 +1,6 @@
 
 import m from 'mithril'
+import extract from 'img-extract'
 import {
   getFrameAt,
   getFramesAt,
@@ -9,6 +10,7 @@ import {
 import Thumb from './thumb'
 
 export default function Timeline (state, dispatch) {
+  const image = state.image
   const tl = state.timeline
   const anim = getSelectedAnim(state)
   const duration = getAnimDuration(anim)
@@ -67,7 +69,7 @@ export default function Timeline (state, dispatch) {
         ]),
         m('.panel.-onion-skin', [
           m('.panel-button', {
-            class: state.timeline.onionSkin ? '-select' : '',
+            class: state.timeline.onionskin ? '-select' : '',
             onclick: dispatch('toggleOnionSkin')
           }, [
             m('span.icon.material-icons-round.-small', 'auto_awesome_motion')
@@ -116,12 +118,15 @@ export default function Timeline (state, dispatch) {
           }, [
             m('.thumb.-frame', [
               frame.sprite
-                ? m(Thumb, { image: frame.sprite.image })
+                ? m(Thumb, { image: extract(image, ...frame.sprite.rect) })
                 : null
             ])
           ])
         ).concat([
-          m('td.frame.-add', { key: 'add' }, [
+          m('td.frame.-add', {
+            key: 'add',
+            onclick: dispatch('openWindow', { type: 'add' })
+          }, [
             m('.icon.-small.material-icons-round', 'add'),
             m('.frame-text', 'Add')
           ])

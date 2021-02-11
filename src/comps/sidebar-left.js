@@ -22,7 +22,7 @@ export default function LeftSidebar (state, dispatch) {
           m('input', { id: 'search', placeholder: 'Search' })
         ]),
         m('.action.-add.material-icons-round',
-          { onclick: dispatch('createAnim') },
+          { onclick: state.tab === 'anims' && dispatch('createAnim') },
           'add')
       ])
     ]),

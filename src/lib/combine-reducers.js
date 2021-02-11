@@ -4,8 +4,12 @@ export default function combineReducers (reducers, initialState) {
     const reducer = reducers[action.type]
     if (reducer) {
       return reducer(state, action.payload)
-    } else {
-      return state
     }
+
+    if (action.type !== '@@INIT') {
+      console.warn(`Received unregistered action type "${action.type}". Ignoring...`)
+    }
+
+    return state
   }
 }

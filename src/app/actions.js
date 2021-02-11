@@ -1,9 +1,17 @@
 
 import clone from 'lodash.clonedeep'
 import select from '../lib/select'
+import { getSelectedAnim } from './helpers'
 
 export const selectTab = (state, { tab }) => {
-  return { ...state, tab }
+  return {
+    ...state,
+    tab,
+    sprites: {
+      ...state.sprites,
+      selects: []
+    }
+  }
 }
 
 export const selectSprite = (state, { index, opts }) => {
@@ -77,7 +85,7 @@ export const toggleRepeat = (state) => {
     ...state,
     timeline: {
       ...state.timeline,
-      repeat: state.timeline.repeat
+      repeat: !state.timeline.repeat
     }
   }
 }
@@ -87,7 +95,38 @@ export const toggleOnionSkin = (state) => {
     ...state,
     timeline: {
       ...state.timeline,
-      onionskin: state.timeline.onionskin
+      onionskin: !state.timeline.onionskin
     }
   }
+}
+
+export const confirmFrames = (state) => {
+  const newState = clone(state)
+  const anim = getSelectedAnim(newState)
+
+  for (let i = anim.frames.length; i--;) {
+    if (!anim.frames[i].sprite) {
+      anim.frames.splice(i, 1)
+    } else {
+      break
+    }
+  }
+
+  const frames = state.sprites.selects.map(idx => ({
+    sprite: state.sprites.list[idx],
+    duration: 1,
+    origin: { x: 0, y: 0 }
+  }))
+  anim.frames.push(...frames)
+
+  newState.window = null
+  return newState
+}
+
+export const openWindow = (state, { type }) => {
+  return { ...state, window: type }
+}
+
+export const closeWindow = (state) => {
+  return { ...state, window: null }
 }

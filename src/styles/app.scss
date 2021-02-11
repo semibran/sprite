@@ -1,5 +1,5 @@
 $black: #111;
-$charcoal: #222;
+$charcoal: #323232;
 $darkgray: #2d2d2d;
 $dimgray: #3a3a3a;
 $gray: #666;
@@ -121,6 +121,7 @@ canvas {
   height: 100vh;
   display: flex;
   flex-direction: column;
+  overflow-x: hidden;
 }
 
 header {
@@ -263,10 +264,6 @@ header {
   flex: 1;
   overflow-y: auto;
 
-  .thumb {
-    border: thin solid $gray;
-  }
-
   &.-empty {
     display: flex;
     justify-content: center;
@@ -332,6 +329,7 @@ header {
 
 .thumb {
   background: #ccc;
+  border: thin solid $gray;
   border-radius: 4px;
   width: 64px;
   height: 64px;

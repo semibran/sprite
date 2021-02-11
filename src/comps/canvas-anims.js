@@ -1,7 +1,10 @@
+
 import m from 'mithril'
+import extract from 'img-extract'
 
 export default () => {
   let canvas = null
+  let sheet = null
   let frame = null
   let frames = null
   let playing = null
@@ -10,6 +13,7 @@ export default () => {
 
   const update = (vnode) => {
     canvas = vnode.dom
+    sheet = vnode.attrs.image
     frame = vnode.attrs.frame
     frames = vnode.attrs.frames
     playing = vnode.attrs.playing
@@ -31,7 +35,7 @@ export default () => {
     const context = canvas.getContext('2d')
 
     for (const frame of framesAfter) {
-      const image = frame.sprite.image
+      const image = extract(sheet, ...frame.sprite.rect)
       const x = xcenter - frame.origin.x
       const y = ycenter - frame.origin.y
       context.globalAlpha = 0.25
@@ -39,8 +43,9 @@ export default () => {
       context.globalAlpha = 1
     }
 
+    console.log(vnode.attrs)
     if (frame && frame.sprite) {
-      const image = frame.sprite.image
+      const image = extract(sheet, ...frame.sprite.rect)
       const x = xcenter - frame.origin.x
       const y = ycenter - frame.origin.y
 
@@ -53,7 +58,7 @@ export default () => {
     }
 
     for (const frame of framesBefore) {
-      const image = frame.sprite.image
+      const image = extract(sheet, ...frame.sprite.rect)
       const x = xcenter - frame.origin.x
       const y = ycenter - frame.origin.y
       context.globalAlpha = 0.25

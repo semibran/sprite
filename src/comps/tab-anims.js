@@ -4,6 +4,7 @@ import extract from 'img-extract'
 import Thumb from './thumb'
 
 export default function AnimsTab (state, dispatch) {
+  const image = state.image
   return state.anims.list.length
     ? m('.sidebar-content', state.anims.list.map((anim, i) => {
         const selected = state.anims.selects.includes(i)
@@ -20,7 +21,7 @@ export default function AnimsTab (state, dispatch) {
         }, [
           m('.thumb.-entry', [
             anim.frames.length && anim.frames[0].sprite
-              ? m(Thumb, { image: anim.frames[0].sprite.image })
+              ? m(Thumb, { image: extract(image, ...anim.frames[0].sprite.rect) })
               : null
           ]),
           selected && state.anims.editname
@@ -53,7 +54,7 @@ export default function AnimsTab (state, dispatch) {
       m('.sidebar-notice', [
         'No states registered.',
         m('button.-create', {
-          // onclick: openWindow('create')
+          onclick: dispatch('createAnim')
         }, [
           m('span.icon.material-icons-round', 'add'),
           'Create'

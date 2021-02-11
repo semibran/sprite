@@ -13,6 +13,7 @@ import reduce from './lib/combine-reducers'
 import * as actions from './app/actions'
 import Editor from './comps/editor'
 import LeftSidebar from './comps/sidebar-left'
+import AddWindow from './comps/window-add'
 
 const cache = { image: null }
 
@@ -57,6 +58,7 @@ const reducers = reduce(Object.assign(actions, { setImage }), initialState)
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
 const enhancer = composeEnhancers(applyMiddleware(thunk))
 const store = createStore(reducers, enhancer)
+store.subscribe(() => m.redraw())
 
 loadImage('../tmp/copen.png').then((image) => {
   cache.image = image
@@ -283,58 +285,6 @@ const changeFramesDuration = (evt) => {
   }
 }
 
-const openWindow = (type) => () => {
-  state.window = type
-}
-
-const closeWindow = () => {
-  state.window = null
-}
-
-const CreateWindow = () =>
-  m('.window.-create', [
-    m('.window-header', [
-      m('.window-title', 'Create new state'),
-      m('span.action.icon.material-icons-round',
-        { onclick: closeWindow },
-        'close')
-    ]),
-    m('.window-content', [
-      m('.window-bar', [
-        state.selects.length === 1
-          ? '1 sprite selected'
-          : `${state.selects.length} sprites selected`,
-        m('.view-toggle', [
-          m('span.icon.material-icons-round.action.-select', 'view_module'),
-          m('span.icon.material-icons-round.action', 'view_list')
-        ])
-      ]),
-      m('.window-entries', [
-        m('.window-entrygrid', state.sprites.map((sprite, i) =>
-          m('.entry.action', {
-            key: `${i}-${sprite.name}-${sprite.rect[2]},${sprite.rect[3]}`,
-            onclick: select(state.selects, i),
-            class: state.selects.includes(i) ? '-select' : null
-          }, [
-            m('.thumb.-entry', [
-              m(Thumb, { image: sprite.image })
-            ]),
-            m('.entry-name', sprite.name)
-          ])
-        ))
-      ]),
-      m('.window-footer', [
-        m('button.-create', {
-          onclick: () => { createAnim(); closeWindow() }
-        }, [
-          m('span.icon.material-icons-round', 'add'),
-          'Create'
-        ]),
-        m('button.-cancel.-alt', { onclick: closeWindow }, 'Cancel')
-      ])
-    ])
-  ])
-
 const App = (state, dispatch) =>
   m('main.app', [
     m('header', [
@@ -350,8 +300,9 @@ const App = (state, dispatch) =>
       LeftSidebar(state, dispatch),
       Editor(state, dispatch)
     ]),
-    state.window ? m('.overlay', { onclick: closeWindow }) : null,
-    state.window === 'create' ? CreateWindow() : null
+    state.window ? m('.overlay', { onclick: dispatch('closeWindow') }) : null,
+    state.window === 'create' ? CreateWindow(state, dispatch) : null,
+    state.window === 'add' ? AddWindow(state, dispatch) : null
   ])
 
 m.mount(document.body, () => ({

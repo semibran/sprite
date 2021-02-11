@@ -60,7 +60,6 @@
   .frame {
     cursor: pointer;
     background: white;
-    border: thin solid $silver;
     border-radius: 4px;
     height: 64px;
 
@@ -69,7 +68,9 @@
     }
 
     &.-select, &.-focus {
-      border-color: $blue;
+      .thumb {
+        border-color: $blue;
+      }
     }
   }
 
