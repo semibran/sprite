@@ -39,7 +39,7 @@ export default () => {
       context.globalAlpha = 1
     }
 
-    if (frame) {
+    if (frame && frame.sprite) {
       const image = frame.sprite.image
       const x = xcenter - frame.origin.x
       const y = ycenter - frame.origin.y
@@ -65,6 +65,7 @@ export default () => {
   const onresize = (vnode) => () => update(vnode)
 
   const onmousedown = (evt) => {
+    if (!frame || !frame.sprite) return
     const xcenter = Math.round(canvas.width / 2)
     const ycenter = Math.round(canvas.height / 2)
     const x = evt.offsetX - xcenter + frame.origin.x

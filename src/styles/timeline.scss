@@ -112,11 +112,24 @@
   }
 
   .panel-button {
+    background: white;
+    color: $charcoal;
     border: thin solid $silver;
+    border-radius: 0;
     padding: 0 8px;
+    margin: 0;
     display: flex;
     align-items: center;
     height: 100%;
+
+    &[disabled] {
+      pointer-events: none;
+      color: $silver;
+
+      &:hover {
+        background: white;
+      }
+    }
   }
 
   .panel-button:first-child {
@@ -145,6 +158,10 @@
     background: $lightblue;
     color: $blue;
     border-color: $blue;
+  }
+
+  .panel-button .icon {
+    margin: 0;
   }
 
   .icon.-step-prev {

@@ -1,33 +1,7 @@
 
 import m from 'mithril'
-import SpritesTab, { selectSprite } from './sprites-tab'
-import AnimsTab, { selectAnim, startRenameAnim, renameAnim } from './anims-tab'
-
-export { selectSprite, selectAnim, startRenameAnim, renameAnim }
-
-export function selectTab (state, { tab }) {
-  return { ...state, tab }
-}
-
-export function createAnim (state) {
-  const anims = state.anims
-  const anim = {
-    name: 'untitled',
-    loop: false,
-    next: null,
-    speed: 1,
-    frames: []
-  }
-  return {
-    ...state,
-    anims: {
-      ...anims,
-      list: [...anims.list, anim],
-      selects: [anims.list.length],
-      editname: true
-    }
-  }
-}
+import SpritesTab from './tab-sprites'
+import AnimsTab from './tab-anims'
 
 export default function LeftSidebar (state, dispatch) {
   return m('aside.sidebar.-left', [
@@ -35,11 +9,11 @@ export default function LeftSidebar (state, dispatch) {
       m('.sidebar-tabs', [
         m('.tab.-sprites', {
           class: state.tab === 'sprites' ? '-active' : '',
-          onclick: dispatch(selectTab, { tab: 'sprites' })
+          onclick: dispatch('selectTab', { tab: 'sprites' })
         }, `Sprites (${state.sprites.list.length})`),
         m('.tab.-anims', {
           class: state.tab === 'anims' ? '-active' : '',
-          onclick: dispatch(selectTab, { tab: 'anims' })
+          onclick: dispatch('selectTab', { tab: 'anims' })
         }, 'States')
       ]),
       m('.sidebar-subheader', [
@@ -48,7 +22,7 @@ export default function LeftSidebar (state, dispatch) {
           m('input', { id: 'search', placeholder: 'Search' })
         ]),
         m('.action.-add.material-icons-round',
-          { onclick: dispatch(createAnim) },
+          { onclick: dispatch('createAnim') },
           'add')
       ])
     ]),

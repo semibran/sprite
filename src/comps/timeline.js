@@ -1,6 +1,12 @@
 
 import m from 'mithril'
-import { getSelectedAnim, getAnimDuration } from '../app/helpers'
+import {
+  getFrameAt,
+  getFramesAt,
+  getSelectedAnim,
+  getAnimDuration
+} from '../app/helpers'
+import Thumb from './thumb'
 
 export default function Timeline (state, dispatch) {
   const tl = state.timeline
@@ -30,24 +36,31 @@ export default function Timeline (state, dispatch) {
     m('.timeline-controls', [
       m('.controls-lhs', [
         m('.panel.-move', [
-          m('.panel-button', /* { onclick: stepPrev }, */ [
+          m('button.panel-button', {
+            disabled: duration === 1,
+            // onclick: stepPrev
+          }, [
             m('span.icon.material-icons-round.-step-prev', 'eject')
           ]),
-          m('.panel-button', {
+          m('button.panel-button', {
             class: state.timeline.playing ? '-select' : '',
+            disabled: duration === 1,
             // onclick: toggleAnim
           }, [
             m('span.icon.material-icons-round.-play',
               state.timeline.playing ? 'pause' : 'play_arrow')
           ]),
-          m('.panel-button', /* { onclick: stepNext }, */ [
+          m('button.panel-button', {
+            disabled: duration === 1,
+            // onclick: stepNext
+          }, [
             m('span.icon.material-icons-round.-step-next', 'eject')
           ])
         ]),
         m('.panel.-repeat', [
           m('.panel-button', {
             class: state.timeline.repeat ? '-select' : '',
-            // onclick: toggleRepeat
+            onclick: dispatch('toggleRepeat')
           }, [
             m('span.icon.material-icons-round.-small', 'repeat')
           ])
@@ -55,7 +68,7 @@ export default function Timeline (state, dispatch) {
         m('.panel.-onion-skin', [
           m('.panel-button', {
             class: state.timeline.onionSkin ? '-select' : '',
-            // onclick: toggleOnionSkin
+            onclick: dispatch('toggleOnionSkin')
           }, [
             m('span.icon.material-icons-round.-small', 'auto_awesome_motion')
           ])
@@ -88,21 +101,23 @@ export default function Timeline (state, dispatch) {
           }, m('th.frame-number', {
             class: (tl.pos === i ? '-focus' : '') +
               (tl.selects.includes(i) ? ' -select' : ''),
-            onclick: selectFrame(i)
+            // onclick: selectFrame(i)
           }, i + 1))
         ).concat([
           m('th.frame-number.-add')
         ])),
         m('tr.frames', anim.frames.map((frame, i) =>
           m('td.frame', {
-            key: `${i}-${frame.sprite.name}`,
+            key: frame.sprite ? `${i}-${frame.sprite.name}` : i,
             class: (getFrameAt(anim, tl.pos) === frame ? '-focus' : '') +
               (getFramesAt(anim, tl.selects).includes(frame) ? ' -select' : ''),
             colspan: frame.duration > 1 ? frame.duration : null,
-            onclick: selectFrame(getIndexOfFrame(anim, frame))
+            // onclick: selectFrame(getIndexOfFrame(anim, frame))
           }, [
             m('.thumb.-frame', [
-              m(Thumb, { image: frame.sprite.image })
+              frame.sprite
+                ? m(Thumb, { image: frame.sprite.image })
+                : null
             ])
           ])
         ).concat([

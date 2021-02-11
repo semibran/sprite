@@ -5,7 +5,7 @@ export default function combineReducers (reducers, initialState) {
     if (reducer) {
       return reducer(state, action.payload)
     } else {
-      return initialState
+      return state
     }
   }
 }

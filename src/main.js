@@ -8,17 +8,11 @@ import loadImage from 'img-load'
 import clone from './lib/img-clone'
 import slice from './lib/slice'
 import merge from './lib/merge'
-import combineReducers from './lib/combine-reducers'
+import reduce from './lib/combine-reducers'
 
+import * as actions from './app/actions'
 import Editor from './comps/editor'
-import LeftSidebar, {
-  selectTab,
-  selectSprite,
-  selectAnim,
-  createAnim,
-  startRenameAnim,
-  renameAnim
-} from './comps/sidebar-left'
+import LeftSidebar from './comps/sidebar-left'
 
 const cache = { image: null }
 
@@ -38,15 +32,15 @@ const initialState = {
     tab: 'anim'
   },
   timeline: {
+    pos: 0,
+    selects: [],
     playing: false,
     repeat: false,
-    onionskin: false,
-    pos: 0,
-    selects: []
+    onionskin: false
   }
 }
 
-const setImage = (state) => {
+export const setImage = (state) => {
   const canvas = clone(cache.image)
   return {
     ...state,
@@ -59,16 +53,7 @@ const setImage = (state) => {
   }
 }
 
-const reducers = combineReducers({
-  setImage,
-  selectTab,
-  selectSprite,
-  selectAnim,
-  createAnim,
-  startRenameAnim,
-  renameAnim
-}, initialState)
-
+const reducers = reduce(Object.assign(actions, { setImage }), initialState)
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
 const enhancer = composeEnhancers(applyMiddleware(thunk))
 const store = createStore(reducers, enhancer)
@@ -236,16 +221,6 @@ const playAnim = () => {
   return true
 }
 
-const toggleRepeat = () => {
-  const tl = state.timeline
-  tl.repeat = !tl.repeat
-}
-
-const toggleOnionSkin = () => {
-  const tl = state.timeline
-  tl.onionskin = !tl.onionskin
-}
-
 const handleFrameOrigin = (axis) => (evt) => {
   const val = parseInt(evt.target.value)
   if (axis === 'x') {
@@ -375,11 +350,11 @@ const App = (state, dispatch) =>
       LeftSidebar(state, dispatch),
       Editor(state, dispatch)
     ]),
-    // state.window ? m('.overlay', { onclick: closeWindow }) : null,
-    // state.window === 'create' ? CreateWindow() : null
+    state.window ? m('.overlay', { onclick: closeWindow }) : null,
+    state.window === 'create' ? CreateWindow() : null
   ])
 
 m.mount(document.body, () => ({
   view: () => App({ ...store.getState(), ...cache },
-    (fn, payload) => () => store.dispatch({ type: fn.name, payload }))
+    (type, payload) => () => store.dispatch({ type, payload }))
 }))

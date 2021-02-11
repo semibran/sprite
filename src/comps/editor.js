@@ -1,7 +1,7 @@
 
 import m from 'mithril'
-import SpritesCanvas from './sprites-canvas'
-import AnimsEditor from './anims-editor'
+import SpritesCanvas from './canvas-sprites'
+import AnimsEditor from './editor-anims'
 import RightSidebar from './sidebar-right'
 
 export default function Editor (state, dispatch) {

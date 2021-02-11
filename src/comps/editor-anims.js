@@ -2,7 +2,7 @@
 import m from 'mithril'
 import { getFrameAt, getFramesAt, getSelectedAnim } from '../app/helpers'
 
-import AnimsCanvas from './anims-canvas'
+import AnimsCanvas from './canvas-anims'
 import Timeline from './timeline'
 
 export default function AnimsEditor (state, dispatch) {

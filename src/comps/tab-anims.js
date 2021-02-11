@@ -1,45 +1,7 @@
 
 import m from 'mithril'
-import clone from 'lodash.clonedeep'
 import extract from 'img-extract'
 import Thumb from './thumb'
-import select from '../lib/select'
-
-export function selectAnim (state, { index, opts }) {
-  state = clone(state)
-  select(state.anims.selects, index, opts)
-  return state
-}
-
-export function startRenameAnim (state) {
-  const anims = state.anims
-  const selects = anims.selects
-  return {
-    ...state,
-    anims: {
-      ...anims,
-      editname: true,
-      selects: [selects[selects.length - 1]]
-    }
-  }
-}
-
-export function renameAnim (state, { name }) {
-  const anims = state.anims
-  const selects = anims.selects
-  return {
-    ...state,
-    anims: {
-      ...anims,
-      editname: false,
-      list: anims.list.map((anim, i) =>
-        i === selects[selects.length - 1]
-          ? { ...anim, name }
-          : anim
-      )
-    }
-  }
-}
 
 export default function AnimsTab (state, dispatch) {
   return state.anims.list.length
@@ -48,7 +10,7 @@ export default function AnimsTab (state, dispatch) {
         return m('.entry', {
           key: i + '-' + anim.name,
           class: selected ? '-select' : null,
-          onclick: (evt) => !selected && dispatch(selectAnim, {
+          onclick: (evt) => !selected && dispatch('selectAnim', {
             index: i,
             opts: {
               ctrl: evt.ctrlKey || evt.metaKey,
@@ -57,7 +19,7 @@ export default function AnimsTab (state, dispatch) {
           })()
         }, [
           m('.thumb.-entry', [
-            anim.frames.length
+            anim.frames.length && anim.frames[0].sprite
               ? m(Thumb, { image: anim.frames[0].sprite.image })
               : null
           ]),
@@ -74,7 +36,7 @@ export default function AnimsTab (state, dispatch) {
 
                   function onblur (evt) {
                     if (blurred) return
-                    dispatch(renameAnim, { name: evt.target.value })()
+                    dispatch('renameAnim', { name: evt.target.value })()
                     requestAnimationFrame(m.redraw)
                     blurred = true
                   }
@@ -83,7 +45,7 @@ export default function AnimsTab (state, dispatch) {
                 m('input.entry-name', { value: anim.name })
               ])
             : m('.entry-name',
-              { ondblclick: dispatch(startRenameAnim) },
+              { ondblclick: dispatch('startRenameAnim') },
               anim.name)
         ])
       }))
