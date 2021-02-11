@@ -1,7 +1,28 @@
 
-import clone from 'lodash.clonedeep'
+import deepClone from 'lodash.clonedeep'
+import loadImage from 'img-load'
+import clone from '../lib/img-clone'
+import slice from '../lib/slice'
 import select from '../lib/select'
-import { getSelectedAnim } from './helpers'
+import cache from './cache'
+import { getSelectedAnim, getAnimDuration } from './helpers'
+
+export const fetchImage = async (url) => {
+  cache.image = await loadImage(url)
+}
+
+export const setImage = (state) => {
+  const canvas = clone(cache.image)
+  return {
+    ...state,
+    sprites: {
+      ...state.sprites,
+      list: slice(canvas).map((rect, i) => (
+        { name: `${state.sprname}_${i}`, rect }
+      ))
+    }
+  }
+}
 
 export const selectTab = (state, { tab }) => {
   return {
@@ -15,13 +36,13 @@ export const selectTab = (state, { tab }) => {
 }
 
 export const selectSprite = (state, { index, opts }) => {
-  state = clone(state)
+  state = deepClone(state)
   select(state.sprites.selects, index, opts)
   return state
 }
 
 export const selectAnim = (state, { index, opts }) => {
-  const newState = clone(state)
+  const newState = deepClone(state)
   select(newState.anims.selects, index, opts)
   newState.timeline.pos = 0
   newState.timeline.selects = []
@@ -29,7 +50,7 @@ export const selectAnim = (state, { index, opts }) => {
 }
 
 export const selectFrame = (state, { index, opts }) => {
-  const newState = clone(state)
+  const newState = deepClone(state)
   const tl = newState.timeline
   select(tl.selects, index, opts)
   if (tl.selects.includes(index)) {
@@ -92,6 +113,50 @@ export const renameAnim = (state, { name }) => {
   }
 }
 
+export const prevFrame = (state) => {
+  const anim = getSelectedAnim(state)
+  if (!anim) return state
+
+  const newState = deepClone(state)
+  const tl = newState.timeline
+  const lastFrame = getAnimDuration(anim) - 1
+  // pauseAnim()
+  if (tl.pos >= 0) {
+    if (tl.pos > 0) {
+      tl.pos--
+    } else {
+      tl.pos = lastFrame
+    }
+    if (tl.selects.length >= 1) {
+      tl.selects = [tl.pos]
+    }
+  }
+
+  return newState
+}
+
+export const nextFrame = (state) => {
+  const anim = getSelectedAnim(state)
+  if (!anim) return state
+
+  const newState = deepClone(state)
+  const tl = newState.timeline
+  const lastFrame = getAnimDuration(anim) - 1
+  // pauseAnim()
+  if (tl.pos <= lastFrame) {
+    if (tl.pos < lastFrame) {
+      tl.pos++
+    } else {
+      tl.pos = 0
+    }
+    if (tl.selects.length >= 1) {
+      tl.selects = [tl.pos]
+    }
+  }
+
+  return newState
+}
+
 export const toggleRepeat = (state) => {
   return {
     ...state,
@@ -113,7 +178,7 @@ export const toggleOnionSkin = (state) => {
 }
 
 export const confirmFrames = (state) => {
-  const newState = clone(state)
+  const newState = deepClone(state)
   const anim = getSelectedAnim(newState)
 
   for (let i = anim.frames.length; i--;) {

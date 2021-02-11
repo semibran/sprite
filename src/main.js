@@ -3,19 +3,16 @@ import m from 'mithril'
 import { createStore, applyMiddleware, compose } from 'redux'
 import thunk from 'redux-thunk'
 import extract from 'img-extract'
-import loadImage from 'img-load'
 
-import clone from './lib/img-clone'
-import slice from './lib/slice'
 import merge from './lib/merge'
 import reduce from './lib/combine-reducers'
 
-import * as actions from './app/actions'
 import Editor from './comps/editor'
 import LeftSidebar from './comps/sidebar-left'
 import AddWindow from './comps/window-add'
 
-const cache = { image: null }
+import cache from './app/cache'
+import * as actions from './app/actions'
 
 const initialState = {
   sprname: 'untitled',
@@ -41,27 +38,13 @@ const initialState = {
   }
 }
 
-export const setImage = (state) => {
-  const canvas = clone(cache.image)
-  return {
-    ...state,
-    sprites: {
-      ...state.sprites,
-      list: slice(canvas).map((rect, i) => (
-        { name: `${state.sprname}_${i}`, rect }
-      ))
-    }
-  }
-}
-
-const reducers = reduce(Object.assign(actions, { setImage }), initialState)
+const reducers = reduce(actions, initialState)
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
 const enhancer = composeEnhancers(applyMiddleware(thunk))
 const store = createStore(reducers, enhancer)
 store.subscribe(() => m.redraw())
 
-loadImage('../tmp/copen.png').then((image) => {
-  cache.image = image
+actions.fetchImage('../tmp/copen.png').then(() => {
   store.dispatch({ type: 'setImage' })
   m.redraw()
 })
@@ -133,54 +116,6 @@ const toggleAnim = () => {
   } else {
     return playAnim()
   }
-}
-
-const stepPrev = () => {
-  const anim = state.anims.select
-  if (!anim) {
-    return false
-  }
-
-  const tl = state.timeline
-  const lastFrame = getAnimDuration(anim) - 1
-  pauseAnim()
-  if (tl.pos >= 0) {
-    if (tl.pos > 0) {
-      tl.pos--
-    } else {
-      tl.pos = lastFrame
-    }
-    if (tl.selects.length >= 1) {
-      tl.selects = [tl.pos]
-    }
-    return true
-  }
-
-  return false
-}
-
-const stepNext = () => {
-  const anim = state.anims.select
-  if (!anim) {
-    return false
-  }
-
-  const tl = state.timeline
-  const lastFrame = getAnimDuration(anim) - 1
-  pauseAnim()
-  if (tl.pos <= lastFrame) {
-    if (tl.pos < lastFrame) {
-      tl.pos++
-    } else {
-      tl.pos = 0
-    }
-    if (tl.selects.length >= 1) {
-      tl.selects = [tl.pos]
-    }
-    return true
-  }
-
-  return false
 }
 
 const pauseAnim = () => {

@@ -15,25 +15,30 @@ export default function Timeline (state, dispatch) {
   const tl = state.timeline
   const anim = getSelectedAnim(state)
   const duration = getAnimDuration(anim)
+
+  const onkeydown = (evt) => {
+    if (evt.key === ',') {
+      dispatch('prevFrame')()
+    } else if (evt.key === '.') {
+      dispatch('nextFrame')()
+    }
+    // if (evt.key === ' ' && !evt.repeat) {
+      //   toggleAnim()
+      // } else else if (evt.code === 'KeyA' && (evt.ctrlKey || evt.metaKey)) {
+    //   evt.preventDefault()
+    //   selectAllFrames()
+    // } else if (evt.code === 'Escape') {
+    //   evt.preventDefault()
+    //   deselectAllFrames()
+    // } else if (evt.key === 'Shift') {
+    //   evt.redraw = false
+    // }
+    evt.redraw = false
+  }
+
   return m.fragment({
     oncreate: (vnode) => {
-      // window.addEventListener('keydown', (evt) => {
-      //   if (evt.key === ' ' && !evt.repeat) {
-      //     toggleAnim()
-      //   } else if (evt.key === ',') {
-      //     stepPrev()
-      //   } else if (evt.key === '.') {
-      //     stepNext()
-      //   } else if (evt.code === 'KeyA' && (evt.ctrlKey || evt.metaKey)) {
-      //     evt.preventDefault()
-      //     selectAllFrames()
-      //   } else if (evt.code === 'Escape') {
-      //     evt.preventDefault()
-      //     deselectAllFrames()
-      //   } else if (evt.key === 'Shift') {
-      //     evt.redraw = false
-      //   }
-      // }, true)
+      window.addEventListener('keydown', onkeydown, true)
     }
   }, m('#timeline', [
     m('.timeline-controls', [
