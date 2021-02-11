@@ -80,8 +80,9 @@ export default () => {
     const ycenter = Math.round(canvas.height / 2)
     const x = evt.offsetX - xcenter + frame.origin.x
     const y = evt.offsetY - ycenter + frame.origin.y
-    const image = frame.sprite.image
-    if (x >= 0 && x < image.width && y >= 0 && y < image.height) {
+    const width = frame.sprite.rect[2]
+    const height = frame.sprite.rect[3]
+    if (x >= 0 && x < width && y >= 0 && y < height) {
       presspos = { x, y }
       m.redraw()
     }

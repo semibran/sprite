@@ -21,16 +21,20 @@ export const selectSprite = (state, { index, opts }) => {
 }
 
 export const selectAnim = (state, { index, opts }) => {
-  state = clone(state)
-  select(state.anims.selects, index, opts)
-  return state
+  const newState = clone(state)
+  select(newState.anims.selects, index, opts)
+  newState.timeline.pos = 0
+  newState.timeline.selects = []
+  return newState
 }
 
 export const selectFrame = (state, { index, opts }) => {
   const newState = clone(state)
   const tl = newState.timeline
-  tl.pos = index
   select(tl.selects, index, opts)
+  if (tl.selects.includes(index)) {
+    tl.pos = index
+  }
   return newState
 }
 
@@ -120,12 +124,15 @@ export const confirmFrames = (state) => {
     }
   }
 
-  const frames = state.sprites.selects.map(idx => ({
-    sprite: state.sprites.list[idx],
+  const frames = newState.sprites.selects.map(idx => ({
+    sprite: newState.sprites.list[idx],
     duration: 1,
     origin: { x: 0, y: 0 }
   }))
   anim.frames.push(...frames)
+  newState.sprites.selects = []
+  newState.timeline.selects = []
+  newState.timeline.pos = 0
 
   newState.window = null
   return newState
