@@ -10,35 +10,27 @@ import {
 } from '../app/helpers'
 import Thumb from './thumb'
 
+let onkeydown = null
+
 export default function Timeline (state, dispatch) {
   const image = state.image
   const tl = state.timeline
   const anim = getSelectedAnim(state)
   const duration = getAnimDuration(anim)
 
-  const onkeydown = (evt) => {
-    if (evt.key === ',') {
-      dispatch('prevFrame')()
-    } else if (evt.key === '.') {
-      dispatch('nextFrame')()
-    }
-    // if (evt.key === ' ' && !evt.repeat) {
-      //   toggleAnim()
-      // } else else if (evt.code === 'KeyA' && (evt.ctrlKey || evt.metaKey)) {
-    //   evt.preventDefault()
-    //   selectAllFrames()
-    // } else if (evt.code === 'Escape') {
-    //   evt.preventDefault()
-    //   deselectAllFrames()
-    // } else if (evt.key === 'Shift') {
-    //   evt.redraw = false
-    // }
-    evt.redraw = false
-  }
-
   return m.fragment({
-    oncreate: (vnode) => {
-      window.addEventListener('keydown', onkeydown, true)
+    oncreate: () => {
+      window.addEventListener('keydown', (onkeydown = (evt) => {
+        if (evt.key === ',') {
+          dispatch('prevFrame')()
+        } else if (evt.key === '.') {
+          dispatch('nextFrame')()
+        }
+        evt.redraw = false
+      }), true)
+    },
+    onremove: () => {
+      window.removeEventListener('keydown', onkeydown, true)
     }
   }, m('#timeline', [
     m('.timeline-controls', [
