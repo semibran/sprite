@@ -27,6 +27,7 @@ const initialState = {
   },
   timeline: {
     pos: 0,
+    subpos: 0,
     selects: [],
     playing: false,
     repeat: false,
@@ -54,6 +55,8 @@ loadImage('../tmp/test.png').then((image) => {
 })
 
 m.mount(document.body, () => ({
-  view: () => App({ ...store.getState(), cache },
-    (type, payload) => store.dispatch({ type, payload }))
+  view: () => App(
+    { ...store.getState(), cache },
+    (type, payload) => store.dispatch({ type, payload })
+  )
 }))

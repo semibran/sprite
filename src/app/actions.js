@@ -16,6 +16,7 @@ import {
 } from './helpers'
 
 export const setImage = (state) => {
+  if (state.sprites.list.length) return state
   const canvas = clone(cache.image)
   return {
     ...state,
@@ -127,6 +128,13 @@ export const renameAnim = (state, { name }) => {
       )
     }
   }
+}
+
+export const setAnimSpeed = (state, speed) => {
+  const newState = deepClone(state)
+  const anim = getSelectedAnim(newState)
+  anim.speed = speed
+  return newState
 }
 
 export const selectFrame = (state, { index, opts }) => {
@@ -286,7 +294,7 @@ export const nextFrame = (state, select) => {
   return pauseAnim(newState)
 }
 
-const playAnim = (state) => {
+export const playAnim = (state) => {
   const anim = getSelectedAnim(state)
   if (!anim) return state
 
@@ -299,16 +307,23 @@ const playAnim = (state) => {
   }
 
   cache.timeout = requestAnimationFrame(function animate () {
-    if (tl.pos < duration - 1) {
-      tl.pos++
-    } else if (tl.repeat) {
-      tl.pos = 0
-    } else {
-      tl.playing = false
+    if (anim.speed === 1 || ++tl.subpos >= anim.speed) {
+      tl.subpos = 0
+      if (tl.pos + 1 === duration) {
+        if (tl.repeat) {
+          tl.pos = 0
+        } else {
+          tl.playing = false
+        }
+      } else {
+        tl.pos++
+      }
     }
+
     if (tl.playing) {
       cache.timeout = requestAnimationFrame(animate)
     }
+
     m.redraw()
   })
 

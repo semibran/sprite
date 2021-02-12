@@ -2,6 +2,10 @@
 import m from 'mithril'
 import { getSelectedAnim } from '../app/helpers'
 
+const handleAnimSpeed = (dispatch) => (evt) => {
+  dispatch('setAnimSpeed', parseInt(evt.target.value))
+}
+
 export default function AnimTab (state, dispatch) {
   const anim = getSelectedAnim(state)
   if (!anim) return null
@@ -27,7 +31,13 @@ export default function AnimTab (state, dispatch) {
       m('h4.sidebar-key', 'Speed'),
       m('span.sidebar-value', [
         m('.sidebar-field.-text', [
-          anim.speed,
+          m('input.sidebar-input.-number', {
+            type: 'number',
+            value: anim.speed,
+            min: 1,
+            max: 100,
+            onchange: handleAnimSpeed(dispatch)
+          }),
           m('span.sidebar-fieldname',
             anim.speed === 1 ? ' tick/frame' : ' ticks/frame')
         ])

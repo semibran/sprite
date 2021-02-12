@@ -21,7 +21,7 @@ export default function SpritesTab (state, dispatch) {
           })
         }, [
           m('.thumb.-entry', [
-            m(Thumb, { image: extract(image, ...sprite.rect) })
+            image && m(Thumb, { image: extract(image, ...sprite.rect) })
           ]),
           m('.entry-name', sprite.name)
         ])

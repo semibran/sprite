@@ -97,7 +97,6 @@ export default () => {
     const x = evt.offsetX - xcenter
     const y = evt.offsetY - ycenter
     changeOffset(presspos.x - x, presspos.y - y)
-    m.redraw()
   }
 
   const onmouseup = (evt) => {
@@ -111,8 +110,8 @@ export default () => {
       const canvas = vnode.dom
       onupdate(vnode)
       window.addEventListener('resize', update)
-      canvas.addEventListener('mousedown', onmousedown)
-      window.addEventListener('mousemove', onmousemove)
+      canvas.addEventListener('mousedown', onmousedown, true)
+      window.addEventListener('mousemove', onmousemove, true)
       window.addEventListener('mouseup', onmouseup)
     },
     onupdate,
