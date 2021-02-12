@@ -41,7 +41,7 @@ export default function AnimsEditor (state, dispatch) {
         }
 
         if (xdelta || ydelta) {
-          dispatch('moveFrameOrigin', { x: -xdelta, y: -ydelta })()
+          dispatch('moveFrameOrigin', { x: -xdelta, y: -ydelta })
         }
 
         evt.redraw = false
@@ -58,7 +58,7 @@ export default function AnimsEditor (state, dispatch) {
             frame,
             frames: (tl.onionskin && frames) || [],
             playing: tl.playing,
-            onchangeoffset: (x, y) => dispatch('setFrameOrigin', { x, y })()
+            onchangeoffset: (x, y) => dispatch('setFrameOrigin', { x, y })
           })
         : null
     ]),

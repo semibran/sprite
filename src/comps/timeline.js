@@ -22,17 +22,17 @@ export default function Timeline (state, dispatch) {
     oncreate: () => {
       window.addEventListener('keydown', (onkeydown = (evt) => {
         if (evt.key === ',') {
-          dispatch('prevFrame')()
+          dispatch('prevFrame')
         } else if (evt.key === '.') {
-          dispatch('nextFrame')()
+          dispatch('nextFrame')
         } else if (evt.key === ' ' && !evt.repeat) {
-          dispatch('togglePlay')()
+          dispatch('togglePlay')
         } else if (evt.key === 'a' && (evt.ctrlKey || evt.metaKey)) {
           evt.preventDefault()
-          dispatch('selectAllFrames')()
+          dispatch('selectAllFrames')
         } else if (evt.code === 'Escape') {
           evt.preventDefault()
-          dispatch('deselectAllFrames')()
+          dispatch('deselectAllFrames')
         }
         evt.redraw = false
       }), true)
@@ -46,21 +46,21 @@ export default function Timeline (state, dispatch) {
         m('.panel.-move', [
           m('button.panel-button', {
             disabled: duration === 1,
-            onclick: duration > 1 && dispatch('prevFrame')
+            onclick: duration > 1 && (() => dispatch('prevFrame'))
           }, [
             m('span.icon.material-icons-round.-step-prev', 'eject')
           ]),
           m('button.panel-button', {
             class: state.timeline.playing ? '-select' : '',
             disabled: duration === 1,
-            onclick: duration > 1 && dispatch('togglePlay')
+            onclick: duration > 1 && (() => dispatch('togglePlay'))
           }, [
             m('span.icon.material-icons-round.-play',
               state.timeline.playing ? 'pause' : 'play_arrow')
           ]),
           m('button.panel-button', {
             disabled: duration === 1,
-            onclick: duration > 1 && dispatch('nextFrame')
+            onclick: duration > 1 && (() => dispatch('nextFrame'))
           }, [
             m('span.icon.material-icons-round.-step-next', 'eject')
           ])
@@ -68,7 +68,7 @@ export default function Timeline (state, dispatch) {
         m('.panel.-repeat', [
           m('.panel-button', {
             class: state.timeline.repeat ? '-select' : '',
-            onclick: dispatch('toggleRepeat')
+            onclick: () => dispatch('toggleRepeat')
           }, [
             m('span.icon.material-icons-round.-small', 'repeat')
           ])
@@ -76,7 +76,7 @@ export default function Timeline (state, dispatch) {
         m('.panel.-onion-skin', [
           m('.panel-button', {
             class: state.timeline.onionskin ? '-select' : '',
-            onclick: dispatch('toggleOnionSkin')
+            onclick: () => dispatch('toggleOnionSkin')
           }, [
             m('span.icon.material-icons-round.-small', 'auto_awesome_motion')
           ])
@@ -115,7 +115,7 @@ export default function Timeline (state, dispatch) {
                 ctrl: evt.ctrlKey || evt.metaKey,
                 shift: evt.shiftKey
               }
-            })())
+            }))
           }, i + 1))
         ).concat([
           m('th.frame-number.-add')
@@ -133,7 +133,7 @@ export default function Timeline (state, dispatch) {
                 ctrl: evt.ctrlKey || evt.metaKey,
                 shift: evt.shiftKey
               }
-            })())
+            }))
           }, [
             m('.thumb.-frame', [
               frame.sprite
@@ -144,7 +144,7 @@ export default function Timeline (state, dispatch) {
         }).concat([
           m('td.frame.-add', {
             key: 'add',
-            onclick: dispatch('openWindow', { type: 'add' })
+            onclick: () => dispatch('openWindow', { type: 'add' })
           }, [
             m('.icon.-small.material-icons-round', 'add'),
             m('.frame-text', 'Add')

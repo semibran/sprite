@@ -18,7 +18,7 @@ export default function SpritesTab (state, dispatch) {
               ctrl: evt.ctrlKey || evt.metaKey,
               shift: evt.shiftKey
             }
-          })()
+          })
         }, [
           m('.thumb.-entry', [
             m(Thumb, { image: extract(image, ...sprite.rect) })

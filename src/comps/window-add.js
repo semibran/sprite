@@ -11,7 +11,7 @@ export default function AddWindow (state, dispatch) {
     m('.window-header', [
       m('.window-title', 'Add new frames'),
       m('span.action.icon.material-icons-round',
-        { onclick: dispatch('closeWindow') },
+        { onclick: () => dispatch('closeWindow') },
         'close')
     ]),
     m('.window-content', [
@@ -35,7 +35,7 @@ export default function AddWindow (state, dispatch) {
                 ctrl: evt.ctrlKey || evt.metaKey,
                 shift: evt.shiftKey
               }
-            })()
+            })
           }, [
             m('.thumb.-entry', [
               m(Thumb, { image: extract(image, ...sprite.rect) })
@@ -46,12 +46,12 @@ export default function AddWindow (state, dispatch) {
       ]),
       m('.window-footer', [
         m('button.-create', {
-          onclick: dispatch('confirmFrames')
+          onclick: () => dispatch('confirmFrames')
         }, [
           m('span.icon.material-icons-round', 'add'),
           'Add'
         ]),
-        m('button.-cancel.-alt', { onclick: dispatch('closeWindow')  }, 'Cancel')
+        m('button.-cancel.-alt', { onclick: () => dispatch('closeWindow') }, 'Cancel')
       ])
     ])
   ])

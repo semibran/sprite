@@ -6,7 +6,7 @@ export default function CreateWindow (state, dispatch) {
     m('.window-header', [
       m('.window-title', 'Create new state'),
       m('span.action.icon.material-icons-round',
-        { onclick: dispatch('closeWindow') },
+        { onclick: () => dispatch('closeWindow') },
         'close')
     ]),
     m('.window-content', [
@@ -40,7 +40,7 @@ export default function CreateWindow (state, dispatch) {
           m('span.icon.material-icons-round', 'add'),
           'Create'
         ]),
-        m('button.-cancel.-alt', { onclick: dispatch('closeWindow')  }, 'Cancel')
+        m('button.-cancel.-alt', { onclick: () => dispatch('closeWindow')  }, 'Cancel')
       ])
     ])
   ])

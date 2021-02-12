@@ -27,5 +27,5 @@ export default function App (state, dispatch) {
 }
 
 function Overlay (state, dispatch) {
-  return m('.overlay', { onclick: dispatch('closeWindow') })
+  return m('.overlay', { onclick: () => dispatch('closeWindow') })
 }

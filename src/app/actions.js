@@ -329,6 +329,8 @@ export const closeWindow = (state) => {
   return { ...state, window: null }
 }
 
+// non-`export`-prefixed functions are WIP
+
 const deleteFrame = () => {
   const tl = state.timeline
   const anim = state.anims.select

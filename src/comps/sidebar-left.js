@@ -9,11 +9,11 @@ export default function LeftSidebar (state, dispatch) {
       m('.sidebar-tabs', [
         m('.tab.-sprites', {
           class: state.tab === 'sprites' ? '-active' : '',
-          onclick: dispatch('selectTab', { tab: 'sprites' })
+          onclick: () => dispatch('selectTab', { tab: 'sprites' })
         }, `Sprites (${state.sprites.list.length})`),
         m('.tab.-anims', {
           class: state.tab === 'anims' ? '-active' : '',
-          onclick: dispatch('selectTab', { tab: 'anims' })
+          onclick: () => dispatch('selectTab', { tab: 'anims' })
         }, 'States')
       ]),
       m('.sidebar-subheader', [
@@ -21,9 +21,14 @@ export default function LeftSidebar (state, dispatch) {
           m('span.icon.material-icons-round', 'search'),
           m('input', { id: 'search', placeholder: 'Search' })
         ]),
-        m('.action.-add.material-icons-round',
-          { onclick: state.tab === 'anims' && dispatch('createAnim') },
-          'add')
+        state.tab === 'sprites'
+          ? m('.action.-add.material-icons-round', 'add')
+          : null,
+        state.tab === 'anims'
+          ? m('.action.-add.material-icons-round',
+              { onclick: () => dispatch('createAnim') },
+              'add')
+          : null
       ])
     ]),
     state.tab === 'sprites' ? SpritesTab(state, dispatch) : null,
@@ -39,14 +44,14 @@ function SpritesFooter (state, dispatch) {
   return m('.sidebar-footer', [
     m('button.-split', {
       disabled: !canSplit,
-      onclick: canSplit && dispatch('splitSelects')
+      onclick: canSplit && (() => dispatch('splitSelects'))
     }, [
       m('span.icon.material-icons-round', 'vertical_split'),
       'Split'
     ]),
     m('button.-merge', {
       disabled: !canMerge,
-      onclick: canMerge && dispatch('mergeSelects')
+      onclick: canMerge && (() => dispatch('mergeSelects'))
     }, [
       m('span.icon.material-icons-round', 'aspect_ratio'),
       'Merge'

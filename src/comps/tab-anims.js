@@ -11,13 +11,13 @@ export default function AnimsTab (state, dispatch) {
         return m('.entry', {
           key: i + '-' + anim.name,
           class: selected ? '-select' : null,
-          onclick: (evt) => !selected && dispatch('selectAnim', {
+          onclick: !selected && (evt => dispatch('selectAnim', {
             index: i,
             opts: {
               ctrl: evt.ctrlKey || evt.metaKey,
               shift: evt.shiftKey
             }
-          })()
+          }))
         }, [
           m('.thumb.-entry', [
             anim.frames.length && anim.frames[0].sprite
@@ -37,7 +37,7 @@ export default function AnimsTab (state, dispatch) {
 
                   function onblur (evt) {
                     if (blurred) return
-                    dispatch('renameAnim', { name: evt.target.value })()
+                    dispatch('renameAnim', { name: evt.target.value })
                     requestAnimationFrame(m.redraw)
                     blurred = true
                   }
@@ -46,7 +46,7 @@ export default function AnimsTab (state, dispatch) {
                 m('input.entry-name', { value: anim.name })
               ])
             : m('.entry-name',
-              { ondblclick: dispatch('startRenameAnim') },
+              { ondblclick: () => dispatch('startRenameAnim') },
               anim.name)
         ])
       }))
@@ -54,7 +54,7 @@ export default function AnimsTab (state, dispatch) {
       m('.sidebar-notice', [
         'No states registered.',
         m('button.-create', {
-          onclick: dispatch('createAnim')
+          onclick: () => dispatch('createAnim')
         }, [
           m('span.icon.material-icons-round', 'add'),
           'Create'
