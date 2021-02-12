@@ -44,7 +44,7 @@ const enhancer = composeEnhancers(applyMiddleware(thunk))
 const store = createStore(reducers, enhancer)
 store.subscribe(() => m.redraw())
 
-actions.fetchImage('../tmp/test.gif').then(() => {
+actions.fetchImage('../tmp/test.png').then(() => {
   store.dispatch({ type: 'setImage' })
   m.redraw()
 })
@@ -87,27 +87,6 @@ const deleteFrame = () => {
     tl.selects = [idx - 1]
     tl.pos = Math.max(0, idx - 1)
   }
-}
-
-const mergeSelects = () => {
-  const sprites = state.sprites
-  const selects = state.selects
-  if (!selects.length) {
-    return false
-  }
-  selects.sort()
-  const rects = selects.map(idx => sprites[idx].rect)
-  const rect = merge(rects)
-  for (let i = selects.length; --i;) {
-    const idx = selects[i]
-    sprites.splice(idx, 1)
-  }
-  const idx = selects[0]
-  const sprite = sprites[idx]
-  sprite.rect = rect
-  sprite.image = extract(state.image, ...rect)
-  selects.length = 0
-  return true
 }
 
 const toggleAnim = () => {

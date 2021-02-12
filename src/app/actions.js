@@ -1,9 +1,11 @@
 
 import deepClone from 'lodash.clonedeep'
 import loadImage from 'img-load'
+import extract from 'img-extract'
 import clone from '../lib/img-clone'
 import slice from '../lib/slice'
 import select from '../lib/select'
+import merge from '../lib/merge'
 import cache from './cache'
 import { getSelectedAnim, getAnimDuration } from './helpers'
 
@@ -56,6 +58,28 @@ export const selectFrame = (state, { index, opts }) => {
   if (tl.selects.includes(index)) {
     tl.pos = index
   }
+  return newState
+}
+
+export const mergeSelects = (state) => {
+  if (!state.sprites.selects.length) return state
+
+  const newState = deepClone(state)
+  const sprites = newState.sprites.list
+  const selects = newState.sprites.selects.sort()
+  const rects = selects.map(idx => sprites[idx].rect)
+  const rect = merge(rects)
+  for (let i = selects.length; --i;) {
+    const idx = selects[i]
+    sprites.splice(idx, 1)
+    // cache.sprites.splice(idx, 1)
+  }
+
+  const idx = selects[0]
+  const sprite = sprites[idx]
+  sprite.rect = rect
+  // cache.sprites[idx] = extract(cache.image, ...rect)
+  selects.length = 0
   return newState
 }
 
