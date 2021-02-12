@@ -21,6 +21,7 @@ export default function Timeline (state, dispatch) {
   return m.fragment({
     oncreate: () => {
       window.addEventListener('keydown', (onkeydown = (evt) => {
+        console.log(evt.code)
         if (evt.key === ',') {
           dispatch('prevFrame')
         } else if (evt.key === '.') {
@@ -33,6 +34,8 @@ export default function Timeline (state, dispatch) {
         } else if (evt.code === 'Escape') {
           evt.preventDefault()
           dispatch('deselectAllFrames')
+        } else if (evt.code === 'Delete') {
+          dispatch('deleteFrame')
         }
         evt.redraw = false
       }), true)
@@ -86,11 +89,12 @@ export default function Timeline (state, dispatch) {
         m('.action.-add.icon.material-icons-round',
           // { onclick: addFrame },
           'add'),
-        m('.action.-clone.icon.-small.-disabled.material-icons-round',
-          // { onclick: cloneFrame },
-          'filter_none'),
-        m('.action.-remove.icon.-disabled.material-icons-round', {
-          // onclick: deleteFrame
+        m('.action.-clone.icon.-small.material-icons-round', {
+          class: duration === 1 ? '-disabled' : null
+        }, 'filter_none'),
+        m('.action.-remove.icon.material-icons-round', {
+          class: duration === 1 ? '-disabled' : null,
+          onclick: duration > 1 && ((evt) => dispatch('deleteFrame'))
         }, 'delete_outline')
       ])
     ]),

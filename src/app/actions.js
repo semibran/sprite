@@ -160,6 +160,33 @@ export const deselectAllFrames = (state) => {
   }
 }
 
+export const deleteFrame = (state) => {
+  const newState = deepClone(state)
+  const anim = getSelectedAnim(newState)
+  if (getAnimDuration(anim) === 1) return newState
+
+  const tl = newState.timeline
+  if (tl.selects.length) {
+    tl.selects.sort()
+    const frames = getFramesAt(anim, tl.selects)
+    for (let i = anim.frames.length; i--;) {
+      if (frames.includes(anim.frames[i])) {
+        anim.frames.splice(i, 1)
+      }
+    }
+    const idx = Math.max(0, tl.selects[0] - 1)
+    tl.selects = [idx]
+    tl.pos = idx
+  } else {
+    const frame = getFrameAt(anim, tl.pos)
+    const idx = getIndexOfFrame(anim, frame)
+    anim.frames.splice(idx, 1)
+    tl.selects = [idx - 1]
+    tl.pos = Math.max(0, idx - 1)
+  }
+  return newState
+}
+
 export const setFrameOrigin = (state, { x, y }) => {
   const newState = deepClone(state)
   const anim = getSelectedAnim(newState)
@@ -307,11 +334,15 @@ export const confirmFrames = (state) => {
     }
   }
 
-  const frames = newState.sprites.selects.map(idx => ({
-    sprite: newState.sprites.list[idx],
-    duration: 1,
-    origin: { x: 0, y: 0 }
-  }))
+  const frames = newState.sprites.selects.map((idx) => {
+    const sprite = newState.sprites.list[idx]
+    const [,, width, height] = sprite.rect
+    return {
+      sprite,
+      duration: 1,
+      origin: { x: Math.floor(width / 2), y: height }
+    }
+  })
   anim.frames.push(...frames)
   newState.sprites.selects = []
   newState.timeline.selects = []
@@ -330,29 +361,6 @@ export const closeWindow = (state) => {
 }
 
 // non-`export`-prefixed functions are WIP
-
-const deleteFrame = () => {
-  const tl = state.timeline
-  const anim = state.anims.select
-  if (tl.selects.length) {
-    tl.selects.sort()
-    const frames = getFramesAt(anim, tl.selects)
-    for (let i = anim.frames.length; i--;) {
-      if (frames.includes(anim.frames[i])) {
-        anim.frames.splice(i, 1)
-      }
-    }
-    const idx = Math.max(0, tl.selects[0] - 1)
-    tl.selects = [idx]
-    tl.pos = idx
-  } else {
-    const frame = getFrameAt(anim, tl.pos)
-    const idx = getIndexOfFrame(anim, frame)
-    anim.frames.splice(idx, 1)
-    tl.selects = [idx - 1]
-    tl.pos = Math.max(0, idx - 1)
-  }
-}
 
 const handleFrameOrigin = (axis) => (evt) => {
   const val = parseInt(evt.target.value)
