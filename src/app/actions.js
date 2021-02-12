@@ -2,7 +2,6 @@
 import m from 'mithril'
 import deepClone from 'lodash.clonedeep'
 import loadImage from 'img-load'
-import extract from 'img-extract'
 import clone from '../lib/img-clone'
 import slice from '../lib/slice'
 import select from '../lib/select'
@@ -13,10 +12,6 @@ import {
   getAnimDuration,
   getFramesAt
 } from './helpers'
-
-export const fetchImage = async (url) => {
-  cache.image = await loadImage(url)
-}
 
 export const setImage = (state) => {
   const canvas = clone(cache.image)
@@ -175,7 +170,7 @@ export const moveFrameOrigin = (state, { x, y }) => {
   return newState
 }
 
-export const prevFrame = (state) => {
+export const prevFrame = (state, select) => {
   const anim = getSelectedAnim(state)
   if (!anim) return state
 
@@ -197,7 +192,7 @@ export const prevFrame = (state) => {
   return newState
 }
 
-export const nextFrame = (state) => {
+export const nextFrame = (state, select) => {
   const anim = getSelectedAnim(state)
   if (!anim) return state
 
@@ -324,4 +319,79 @@ export const openWindow = (state, { type }) => {
 
 export const closeWindow = (state) => {
   return { ...state, window: null }
+}
+
+const deleteFrame = () => {
+  const tl = state.timeline
+  const anim = state.anims.select
+  if (tl.selects.length) {
+    tl.selects.sort()
+    const frames = getFramesAt(anim, tl.selects)
+    for (let i = anim.frames.length; i--;) {
+      if (frames.includes(anim.frames[i])) {
+        anim.frames.splice(i, 1)
+      }
+    }
+    const idx = Math.max(0, tl.selects[0] - 1)
+    tl.selects = [idx]
+    tl.pos = idx
+  } else {
+    const frame = getFrameAt(anim, tl.pos)
+    const idx = getIndexOfFrame(anim, frame)
+    anim.frames.splice(idx, 1)
+    tl.selects = [idx - 1]
+    tl.pos = Math.max(0, idx - 1)
+  }
+}
+
+const handleFrameOrigin = (axis) => (evt) => {
+  const val = parseInt(evt.target.value)
+  if (axis === 'x') {
+    setFrameOrigin(val, null)
+  } else if (axis === 'y') {
+    setFrameOrigin(null, val)
+  }
+}
+
+const selectTimelineOrigin = (evt) => {
+  const tl = state.timeline
+  const anim = state.anims.select
+  const frames = anim && getFramesAt(anim, tl.selects)
+  const [xpos, ypos] = evt.target.value.split('-')
+  for (const frame of frames) {
+    if (xpos === 'left') {
+      frame.origin.x = 0
+    } else if (xpos === 'center') {
+      frame.origin.x = Math.floor(frame.sprite.image.width / 2)
+    } else if (xpos === 'right') {
+      frame.origin.x = frame.sprite.image.width
+    }
+    if (ypos === 'top') {
+      frame.origin.y = 0
+    } else if (ypos === 'middle') {
+      frame.origin.y = Math.floor(frame.sprite.image.height / 2)
+    } else if (ypos === 'bottom') {
+      frame.origin.y = frame.sprite.image.height
+    }
+  }
+}
+
+const setFrameOrigin = (x, y) => {
+  const anim = state.anims.select
+  const frame = anim && anim.frames[state.timeline.pos]
+  if (x != null) frame.origin.x = x
+  if (y != null) frame.origin.y = y
+}
+
+const changeFrameDuration = (frame) => (evt) => {
+  frame.duration = parseInt(evt.target.value)
+}
+
+const changeFramesDuration = (evt) => {
+  const tl = state.timeline
+  const anim = state.anims.select
+  const frames = getFramesAt(anim, tl.selects)
+  for (const frame of frames) {
+    frame.duration = parseInt(evt.target.value)
+  }
 }

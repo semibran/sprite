@@ -94,7 +94,7 @@ export default () => {
     const ycenter = Math.round(canvas.height / 2)
     const x = evt.offsetX - xcenter
     const y = evt.offsetY - ycenter
-    changeOffset(presspos.x - x - frame.origin.x, presspos.y - y - frame.origin.y)
+    changeOffset(presspos.x - x, presspos.y - y)
     m.redraw()
   }
 

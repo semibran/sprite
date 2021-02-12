@@ -56,9 +56,9 @@ export default function AnimsEditor (state, dispatch) {
         ? m(AnimsCanvas, {
             image,
             frame,
-            frames: tl.onionskin && frames || [],
+            frames: (tl.onionskin && frames) || [],
             playing: tl.playing,
-            // onchangeoffset: moveFrameOrigin
+            onchangeoffset: (x, y) => dispatch('setFrameOrigin', { x, y })()
           })
         : null
     ]),
