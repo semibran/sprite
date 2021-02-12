@@ -8,7 +8,11 @@ import slice from '../lib/slice'
 import select from '../lib/select'
 import merge from '../lib/merge'
 import cache from './cache'
-import { getSelectedAnim, getAnimDuration } from './helpers'
+import {
+  getSelectedAnim,
+  getAnimDuration,
+  getFramesAt
+} from './helpers'
 
 export const fetchImage = async (url) => {
   cache.image = await loadImage(url)
@@ -158,6 +162,17 @@ export const deselectAllFrames = (state) => {
       selects: []
     }
   }
+}
+
+export const moveFrameOrigin = (state, { x, y }) => {
+  const newState = deepClone(state)
+  const anim = getSelectedAnim(newState)
+  const frames = getFramesAt(anim, newState.timeline.selects)
+  frames.forEach(frame => {
+    frame.origin.x += x
+    frame.origin.y += y
+  })
+  return newState
 }
 
 export const prevFrame = (state) => {

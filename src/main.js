@@ -111,16 +111,6 @@ const setFrameOrigin = (x, y) => {
   if (y != null) frame.origin.y = y
 }
 
-const moveFrameOrigin = (dx, dy) => {
-  const tl = state.timeline
-  const anim = state.anims.select
-  const frames = getFramesAt(anim, tl.selects)
-  for (const frame of frames) {
-    frame.origin.x += dx
-    frame.origin.y += dy
-  }
-}
-
 const changeFrameDuration = (frame) => (evt) => {
   frame.duration = parseInt(evt.target.value)
 }

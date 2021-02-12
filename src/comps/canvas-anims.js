@@ -104,38 +104,6 @@ export default () => {
     m.redraw()
   }
 
-  const onkeydown = (evt) => {
-    const left = evt.code === 'ArrowLeft'
-    const right = evt.code === 'ArrowRight'
-    const up = evt.code === 'ArrowUp'
-    const down = evt.code === 'ArrowDown'
-    const shift = evt.shiftKey
-    let xdelta = 0
-    let ydelta = 0
-
-    if (left && !right) {
-      xdelta = -1
-    } else if (right && !left) {
-      xdelta = 1
-    }
-
-    if (up && !down) {
-      ydelta = -1
-    } else if (down && !up) {
-      ydelta = 1
-    }
-
-    if (shift) {
-      xdelta *= 10
-      ydelta *= 10
-    }
-
-    if (xdelta || ydelta) {
-      changeOffset(-xdelta, -ydelta)
-      m.redraw()
-    }
-  }
-
   return {
     oncreate: (vnode) => {
       const canvas = vnode.dom
@@ -144,7 +112,6 @@ export default () => {
       canvas.addEventListener('mousedown', onmousedown)
       window.addEventListener('mousemove', onmousemove)
       window.addEventListener('mouseup', onmouseup)
-      window.addEventListener('keydown', onkeydown)
     },
     onupdate,
     view: () => m('canvas')
