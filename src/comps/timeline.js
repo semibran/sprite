@@ -25,6 +25,8 @@ export default function Timeline (state, dispatch) {
           dispatch('prevFrame')()
         } else if (evt.key === '.') {
           dispatch('nextFrame')()
+        } else if (evt.key === ' ' && !evt.repeat) {
+          dispatch('togglePlay')()
         }
         evt.redraw = false
       }), true)
@@ -101,7 +103,13 @@ export default function Timeline (state, dispatch) {
           }, m('th.frame-number', {
             class: (tl.pos === i ? '-focus' : '') +
               (tl.selects.includes(i) ? ' -select' : ''),
-            // onclick: selectFrame(i)
+            onclick: tl.pos !== i && (evt => dispatch('selectFrame', {
+              index: i,
+              opts: {
+                ctrl: evt.ctrlKey || evt.metaKey,
+                shift: evt.shiftKey
+              }
+            })())
           }, i + 1))
         ).concat([
           m('th.frame-number.-add')
@@ -113,13 +121,13 @@ export default function Timeline (state, dispatch) {
             class: (getFrameAt(anim, tl.pos) === frame ? '-focus' : '') +
               (getFramesAt(anim, tl.selects).includes(frame) ? ' -select' : ''),
             colspan: frame.duration > 1 ? frame.duration : null,
-            onclick: (evt) => tl.pos !== pos && dispatch('selectFrame', {
+            onclick: tl.pos !== pos && (evt => dispatch('selectFrame', {
               index: pos,
               opts: {
                 ctrl: evt.ctrlKey || evt.metaKey,
                 shift: evt.shiftKey
               }
-            })()
+            })())
           }, [
             m('.thumb.-frame', [
               frame.sprite
