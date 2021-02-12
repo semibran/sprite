@@ -49,23 +49,6 @@ actions.fetchImage('../tmp/test.png').then(() => {
   m.redraw()
 })
 
-const selectFrame = (i) => (evt) => {
-  select(state.timeline.selects, i)(evt)
-  state.timeline.pos = i
-}
-
-const selectAllFrames = () => {
-  const tl = state.timeline
-  const anim = state.anims.select
-  tl.selects = new Array(getAnimDuration(anim)).fill(0).map((_, i) => i)
-  tl.pos = 0
-}
-
-const deselectAllFrames = () => {
-  const tl = state.timeline
-  tl.selects = [tl.pos]
-}
-
 const deleteFrame = () => {
   const tl = state.timeline
   const anim = state.anims.select

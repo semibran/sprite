@@ -27,6 +27,12 @@ export default function Timeline (state, dispatch) {
           dispatch('nextFrame')()
         } else if (evt.key === ' ' && !evt.repeat) {
           dispatch('togglePlay')()
+        } else if (evt.key === 'a' && (evt.ctrlKey || evt.metaKey)) {
+          evt.preventDefault()
+          dispatch('selectAllFrames')()
+        } else if (evt.code === 'Escape') {
+          evt.preventDefault()
+          dispatch('deselectAllFrames')()
         }
         evt.redraw = false
       }), true)

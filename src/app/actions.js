@@ -52,16 +52,6 @@ export const selectAnim = (state, { index, opts }) => {
   return newState
 }
 
-export const selectFrame = (state, { index, opts }) => {
-  const newState = deepClone(state)
-  const tl = newState.timeline
-  select(tl.selects, index, opts)
-  if (tl.selects.includes(index)) {
-    tl.pos = index
-  }
-  return newState
-}
-
 export const mergeSelects = (state) => {
   if (!state.sprites.selects.length) return state
 
@@ -134,6 +124,38 @@ export const renameAnim = (state, { name }) => {
           ? { ...anim, name }
           : anim
       )
+    }
+  }
+}
+
+export const selectFrame = (state, { index, opts }) => {
+  const newState = deepClone(state)
+  const tl = newState.timeline
+  select(tl.selects, index, opts)
+  if (tl.selects.includes(index)) {
+    tl.pos = index
+  }
+  return newState
+}
+
+export const selectAllFrames = (state) => {
+  const anim = getSelectedAnim(state)
+  const duration = getAnimDuration(anim)
+  return {
+    ...state,
+    timeline: {
+      ...state.timeline,
+      selects: new Array(duration).fill(0).map((_, i) => i)
+    }
+  }
+}
+
+export const deselectAllFrames = (state) => {
+  return {
+    ...state,
+    timeline: {
+      ...state.timeline,
+      selects: []
     }
   }
 }
