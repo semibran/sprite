@@ -86,11 +86,13 @@ export default function Timeline (state, dispatch) {
         ])
       ]),
       m('.controls-rhs', [
-        m('.action.-add.icon.material-icons-round',
-          // { onclick: addFrame },
+        m('.action.-add.icon.material-icons-round', {
+          onclick: (evt) => dispatch('addFrame')
+        },
           'add'),
         m('.action.-clone.icon.-small.material-icons-round', {
-          class: duration === 1 ? '-disabled' : null
+          class: duration === 1 ? '-disabled' : null,
+          onclick: duration > 1 && ((evt) => dispatch('cloneFrame'))
         }, 'filter_none'),
         m('.action.-remove.icon.material-icons-round', {
           class: duration === 1 ? '-disabled' : null,

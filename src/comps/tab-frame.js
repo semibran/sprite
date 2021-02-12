@@ -12,7 +12,7 @@ export default function FrameTab (state, dispatch) {
     m('section.-sprite', [
       m('h4.sidebar-key', 'Sprite'),
       m('span.sidebar-value', [
-        m('.sidebar-field', frame.sprite.name)
+        m('.sidebar-field', frame.sprite ? frame.sprite.name : '(none)')
       ])
     ]),
     m('section.-duration', [

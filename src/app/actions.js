@@ -160,6 +160,20 @@ export const deselectAllFrames = (state) => {
   }
 }
 
+export const addFrame = (state) => {
+  const newState = deepClone(state)
+  const anim = getSelectedAnim(newState)
+  const duration = getAnimDuration(anim)
+  anim.frames.push({
+    sprite: null,
+    duration: 1,
+    origin: { x: 0, y: 0 }
+  })
+  newState.timeline.pos = duration
+  newState.timeline.selects = [duration]
+  return newState
+}
+
 export const deleteFrame = (state) => {
   const newState = deepClone(state)
   const anim = getSelectedAnim(newState)
