@@ -44,7 +44,7 @@ const enhancer = composeEnhancers(applyMiddleware(thunk))
 const store = createStore(reducers, enhancer)
 store.subscribe(() => m.redraw())
 
-actions.fetchImage('../tmp/copen.png').then(() => {
+actions.fetchImage('../tmp/test.gif').then(() => {
   store.dispatch({ type: 'setImage' })
   m.redraw()
 })
