@@ -3,7 +3,7 @@ export const getSelectedAnim = (state) =>
   state.anims.list[state.anims.selects[state.anims.selects.length - 1]]
 
 export const getSelectedFrame = (state) =>
-  getSelectedAnim(state)[state.timeline.selects[state.timeline.selects.length - 1]]
+  getSelectedAnim(state).frames[state.timeline.selects[state.timeline.selects.length - 1]]
 
 export const isEmptyAnim = (anim) =>
   anim.frames.length === 1 && !anim.frames[0].sprite
@@ -12,16 +12,13 @@ export const getAnimDuration = (anim) =>
   anim.frames.reduce((d, frame) => d + frame.duration, 0)
 
 export const getFrameAt = (anim, t) => {
-  if (t >= anim.frames.length) {
-    return null
-  }
   let f = 0
   let g = 0
   let frame = anim.frames[0]
   for (let i = 0; i < t; i++) {
     if (++g >= frame.duration) {
-      frame = anim.frames[++f]
       g = 0
+      frame = anim.frames[++f]
       if (!frame) {
         return null
       }

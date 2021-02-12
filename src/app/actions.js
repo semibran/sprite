@@ -9,6 +9,7 @@ import merge from '../lib/merge'
 import cache from './cache'
 import {
   getSelectedAnim,
+  getSelectedFrame,
   getAnimDuration,
   getFrameAt,
   getFramesAt
@@ -236,6 +237,13 @@ export const moveFrameOrigin = (state, { x, y }) => {
   return newState
 }
 
+export const setFrameDuration = (state, duration) => {
+  const newState = deepClone(state)
+  const frame = getSelectedFrame(newState)
+  frame.duration = duration
+  return newState
+}
+
 export const prevFrame = (state, select) => {
   const anim = getSelectedAnim(state)
   if (!anim) return state
@@ -421,10 +429,6 @@ const selectTimelineOrigin = (evt) => {
       frame.origin.y = frame.sprite.image.height
     }
   }
-}
-
-const changeFrameDuration = (frame) => (evt) => {
-  frame.duration = parseInt(evt.target.value)
 }
 
 const changeFramesDuration = (evt) => {

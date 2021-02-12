@@ -64,6 +64,10 @@
     border-radius: 4px;
     height: 64px;
 
+    .thumb {
+      width: 100%;
+    }
+
     &:hover .thumb {
       border-color: $lightgray;
     }

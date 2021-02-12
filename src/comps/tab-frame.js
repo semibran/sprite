@@ -2,9 +2,14 @@
 import m from 'mithril'
 import { getSelectedAnim, getFrameAt } from '../app/helpers'
 
+const handleFrameDuration = (dispatch) => (evt) => {
+  dispatch('setFrameDuration', parseInt(evt.target.value))
+}
+
 export default function FrameTab (state, dispatch) {
   const anim = getSelectedAnim(state)
-  const frame = anim && getFrameAt(anim, state.timeline.selects[0])
+  const index = state.timeline.selects[0]
+  const frame = anim && getFrameAt(anim, index)
   if (!frame) return null
 
   return m('.sidebar-content', [
@@ -24,7 +29,7 @@ export default function FrameTab (state, dispatch) {
             value: frame.duration,
             min: 1,
             max: 100,
-            // onchange: changeFrameDuration(frame)
+            onchange: handleFrameDuration(dispatch)
           }),
           m('span.sidebar-fieldname',
             frame.duration === 1 ? ' frame' : ' frames')
