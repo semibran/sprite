@@ -174,6 +174,22 @@ export const addFrame = (state) => {
   return newState
 }
 
+export const cloneFrame = (state) => {
+  const newState = deepClone(state)
+  const anim = getSelectedAnim(newState)
+  const tl = newState.timeline
+  if (tl.selects.length) {
+    tl.selects.sort()
+    const frames = getFramesAt(anim, tl.selects)
+    const index = tl.selects[tl.selects.length - 1]
+    anim.frames.splice(index + 1, 0, ...frames.map(deepClone))
+  } else {
+    const frame = getFrameAt(anim, tl.pos)
+    anim.frames.splice(tl.pos + 1, 0, deepClone(frame))
+  }
+  return newState
+}
+
 export const deleteFrame = (state) => {
   const newState = deepClone(state)
   const anim = getSelectedAnim(newState)
@@ -188,15 +204,14 @@ export const deleteFrame = (state) => {
         anim.frames.splice(i, 1)
       }
     }
-    const idx = Math.max(0, tl.selects[0] - 1)
-    tl.selects = [idx]
-    tl.pos = idx
+    tl.pos = tl.selects[0]
+    tl.selects = [tl.pos]
   } else {
     const frame = getFrameAt(anim, tl.pos)
     const idx = getIndexOfFrame(anim, frame)
     anim.frames.splice(idx, 1)
-    tl.selects = [idx - 1]
-    tl.pos = Math.max(0, idx - 1)
+    tl.pos = idx
+    tl.selects = [tl.pos]
   }
   return newState
 }
