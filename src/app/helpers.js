@@ -30,7 +30,7 @@ export const getFrameAt = (anim, t) => {
 export const getFramesAt = (anim, ts) =>
   [...new Set(ts.map(t => getFrameAt(anim, t)).filter(x => x))]
 
-export const getIndexOfFrame = (anim, frame) => {
+export const getFrameIndex = (anim, frame) => {
   let f = 0
   let g = 0
   const d = getAnimDuration(anim)

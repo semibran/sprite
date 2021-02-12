@@ -2,11 +2,11 @@
 import m from 'mithril'
 import extract from 'img-extract'
 import {
-  getFrameAt,
-  getFramesAt,
   getSelectedAnim,
   getAnimDuration,
-  getIndexOfFrame
+  getFrameAt,
+  getFramesAt,
+  getFrameIndex
 } from '../app/helpers'
 import Thumb from './thumb'
 
@@ -21,7 +21,6 @@ export default function Timeline (state, dispatch) {
   return m.fragment({
     oncreate: () => {
       window.addEventListener('keydown', (onkeydown = (evt) => {
-        console.log(evt.code)
         if (evt.key === ',') {
           dispatch('prevFrame')
         } else if (evt.key === '.') {
@@ -88,8 +87,7 @@ export default function Timeline (state, dispatch) {
       m('.controls-rhs', [
         m('.action.-add.icon.material-icons-round', {
           onclick: (evt) => dispatch('addFrame')
-        },
-          'add'),
+        }, 'add'),
         m('.action.-clone.icon.-small.material-icons-round', {
           class: duration === 1 ? '-disabled' : null,
           onclick: duration > 1 && ((evt) => dispatch('cloneFrame'))
@@ -127,7 +125,7 @@ export default function Timeline (state, dispatch) {
           m('th.frame-number.-add')
         ])),
         m('tr.frames', anim.frames.map((frame, i) => {
-          const pos = getIndexOfFrame(anim, frame)
+          const pos = getFrameIndex(anim, frame)
           return m('td.frame', {
             key: frame.sprite ? `${i}-${frame.sprite.name}` : i,
             class: (getFrameAt(anim, tl.pos) === frame ? '-focus' : '') +
@@ -142,7 +140,7 @@ export default function Timeline (state, dispatch) {
             }))
           }, [
             m('.thumb.-frame', [
-              frame.sprite
+              image && frame.sprite
                 ? m(Thumb, { image: extract(image, ...frame.sprite.rect) })
                 : null
             ])

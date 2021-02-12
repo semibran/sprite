@@ -20,7 +20,7 @@ export default function AnimsTab (state, dispatch) {
           }))
         }, [
           m('.thumb.-entry', [
-            anim.frames.length && anim.frames[0].sprite
+            image && anim.frames.length && anim.frames[0].sprite
               ? m(Thumb, { image: extract(image, ...anim.frames[0].sprite.rect) })
               : null
           ]),

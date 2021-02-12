@@ -1,6 +1,8 @@
 
 import m from 'mithril'
 import { createStore, applyMiddleware, compose } from 'redux'
+import { persistStore, persistReducer } from 'redux-persist'
+import storage from 'redux-persist/lib/storage'
 import thunk from 'redux-thunk'
 import loadImage from 'img-load'
 import reduce from './lib/combine-reducers'
@@ -38,10 +40,12 @@ Object.assign(cache, {
   images: []
 })
 
-const reducers = reduce(actions, initialState)
+const persistConfig = { key: 'root', storage }
+const reducer = persistReducer(persistConfig, reduce(actions, initialState))
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
 const enhancer = composeEnhancers(applyMiddleware(thunk))
-const store = createStore(reducers, enhancer)
+const store = createStore(reducer, enhancer)
+const persistor = persistStore(store)
 store.subscribe(m.redraw)
 
 loadImage('../tmp/test.png').then((image) => {

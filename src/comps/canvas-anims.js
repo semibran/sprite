@@ -46,7 +46,7 @@ export default () => {
       context.globalAlpha = 1
     }
 
-    if (frame && frame.sprite) {
+    if (sheet && frame && frame.sprite) {
       const image = extract(sheet, ...frame.sprite.rect)
       const x = xcenter - frame.origin.x
       const y = ycenter - frame.origin.y
@@ -140,12 +140,12 @@ function fill (canvas, x, y) {
   context.strokeStyle = 'white'
 
   context.beginPath()
-  context.moveTo(x + 0.5, 0)
-  context.lineTo(x + 0.5, canvas.height + 1)
+  context.moveTo(x, 0)
+  context.lineTo(x, canvas.height)
   context.stroke()
 
   context.beginPath()
-  context.moveTo(0, y + 0.5)
-  context.lineTo(canvas.width + 1, y + 0.5)
+  context.moveTo(0, y)
+  context.lineTo(canvas.width, y)
   context.stroke()
 }

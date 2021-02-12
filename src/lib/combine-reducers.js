@@ -6,7 +6,7 @@ export default function combineReducers (reducers, initialState) {
       return reducer(state, action.payload)
     }
 
-    if (action.type !== '@@INIT') {
+    if (action.type !== '@@INIT' && !action.type.startsWith('persist/')) {
       console.warn(`Received unregistered action type "${action.type}". Ignoring...`)
     }
 

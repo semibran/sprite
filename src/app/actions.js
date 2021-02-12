@@ -1,7 +1,6 @@
 
 import m from 'mithril'
 import deepClone from 'lodash.clonedeep'
-import loadImage from 'img-load'
 import clone from '../lib/img-clone'
 import slice from '../lib/slice'
 import select from '../lib/select'
@@ -12,7 +11,8 @@ import {
   getSelectedFrame,
   getAnimDuration,
   getFrameAt,
-  getFramesAt
+  getFramesAt,
+  getFrameIndex
 } from './helpers'
 
 export const setImage = (state) => {
@@ -186,7 +186,7 @@ export const cloneFrame = (state) => {
     anim.frames.splice(index + 1, 0, ...frames.map(deepClone))
   } else {
     const frame = getFrameAt(anim, tl.pos)
-    anim.frames.splice(tl.pos + 1, 0, deepClone(frame))
+    anim.frames.splice(tl.pos, 0, deepClone(frame))
   }
   return newState
 }
@@ -209,7 +209,7 @@ export const deleteFrame = (state) => {
     tl.selects = [tl.pos]
   } else {
     const frame = getFrameAt(anim, tl.pos)
-    const idx = getIndexOfFrame(anim, frame)
+    const idx = getFrameIndex(anim, frame)
     anim.frames.splice(idx, 1)
     tl.pos = idx
     tl.selects = [tl.pos]
