@@ -27,6 +27,8 @@ export default () => {
     const ycenter = Math.round(canvas.height / 2)
     fill(canvas, xcenter, ycenter)
 
+    if (!sheet) return
+
     let framesBefore = []
     let framesAfter = []
     if (frames.length && !playing) {
@@ -46,7 +48,7 @@ export default () => {
       context.globalAlpha = 1
     }
 
-    if (sheet && frame && frame.sprite) {
+    if (frame && frame.sprite) {
       const image = extract(sheet, ...frame.sprite.rect)
       const x = xcenter - frame.origin.x
       const y = ycenter - frame.origin.y

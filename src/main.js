@@ -45,7 +45,7 @@ const reducer = persistReducer(persistConfig, reduce(actions, initialState))
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
 const enhancer = composeEnhancers(applyMiddleware(thunk))
 const store = createStore(reducer, enhancer)
-const persistor = persistStore(store)
+persistStore(store)
 store.subscribe(m.redraw)
 
 loadImage('../tmp/test.png').then((image) => {

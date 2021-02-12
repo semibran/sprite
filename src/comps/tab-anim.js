@@ -20,7 +20,7 @@ export default function AnimTab (state, dispatch) {
           anim.frames.length,
           m('span.sidebar-fieldname',
             anim.frames.length === 1 ? ' frame' : ' frames')
-        ]),
+        ])
       ])
     ]),
     m('section.-speed', [
@@ -29,8 +29,8 @@ export default function AnimTab (state, dispatch) {
         m('.sidebar-field.-text', [
           anim.speed,
           m('span.sidebar-fieldname',
-            anim.speed === 1 ? ' frame/tick' : ' frames/tick')
-        ]),
+            anim.speed === 1 ? ' tick/frame' : ' ticks/frame')
+        ])
       ])
     ]),
     m('section.-repeat', [
