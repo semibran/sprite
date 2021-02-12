@@ -89,54 +89,6 @@ const deleteFrame = () => {
   }
 }
 
-const toggleAnim = () => {
-  if (state.timeline.playing) {
-    return pauseAnim()
-  } else {
-    return playAnim()
-  }
-}
-
-const pauseAnim = () => {
-  const tl = state.timeline
-  tl.playing = false
-  if (tl.timeout) {
-    cancelAnimationFrame(tl.timeout)
-    tl.timeout = null
-    m.redraw()
-  }
-  return true
-}
-
-const playAnim = () => {
-  const anim = state.anims.select
-  if (!anim) {
-    return false
-  }
-
-  const duration = getAnimDuration(anim)
-  const tl = state.timeline
-  tl.playing = true
-  if (tl.pos === duration - 1) {
-    tl.pos = 0
-  }
-
-  tl.timeout = requestAnimationFrame(function animate () {
-    if (tl.pos < duration - 1) {
-      tl.pos++
-    } else if (tl.repeat) {
-      tl.pos = 0
-    } else {
-      tl.playing = false
-    }
-    if (tl.playing) {
-      tl.timeout = requestAnimationFrame(animate)
-    }
-    m.redraw()
-  })
-  return true
-}
-
 const handleFrameOrigin = (axis) => (evt) => {
   const val = parseInt(evt.target.value)
   if (axis === 'x') {

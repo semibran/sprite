@@ -38,21 +38,21 @@ export default function Timeline (state, dispatch) {
         m('.panel.-move', [
           m('button.panel-button', {
             disabled: duration === 1,
-            // onclick: stepPrev
+            onclick: duration > 1 && dispatch('prevFrame')
           }, [
             m('span.icon.material-icons-round.-step-prev', 'eject')
           ]),
           m('button.panel-button', {
             class: state.timeline.playing ? '-select' : '',
             disabled: duration === 1,
-            // onclick: toggleAnim
+            onclick: duration > 1 && dispatch('togglePlay')
           }, [
             m('span.icon.material-icons-round.-play',
               state.timeline.playing ? 'pause' : 'play_arrow')
           ]),
           m('button.panel-button', {
             disabled: duration === 1,
-            // onclick: stepNext
+            onclick: duration > 1 && dispatch('nextFrame')
           }, [
             m('span.icon.material-icons-round.-step-next', 'eject')
           ])

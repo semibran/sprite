@@ -1,4 +1,5 @@
 
+import m from 'mithril'
 import deepClone from 'lodash.clonedeep'
 import loadImage from 'img-load'
 import extract from 'img-extract'
@@ -179,6 +180,59 @@ export const nextFrame = (state) => {
   }
 
   return newState
+}
+
+const playAnim = (state) => {
+  const anim = getSelectedAnim(state)
+  if (!anim) return state
+
+  const newState = deepClone(state)
+  const duration = getAnimDuration(anim)
+  const tl = newState.timeline
+  tl.playing = true
+  if (tl.pos === duration - 1) {
+    tl.pos = 0
+  }
+
+  tl.timeout = requestAnimationFrame(function animate () {
+    if (tl.pos < duration - 1) {
+      tl.pos++
+    } else if (tl.repeat) {
+      tl.pos = 0
+    } else {
+      tl.playing = false
+    }
+    if (tl.playing) {
+      tl.timeout = requestAnimationFrame(animate)
+    }
+    m.redraw()
+  })
+
+  return newState
+}
+
+export const pauseAnim = (state) => {
+  if (cache.timeout) {
+    cancelAnimationFrame(cache.timeout)
+    cache.timeout = null
+    m.redraw()
+  }
+
+  return {
+    ...state,
+    timeline: {
+      ...state.timeline,
+      playing: false
+    }
+  }
+}
+
+export const togglePlay = (state) => {
+  if (state.timeline.playing) {
+    return pauseAnim(state)
+  } else {
+    return playAnim(state)
+  }
 }
 
 export const toggleRepeat = (state) => {
