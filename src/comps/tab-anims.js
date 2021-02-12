@@ -4,7 +4,7 @@ import extract from 'img-extract'
 import Thumb from './thumb'
 
 export default function AnimsTab (state, dispatch) {
-  const image = state.image
+  const image = state.cache.image
   return state.anims.list.length
     ? m('.sidebar-content', state.anims.list.map((anim, i) => {
         const selected = state.anims.selects.includes(i)

@@ -13,7 +13,7 @@ import Thumb from './thumb'
 let onkeydown = null
 
 export default function Timeline (state, dispatch) {
-  const image = state.image
+  const image = state.cache.image
   const tl = state.timeline
   const anim = getSelectedAnim(state)
   const duration = getAnimDuration(anim)

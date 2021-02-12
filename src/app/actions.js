@@ -10,6 +10,7 @@ import cache from './cache'
 import {
   getSelectedAnim,
   getAnimDuration,
+  getFrameAt,
   getFramesAt
 } from './helpers'
 
@@ -159,6 +160,15 @@ export const deselectAllFrames = (state) => {
   }
 }
 
+export const setFrameOrigin = (state, { x, y }) => {
+  const newState = deepClone(state)
+  const anim = getSelectedAnim(newState)
+  const frame = getFrameAt(anim, newState.timeline.pos)
+  if (x != null) frame.origin.x = x
+  if (y != null) frame.origin.y = y
+  return newState
+}
+
 export const moveFrameOrigin = (state, { x, y }) => {
   const newState = deepClone(state)
   const anim = getSelectedAnim(newState)
@@ -177,7 +187,6 @@ export const prevFrame = (state, select) => {
   const newState = deepClone(state)
   const tl = newState.timeline
   const lastFrame = getAnimDuration(anim) - 1
-  // pauseAnim()
   if (tl.pos >= 0) {
     if (tl.pos > 0) {
       tl.pos--
@@ -189,7 +198,7 @@ export const prevFrame = (state, select) => {
     }
   }
 
-  return newState
+  return pauseAnim(newState)
 }
 
 export const nextFrame = (state, select) => {
@@ -199,7 +208,6 @@ export const nextFrame = (state, select) => {
   const newState = deepClone(state)
   const tl = newState.timeline
   const lastFrame = getAnimDuration(anim) - 1
-  // pauseAnim()
   if (tl.pos <= lastFrame) {
     if (tl.pos < lastFrame) {
       tl.pos++
@@ -211,7 +219,7 @@ export const nextFrame = (state, select) => {
     }
   }
 
-  return newState
+  return pauseAnim(newState)
 }
 
 const playAnim = (state) => {
@@ -226,7 +234,7 @@ const playAnim = (state) => {
     tl.pos = 0
   }
 
-  tl.timeout = requestAnimationFrame(function animate () {
+  cache.timeout = requestAnimationFrame(function animate () {
     if (tl.pos < duration - 1) {
       tl.pos++
     } else if (tl.repeat) {
@@ -235,7 +243,7 @@ const playAnim = (state) => {
       tl.playing = false
     }
     if (tl.playing) {
-      tl.timeout = requestAnimationFrame(animate)
+      cache.timeout = requestAnimationFrame(animate)
     }
     m.redraw()
   })
@@ -374,13 +382,6 @@ const selectTimelineOrigin = (evt) => {
       frame.origin.y = frame.sprite.image.height
     }
   }
-}
-
-const setFrameOrigin = (x, y) => {
-  const anim = state.anims.select
-  const frame = anim && anim.frames[state.timeline.pos]
-  if (x != null) frame.origin.x = x
-  if (y != null) frame.origin.y = y
 }
 
 const changeFrameDuration = (frame) => (evt) => {

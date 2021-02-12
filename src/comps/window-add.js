@@ -4,7 +4,7 @@ import extract from 'img-extract'
 import Thumb from './thumb'
 
 export default function AddWindow (state, dispatch) {
-  const image = state.image
+  const image = state.cache.image
   const sprites = state.sprites.list
   const selects = state.sprites.selects
   return m('.window.-add', [

@@ -7,7 +7,7 @@ import Timeline from './timeline'
 let onkeydown = null
 
 export default function AnimsEditor (state, dispatch) {
-  const image = state.image
+  const image = state.cache.image
   const tl = state.timeline
   const anim = getSelectedAnim(state)
   const selects = tl.selects

@@ -4,7 +4,7 @@ import extract from 'img-extract'
 import Thumb from './thumb'
 
 export default function SpritesTab (state, dispatch) {
-  const image = state.image
+  const image = state.cache.image
   const sprites = state.sprites.list
   const selects = state.sprites.selects
   return sprites.length
