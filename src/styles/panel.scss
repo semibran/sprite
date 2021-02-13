@@ -1,0 +1,11 @@
+.panel {
+  background: $white;
+}
+
+.panel:first-child {
+  border-right: thin solid $silver;
+}
+
+.panel:last-child {
+  border-left: thin solid $silver;
+}

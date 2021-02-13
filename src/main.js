@@ -6,31 +6,23 @@ import storage from 'redux-persist/lib/storage'
 import thunk from 'redux-thunk'
 import loadImage from 'img-load'
 import reduce from './lib/combine-reducers'
-import App from './comps/app'
+import App from './views/app'
 import cache from './app/cache'
 import * as actions from './app/actions'
 
-console.log(actions)
-
 const initialState = {
-  sprname: 'untitled',
-  tab: 'sprites',
+  project: { name: 'Untitled' },
   window: null,
-  sprites: {
-    list: [],
-    selects: [],
-    editname: false
-  },
-  anims: {
-    list: [],
-    selects: [],
-    editname: false,
-    tab: 'anim'
+  menu: false,
+  sprites: [],
+  anims: [],
+  select: {
+    target: [],
+    list: []
   },
   timeline: {
     pos: 0,
     subpos: 0,
-    selects: [],
     playing: false,
     repeat: false,
     onionskin: false
@@ -48,12 +40,12 @@ const reducer = persistReducer(persistConfig, reduce(actions, initialState))
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
 const enhancer = composeEnhancers(applyMiddleware(thunk))
 const store = createStore(reducer, enhancer)
-persistStore(store)
+window.persistor = persistStore(store)
 store.subscribe(m.redraw)
 
 loadImage('../tmp/test.png').then((image) => {
   cache.image = image
-  store.dispatch({ type: 'setImage' })
+  store.dispatch({ type: 'useImage' })
 })
 
 m.mount(document.body, () => ({

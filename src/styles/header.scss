@@ -1,0 +1,19 @@
+header {
+  background: $charcoal;
+  color: white;
+  display: flex;
+  align-items: center;
+  height: $header-height;
+  padding: 0 24px;
+}
+
+.header-text {
+  color: $lightgray;
+  margin-left: 12px;
+
+  h3 {
+    color: white;
+    font-weight: bold;
+    margin-top: 2px;
+  }
+}
