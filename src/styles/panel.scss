@@ -1,5 +1,16 @@
 .panel {
-  background: $white;
+
+}
+
+.panel-header {
+  background: white;
+  border-bottom: thin solid $silver;
+  font-weight: bold;
+  height: 48px;
+  padding: 0 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .panel:first-child {
