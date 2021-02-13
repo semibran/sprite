@@ -13,6 +13,8 @@ import {
 } from './helpers'
 
 export * from '../views/timeline'
+export * from '../views/panel-sprites'
+export * from '../views/panel-props'
 
 export const useImage = (state) => {
   if (state.sprites.list.length) return state

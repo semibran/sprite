@@ -20,8 +20,12 @@ const initialState = {
     target: [],
     items: []
   },
+  panels: {
+    sprites: true,
+    props: true,
+    timeline: true
+  },
   timeline: {
-    hidden: false,
     pos: 0,
     subpos: 0,
     playing: false,
