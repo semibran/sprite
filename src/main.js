@@ -10,6 +10,8 @@ import App from './comps/app'
 import cache from './app/cache'
 import * as actions from './app/actions'
 
+console.log(actions)
+
 const initialState = {
   sprname: 'untitled',
   tab: 'sprites',
