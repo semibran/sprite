@@ -18,9 +18,10 @@ const initialState = {
   anims: [],
   select: {
     target: [],
-    list: []
+    items: []
   },
   timeline: {
+    hidden: false,
     pos: 0,
     subpos: 0,
     playing: false,
@@ -51,6 +52,8 @@ loadImage('../tmp/test.png').then((image) => {
 m.mount(document.body, () => ({
   view: () => App(
     { ...store.getState(), cache },
-    (type, payload) => store.dispatch({ type, payload })
+    (action, payload) => {
+      store.dispatch({ type: action.name, payload })
+    }
   )
 }))

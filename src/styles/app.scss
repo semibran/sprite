@@ -26,6 +26,15 @@ body {
   color: $charcoal;
 }
 
+.icon.-button {
+  cursor: pointer;
+
+  &:hover {
+    background: $smoke;
+    border-radius: 4px;
+  }
+}
+
 .app {
   display: flex;
   flex-direction: column;

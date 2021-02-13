@@ -2,3 +2,17 @@
   flex: 1;
   border-top: thin solid $silver;
 }
+
+.timeline.-min {
+  &:hover .panel-header {
+    background: $smoke;
+  }
+
+  &:focus-within .panel-header {
+    background: none;
+  }
+
+  .icon.-button:hover {
+    background: none;
+  }
+}

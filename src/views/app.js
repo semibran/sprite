@@ -14,6 +14,6 @@ export default function App (state, dispatch) {
       Editor(),
       PropsPanel()
     ]),
-    Timeline()
+    Timeline(state, dispatch)
   ])
 }

@@ -5,7 +5,7 @@ export default function PropsPanel () {
   return m('aside.panel.-props', [
     m('.panel-header', [
       'Properties',
-      m('span.icon.material-icons-round', 'remove')
+      m('span.icon.-button.material-icons-round', 'remove')
     ])
   ])
 }

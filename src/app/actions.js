@@ -12,6 +12,8 @@ import {
   getFrameIndex
 } from './helpers'
 
+export * from '../views/timeline'
+
 export const useImage = (state) => {
   if (state.sprites.list.length) return state
   const canvas = cloneImage(cache.image)
