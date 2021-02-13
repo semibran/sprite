@@ -11,7 +11,7 @@ export default function App (state, dispatch) {
     Header({ title: state.project.name }),
     m('.content', [
       SpritesPanel(state, dispatch),
-      Editor(),
+      Editor(state, dispatch),
       PropsPanel(state, dispatch)
     ]),
     Timeline(state, dispatch)

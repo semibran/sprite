@@ -55,7 +55,7 @@ loadImage('../tmp/test.png').then((image) => {
 
 m.mount(document.body, () => ({
   view: () => App(
-    { ...store.getState(), cache },
+    store.getState(),
     (action, payload) => {
       store.dispatch({ type: action.name, payload })
     }

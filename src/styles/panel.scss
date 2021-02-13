@@ -1,4 +1,5 @@
 .panel-header {
+  user-select: none;
   background: white;
   border-bottom: thin solid $silver;
   font-weight: bold;
@@ -21,14 +22,6 @@
 .panel.-min {
   cursor: pointer;
   flex: none;
-
-  &:hover .panel-header {
-    background: $smoke;
-  }
-
-  .icon.-button:hover {
-    background: none;
-  }
 }
 
 .panel.-sprites.-min, .panel.-props.-min {
