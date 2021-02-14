@@ -73,14 +73,6 @@
   }
 }
 
-.panel:first-child {
-  border-right: thin solid $silver;
-}
-
-.panel:last-child {
-  border-left: thin solid $silver;
-}
-
 .panel.-min {
   cursor: pointer;
   flex: none;

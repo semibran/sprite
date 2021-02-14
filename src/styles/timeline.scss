@@ -3,7 +3,6 @@
 .panel.-timeline {
   background: $white;
   border-top: thin solid $silver;
-  flex-basis: 40vh;
 
   table {
     border-spacing: 0;
@@ -13,7 +12,6 @@
     content: '';
     display: table-cell;
     background: white;
-    height: 40vh;
     border-right: thin solid $silver;
   }
 

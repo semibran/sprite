@@ -56,9 +56,10 @@ canvas {
 
 .content {
   display: flex;
-  flex: 2;
+  flex: 1;
+}
 
-  & > * {
-    flex: 1;
-  }
+.content.-col {
+  flex-direction: column;
+  flex: 2;
 }
