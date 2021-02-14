@@ -21,8 +21,29 @@ export default function PropsPanel (state, dispatch) {
     onshow: () => dispatch(showProps),
     onhide: () => dispatch(hideProps)
   }, shown && [
+    !state.select.items.length &&
+      ProjectPanel({ project: state.project, sprites: state.sprites, anims: state.anims }),
     state.select.target === 'sprites' && state.select.items.length === 1 &&
-      SpritePanel({ sprite: state.sprites[state.select.items[0]] })
+      SpritePanel({ sprite: state.sprites[state.select.items[0]] }),
+    state.select.target === 'sprites' && state.select.items.length > 1 &&
+      SpritesPanel({ sprites: state.select.items.map(index => state.sprites[index]) })
+  ])
+}
+
+function ProjectPanel({ project, sprites, anims }) {
+  return m('.panel-content', [
+    m('.panel-section.-name.-inline', [
+      m('.section-key', 'Project'),
+      m('.section-value', project.name),
+    ]),
+    m('.panel-section.-sprites.-inline', [
+      m('.section-key', 'Sprites'),
+      m('.section-value', sprites.length),
+    ]),
+    m('.panel-section.-anims.-inline', [
+      m('.section-key', 'Animations'),
+      m('.section-value', anims.length),
+    ])
   ])
 }
 
@@ -55,6 +76,16 @@ function SpritePanel ({ sprite }) {
           ])
         ])
       ]),
+    ])
+  ])
+}
+
+function SpritesPanel({ sprites }) {
+  return m('.panel-content', [
+    m('.panel-section.-name.-inline', [
+      m('span', sprites.length > 1
+        ? `${sprites.length} sprites selected`
+        : '1 sprite selected')
     ])
   ])
 }

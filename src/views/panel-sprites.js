@@ -95,9 +95,9 @@ export default function SpritesPanel (state, dispatch) {
         })
       }
     }, m('.banner.-enter', [
-      selection.items.length === 1
-        ? `${selection.items.length} item selected`
-        : `${selection.items.length} items selected`,
+      selection.items.length > 1
+        ? `${selection.items.length} sprites selected`
+        : `1 sprite selected`,
       selection.items.length === 1
         ? m('button', 'Split')
         : m('button', {
