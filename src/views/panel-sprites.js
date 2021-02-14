@@ -1,6 +1,8 @@
 
 import m from 'mithril'
 import Panel from './panel'
+import Thumb from './thumb'
+import cache from '../app/cache'
 
 export const showSprites = (state) => ({
   ...state,
@@ -19,5 +21,9 @@ export default function SpritesPanel (state, dispatch) {
     hidden: !state.panels.sprites,
     onshow: () => dispatch(showSprites),
     onhide: () => dispatch(hideSprites)
-  })
+  }, cache.sprites && m('.thumbs-wrap', [
+    m('.thumbs', cache.sprites.map(image => {
+      return m('.thumb', Thumb(image))
+    }))
+  ]))
 }

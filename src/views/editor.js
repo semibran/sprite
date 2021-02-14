@@ -41,8 +41,8 @@ export const endPan = (state) => ({
 })
 
 export default function Editor (state, dispatch) {
-  ;({ sprites }) = state
-  ;({ pos, pan }) = state.editor
+  ;({ sprites } = state)
+  ;({ pos, pan } = state.editor)
   const image = cache.image
   return m('.editor', { class: pan ? '-pan' : '' }, [
     m.fragment({
@@ -58,14 +58,12 @@ export default function Editor (state, dispatch) {
             const rect = vnode.dom.getBoundingClientRect()
             const x = evt.pageX - rect.left
             const y = evt.pageY - rect.top
-            select = sprites.find(sprite => {
+            select = sprites.find((sprite) => {
               const [left, top, width, height] = sprite.rect
-              if (x >= left
-              && y >= top
-              && x < left + width
-              && y < top + height) {
-                return sprite
-              }
+              return x >= left &&
+                y >= top &&
+                x < left + width &&
+                y < top + height
             })
           }
         }))
