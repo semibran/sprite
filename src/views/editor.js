@@ -67,7 +67,7 @@ export default function Editor (state, dispatch) {
           } else {
             dispatch(selectSprite, {
               index: select,
-              opts: { ctrl: evt.ctrlKey || evt.metaKey || evt.shiftKey },
+              opts: { ctrl: evt.ctrlKey || evt.metaKey || evt.shiftKey }
             })
           }
         }))
