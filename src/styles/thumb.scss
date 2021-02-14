@@ -1,6 +1,7 @@
 $thumb-bg: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAApklEQVR4Xu3WQQ0AIQADQdCEWjyBpjsZ+2AwQEJoO3Pv/Y3wrLXC28eYHsAPEAEdULaQErQCZrBMIAeAEAmSIAmSYLlDJEiCJFgmkARJkARJkARJsNwhEiRBEiwTSIIk+LwEzzmpA+69bQd4AD9ABHRA2UJK0AqYwTKBY3IAB3AAB5QtxAEcwAFlAjkAhEiQBEmQBMsdIkESJMEygSRIgiRIgm9L8AfNACXwHHdRTwAAAABJRU5ErkJggg==) #ccc;
 
 .thumb {
+  cursor: pointer;
   background: $thumb-bg;
   border: thin solid $gray;
   border-radius: 4px;
@@ -16,4 +17,22 @@ $thumb-bg: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXH
 .thumb canvas {
   max-width: 64px;
   max-height: 64px;
+  position: relative;
+  z-index: 1;
+}
+
+.thumb.-select {
+  border-color: $blue;
+  box-shadow: 0 0 0 1px $blue;
+
+  &::before {
+    content: '';
+    display: block;
+    background: rgba($blue, 0.25);
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+  }
 }

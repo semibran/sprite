@@ -1,12 +1,12 @@
 
 import m from 'mithril'
 import cache from '../app/cache'
+import { selectSprite } from './panel-sprites'
 
 let onmousedown = null
 let onmousemove = null
 let onmouseup = null
 let sprites = null
-let select = null
 let pos = null
 let pan = null
 
@@ -47,29 +47,49 @@ export default function Editor (state, dispatch) {
   return m('.editor', { class: pan ? '-pan' : '' }, [
     m.fragment({
       oncreate: (vnode) => {
+        const findSelect = (evt) => {
+          const rect = vnode.dom.getBoundingClientRect()
+          const x = evt.pageX - rect.left
+          const y = evt.pageY - rect.top
+          return sprites.findIndex((sprite) => {
+            const [left, top, width, height] = sprite.rect
+            return x >= left &&
+              y >= top &&
+              x < left + width &&
+              y < top + height
+          })
+        }
+
         vnode.dom.addEventListener('mousedown', (onmousedown = (evt) => {
-          dispatch(startPan, { x: evt.pageX, y: evt.pageY })
+          const select = findSelect(evt)
+          if (select === -1) {
+            dispatch(startPan, { x: evt.pageX, y: evt.pageY })
+          } else {
+            dispatch(selectSprite, {
+              index: select,
+              opts: {
+                ctrl: evt.ctrlKey || evt.metaKey,
+                shift: evt.shiftKey
+              }
+            })
+          }
         }))
 
         window.addEventListener('mousemove', (onmousemove = (evt) => {
           if (pan) {
             dispatch(updatePan, { x: evt.pageX, y: evt.pageY })
           } else {
-            const rect = vnode.dom.getBoundingClientRect()
-            const x = evt.pageX - rect.left
-            const y = evt.pageY - rect.top
-            select = sprites.find((sprite) => {
-              const [left, top, width, height] = sprite.rect
-              return x >= left &&
-                y >= top &&
-                x < left + width &&
-                y < top + height
-            })
+            const select = findSelect(evt)
+            if (select !== -1) {
+              // dispatch hover event
+            }
           }
         }))
 
         window.addEventListener('mouseup', (onmouseup = () => {
-          dispatch(endPan)
+          if (pan) {
+            dispatch(endPan)
+          }
         }))
       },
       onremove: (vnode) => {
@@ -87,13 +107,19 @@ export default function Editor (state, dispatch) {
           const context = canvas.getContext('2d')
           const xoffset = canvas.width / 2 - image.width / 2
 
-          sprites.forEach((sprite) => {
-            if (sprite === select) {
+          sprites.forEach((sprite, i) => {
+            const [left, top, width, height] = sprite.rect
+            const selected = state.select.target === 'sprites' &&
+              state.select.items.includes(i)
+            if (selected) {
+              context.lineWidth = 2
               context.strokeStyle = '#36d'
+              context.strokeRect(...sprite.rect)
             } else {
-              context.strokeStyle = 'black'
+              context.lineWidth = 1
+              context.strokeStyle = 'rgba(0, 0, 0, 0.5)'
+              context.strokeRect(left - 0.5, top - 0.5, width + 1, height + 1)
             }
-            context.strokeRect(...sprite.rect)
           })
 
           context.drawImage(image, Math.round(xoffset), 0)
