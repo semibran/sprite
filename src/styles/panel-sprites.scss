@@ -1,3 +1,5 @@
+$banner-height: 56px;
+
 .panel.-sprites {
   background: $white;
   flex: 2;
@@ -10,14 +12,33 @@
     flex: 1;
   }
 
+  .thumbs {
+    position: absolute;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    padding: 16px 0;
+  }
+
   .banner {
+    user-select: none;
     background: $blue;
     color: white;
     font-weight: bold;
-    padding: 12px 24px;
+    padding: 0 24px;
+    height: $banner-height;
     display: flex;
     justify-content: space-between;
     align-items: center;
+
+    &.-enter {
+      animation: 250ms banner-enter ease-out;
+    }
+
+    &.-exit {
+      animation: 125ms banner-enter ease-in reverse;
+    }
 
     button {
       background: white;
@@ -26,13 +47,20 @@
       border-radius: 4px;
     }
   }
+}
 
-  .thumbs {
-    position: absolute;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 8px;
-    padding: 16px 0;
+.panel.-sprites.-min .banner {
+  display: none;
+}
+
+@keyframes banner-enter {
+  from {
+    transform: translateY(100%);
+    margin-top: -$banner-height;
+  }
+
+  to {
+    transform: translateY(0);
+    margin-top: 0;
   }
 }

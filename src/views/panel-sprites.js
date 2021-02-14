@@ -57,13 +57,22 @@ export default function SpritesPanel (state, dispatch) {
         })
       ])
     ]),
-    selection.target === 'sprites' && m('.banner', [
+    selection.target === 'sprites' && m.fragment({
+      onbeforeremove: (vnode) => {
+        vnode.dom.classList.remove('-enter')
+        void vnode.dom.offsetWidth
+        vnode.dom.classList.add('-exit')
+        return new Promise((resolve) => {
+          vnode.dom.addEventListener('animationend', resolve)
+        })
+      }
+    }, m('.banner.-enter', [
       selection.items.length === 1
         ? `${selection.items.length} item selected`
         : `${selection.items.length} items selected`,
       selection.items.length === 1
         ? m('button', 'Split')
         : m('button', 'Merge')
-    ])
+    ]))
   ])
 }
