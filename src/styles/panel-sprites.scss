@@ -18,7 +18,7 @@ $banner-height: 56px;
     flex-wrap: wrap;
     justify-content: center;
     gap: 8px;
-    padding: 16px 0;
+    padding: 16px 0 calc(16px + #{$banner-height});
   }
 
   .banner {
@@ -28,9 +28,12 @@ $banner-height: 56px;
     font-weight: bold;
     padding: 0 24px;
     height: $banner-height;
+    margin-top: -$banner-height;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    position: relative;
+    z-index: 1;
 
     &.-enter {
       animation: 250ms banner-enter ease-out;
@@ -56,11 +59,9 @@ $banner-height: 56px;
 @keyframes banner-enter {
   from {
     transform: translateY(100%);
-    margin-top: -$banner-height;
   }
 
   to {
     transform: translateY(0);
-    margin-top: 0;
   }
 }

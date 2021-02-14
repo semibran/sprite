@@ -6,6 +6,7 @@ import cache from './cache'
 
 export * from '../views/editor'
 export * from '../views/timeline'
+export * from '../views/timeline-controls'
 export * from '../views/panel-sprites'
 export * from '../views/panel-props'
 

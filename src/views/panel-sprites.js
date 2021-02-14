@@ -25,12 +25,20 @@ export const selectSprite = (state, { index, opts }) => {
     selection.target = 'sprites'
     selection.items = []
   }
+
   select(selection.items, index, opts)
   if (!selection.items.length) {
     selection.target = null
   }
-  newState.editor.click = false
-  newState.editor.pan = null
+
+  // const target = newState.sprites[selection.items[selection.items.length - 1]]
+  // newState.editor.click = false
+  // newState.editor.pan = null
+  // newState.editor.pos = {
+  //   x: -target.rect[0],
+  //   y: -target.rect[1]
+  // }
+
   return newState
 }
 
@@ -61,13 +69,14 @@ export const mergeSprites = (state) => {
 
 export default function SpritesPanel (state, dispatch) {
   const selection = state.select
+  const shown = state.panels.sprites
   return Panel({
     id: 'sprites',
     name: `Sprites (${state.sprites.length})`,
-    hidden: !state.panels.sprites,
+    hidden: !shown,
     onshow: () => dispatch(showSprites),
     onhide: () => dispatch(hideSprites)
-  }, [
+  }, shown && [
     cache.sprites && m('.panel-content', [
       m('.thumbs', [
         cache.sprites.map((image, i) => {
@@ -90,7 +99,11 @@ export default function SpritesPanel (state, dispatch) {
     selection.target === 'sprites' && selection.items.length && m.fragment({
       onbeforeremove: (vnode) => {
         vnode.dom.classList.remove('-enter')
+
+        // HACK: reflush element to play same animation in reverse
+        // eslint-disable-next-line
         void vnode.dom.offsetWidth
+
         vnode.dom.classList.add('-exit')
         return new Promise((resolve) => {
           vnode.dom.addEventListener('animationend', resolve)
@@ -99,7 +112,7 @@ export default function SpritesPanel (state, dispatch) {
     }, m('.banner.-enter', [
       selection.items.length > 1
         ? `${selection.items.length} sprites selected`
-        : `1 sprite selected`,
+        : '1 sprite selected',
       selection.items.length === 1
         ? m('button', 'Split')
         : m('button', {

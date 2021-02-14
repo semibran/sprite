@@ -1,4 +1,50 @@
+@import './timeline-controls';
+
 .panel.-timeline {
-  flex-basis: 40vh;
+  background: $white;
   border-top: thin solid $silver;
+  flex-basis: 40vh;
+
+  table {
+    border-spacing: 0;
+  }
+
+  table::after {
+    content: '';
+    display: table-cell;
+    background: white;
+    height: 40vh;
+    border-right: thin solid $silver;
+  }
+
+  .frame-number span {
+    color: $lightgray;
+    border: thin solid $silver;
+    border-radius: 4px;
+    padding: 0 32px;
+    line-height: 24px;
+    margin-left: 4px;
+    text-align: center;
+    display: block;
+  }
+
+  .frame-number:nth-child(2) span {
+    margin-left: 12px;
+  }
+}
+
+.timeline-header, .timeline-track {
+  & > *:first-child {
+    background: white;
+    border-right: thin solid $silver;
+  }
+}
+
+.timeline-track {
+  .track-name {
+    font-weight: bold;
+    padding: 0 24px;
+    line-height: 72px;
+    border-top: thin solid $silver;
+  }
 }

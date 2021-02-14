@@ -30,19 +30,19 @@ export default function PropsPanel (state, dispatch) {
   ])
 }
 
-function ProjectPanel({ project, sprites, anims }) {
+function ProjectPanel ({ project, sprites, anims }) {
   return m('.panel-content', [
     m('.panel-section.-name.-inline', [
       m('.section-key', 'Project'),
-      m('.section-value', project.name),
+      m('.section-value', project.name)
     ]),
     m('.panel-section.-sprites.-inline', [
       m('.section-key', 'Sprites'),
-      m('.section-value', sprites.length),
+      m('.section-value', sprites.length)
     ]),
     m('.panel-section.-anims.-inline', [
       m('.section-key', 'Animations'),
-      m('.section-value', anims.length),
+      m('.section-value', anims.length)
     ])
   ])
 }
@@ -52,7 +52,7 @@ function SpritePanel ({ sprite }) {
   return m('.panel-content', [
     m('.panel-section.-name.-inline', [
       m('.section-key', 'Sprite'),
-      m('.section-value', sprite.name),
+      m('.section-value', sprite.name)
     ]),
     m('.panel-section.-location', [
       m('.section-key', 'Location'),
@@ -75,12 +75,16 @@ function SpritePanel ({ sprite }) {
             m('input.field-value#height', { type: 'number', value: height })
           ])
         ])
-      ]),
+      ])
+    ]),
+    m('.panel-section.-animations.-inline', [
+      m('.section-key', 'Used in'),
+      m('.section-value', 'n/a')
     ])
   ])
 }
 
-function SpritesPanel({ sprites }) {
+function SpritesPanel ({ sprites }) {
   return m('.panel-content', [
     m('.panel-section.-name.-inline', [
       m('span', sprites.length > 1
