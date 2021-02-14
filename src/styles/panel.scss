@@ -10,10 +10,67 @@
   font-weight: bold;
   height: 48px;
   line-height: 1;
-  padding: 0 16px;
+  padding: 0 24px;
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+.panel-section {
+  font-size: 12px;
+  padding: 16px 0;
+  margin: 0 24px;
+
+  &.-inline {
+    display: flex;
+  }
+
+  .section-key {
+    font-weight: bold;
+    width: 40%;
+  }
+
+  .section-fields {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 4px;
+    margin-top: 8px;
+    width: 90%;
+  }
+
+  .section-field {
+    display: flex;
+    padding: 8px 12px;
+    border: thin solid transparent;
+
+    &:hover {
+      border-color: $silver;
+    }
+
+    &:focus-within {
+      border-color: $blue;
+    }
+  }
+
+  .field-key {
+    color: $lightgray;
+    width: 24px;
+  }
+
+  input.field-value {
+    width: 40px;
+    outline: 0;
+  }
+
+  input[type=number]::-webkit-inner-spin-button,
+  input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  & + .panel-section {
+    border-top: thin solid silver;
+  }
 }
 
 .panel:first-child {

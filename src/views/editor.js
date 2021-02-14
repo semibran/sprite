@@ -110,8 +110,14 @@ export default function Editor (state, dispatch) {
               state.select.items.includes(i)
             if (selected) {
               context.lineWidth = 2
+              context.fillStyle = '#36d'
               context.strokeStyle = '#36d'
-              context.strokeRect(...sprite.rect)
+              context.beginPath()
+              context.rect(...sprite.rect)
+              context.globalAlpha = 0.25
+              context.fill()
+              context.globalAlpha = 1
+              context.stroke()
             } else {
               context.lineWidth = 1
               context.strokeStyle = 'rgba(0, 0, 0, 0.5)'
