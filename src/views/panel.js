@@ -14,6 +14,6 @@ export default function Panel ({ id, name, hidden, onshow, onhide }, children) {
         onclick: hidden ? onshow : onhide
       }, hidden ? 'add' : 'remove')
     ]),
-    m('.panel-content', children)
+    children
   ])
 }

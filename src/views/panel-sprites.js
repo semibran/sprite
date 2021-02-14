@@ -18,35 +18,52 @@ export const hideSprites = (state) => ({
 
 export const selectSprite = (state, { index, opts }) => {
   const newState = deepClone(state)
-  if (state.select.target !== 'sprites') {
-    newState.select.target = 'sprites'
-    newState.select.items = []
+  const selection = newState.select
+  if (selection.target !== 'sprites') {
+    selection.target = 'sprites'
+    selection.items = []
   }
-  select(newState.select.items, index, opts)
+  select(selection.items, index, opts)
+  if (!selection.items.length) {
+    selection.target = null
+  }
   return newState
 }
 
 export default function SpritesPanel (state, dispatch) {
+  const selection = state.select
   return Panel({
     id: 'sprites',
     name: `Sprites (${state.sprites.length})`,
     hidden: !state.panels.sprites,
     onshow: () => dispatch(showSprites),
     onhide: () => dispatch(hideSprites)
-  }, cache.sprites && m('.thumbs', [
-    cache.sprites.map((image, i) => {
-      const selected = state.select.target === 'sprites' &&
-        state.select.items.includes(i)
-      return m('.thumb', {
-        class: selected ? '-select' : '',
-        onclick: (evt) => dispatch(selectSprite, {
-          index: i,
-          opts: {
-            ctrl: evt.ctrlKey || evt.metaKey,
-            shift: evt.shiftKey
-          }
+  }, [
+    cache.sprites && m('.panel-content', [
+      m('.thumbs', [
+        cache.sprites.map((image, i) => {
+          const selected = selection.target === 'sprites' &&
+            selection.items.includes(i)
+          return m('.thumb', {
+            class: selected ? '-select' : '',
+            onclick: (evt) => dispatch(selectSprite, {
+              index: i,
+              opts: {
+                ctrl: evt.ctrlKey || evt.metaKey,
+                shift: evt.shiftKey
+              }
+            })
+          }, Thumb(image))
         })
-      }, Thumb(image))
-    })
-  ]))
+      ])
+    ]),
+    selection.target === 'sprites' && m('.banner', [
+      selection.items.length === 1
+        ? `${selection.items.length} item selected`
+        : `${selection.items.length} items selected`,
+      selection.items.length === 1
+        ? m('button', 'Split')
+        : m('button', 'Merge')
+    ])
+  ])
 }
