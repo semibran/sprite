@@ -9,11 +9,14 @@ let onmouseup = null
 let sprites = null
 let pos = null
 let pan = null
+let click = false
+let hover = -1
 
 export const startPan = (state, { x, y }) => ({
   ...state,
   editor: {
     ...state.editor,
+    click: true,
     pan: {
       x: x - state.editor.pos.x,
       y: y - state.editor.pos.y
@@ -27,6 +30,7 @@ export const updatePan = (state, { x, y }) => {
     ...state,
     editor: {
       ...state.editor,
+      click: false,
       pos: {
         x: x - state.editor.pan.x,
         y: y - state.editor.pan.y
@@ -37,14 +41,34 @@ export const updatePan = (state, { x, y }) => {
 
 export const endPan = (state) => ({
   ...state,
-  editor: { ...state.editor, pan: null }
+  editor: { ...state.editor, click: false, pan: null }
+})
+
+export const hoverSprite = (state, { index }) => ({
+  ...state,
+  editor: { ...state.editor, hover: index }
+})
+
+export const unhoverSprite = (state) => ({
+  ...state,
+  editor: { ...state.editor, hover: -1 }
+})
+
+export const deselect = (state) => ({
+  ...state,
+  select: { ...state.select, target: null, items: [] }
 })
 
 export default function Editor (state, dispatch) {
   ;({ sprites } = state)
-  ;({ pos, pan } = state.editor)
+  ;({ pos, pan, hover, click } = state.editor)
   const image = cache.image
-  return m('.editor', { class: pan ? '-pan' : '' }, [
+  return m('.editor', {
+    class: [
+      pan && (!click || hover === -1) ? '-pan' : '',
+      hover !== -1 ? '-hover' : ''
+    ].join(' ')
+  }, [
     m.fragment({
       oncreate: (vnode) => {
         const findSelect = (evt) => {
@@ -61,15 +85,7 @@ export default function Editor (state, dispatch) {
         }
 
         vnode.dom.addEventListener('mousedown', (onmousedown = (evt) => {
-          const select = findSelect(evt)
-          if (select === -1) {
-            dispatch(startPan, { x: evt.pageX, y: evt.pageY })
-          } else {
-            dispatch(selectSprite, {
-              index: select,
-              opts: { ctrl: evt.ctrlKey || evt.metaKey || evt.shiftKey }
-            })
-          }
+          dispatch(startPan, { x: evt.pageX, y: evt.pageY })
         }))
 
         window.addEventListener('mousemove', (onmousemove = (evt) => {
@@ -78,12 +94,27 @@ export default function Editor (state, dispatch) {
           } else {
             const select = findSelect(evt)
             if (select !== -1) {
-              // dispatch hover event
+              if (hover === -1) {
+                dispatch(hoverSprite, { index: select })
+              }
+            } else if (hover !== -1) {
+              dispatch(unhoverSprite)
             }
           }
         }))
 
-        window.addEventListener('mouseup', (onmouseup = () => {
+        window.addEventListener('mouseup', (onmouseup = (evt) => {
+          if (click) {
+            const select = findSelect(evt)
+            if (select !== -1) {
+              dispatch(selectSprite, {
+                index: select,
+                opts: { ctrl: evt.ctrlKey || evt.metaKey || evt.shiftKey }
+              })
+            } else {
+              dispatch(deselect)
+            }
+          }
           if (pan) {
             dispatch(endPan)
           }
@@ -108,6 +139,7 @@ export default function Editor (state, dispatch) {
             const [left, top, width, height] = sprite.rect
             const selected = state.select.target === 'sprites' &&
               state.select.items.includes(i)
+            const hovered = hover === i
             if (selected) {
               context.lineWidth = 2
               context.fillStyle = '#36d'
@@ -118,6 +150,10 @@ export default function Editor (state, dispatch) {
               context.fill()
               context.globalAlpha = 1
               context.stroke()
+            } else if (hovered) {
+              context.lineWidth = 2
+              context.strokeStyle = '#36d'
+              context.strokeRect(...sprite.rect)
             } else {
               context.lineWidth = 1
               context.strokeStyle = 'rgba(0, 0, 0, 0.5)'

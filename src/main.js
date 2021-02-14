@@ -22,7 +22,9 @@ const initialState = {
   },
   editor: {
     pos: { x: 0, y: 0 },
-    pan: null
+    pan: null,
+    click: false,
+    hover: -1
   },
   panels: {
     sprites: true,

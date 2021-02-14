@@ -16,6 +16,10 @@
   cursor: grab;
 }
 
+.editor.-hover {
+  cursor: pointer;
+}
+
 .editor.-pan {
   cursor: grabbing;
 }

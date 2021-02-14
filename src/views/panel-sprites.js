@@ -29,6 +29,8 @@ export const selectSprite = (state, { index, opts }) => {
   if (!selection.items.length) {
     selection.target = null
   }
+  newState.editor.click = false
+  newState.editor.pan = null
   return newState
 }
 
