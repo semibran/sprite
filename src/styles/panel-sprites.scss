@@ -14,11 +14,12 @@ $banner-height: 56px;
 
   .thumbs {
     position: absolute;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 8px;
+    width: 100%;
     padding: 16px 0 calc(16px + #{$banner-height});
+    display: grid;
+    grid-template-columns: repeat(auto-fill, $thumb-size);
+    grid-gap: 8px;
+    justify-content: center;
   }
 
   .banner {
@@ -40,7 +41,7 @@ $banner-height: 56px;
     }
 
     &.-exit {
-      animation: 125ms banner-enter ease-in reverse;
+      animation: 250ms banner-enter ease-in reverse;
     }
 
     button {
