@@ -1,8 +1,10 @@
 
 import m from 'mithril'
+import cssify from 'css-string'
 import cache from '../app/cache'
 import { selectSprite } from './panel-sprites'
 
+let editor = null
 let canvas = null
 let onmousedown = null
 let onmousemove = null
@@ -80,11 +82,12 @@ export default function Editor (state, dispatch) {
     m.fragment({
       oncreate: (vnode) => {
         canvas = vnode.dom
+        editor = canvas.parentNode
 
         const findSelect = (evt) => {
           const rect = vnode.dom.getBoundingClientRect()
-          const x = evt.pageX - rect.left
-          const y = evt.pageY - rect.top
+          const x = (evt.pageX - rect.left) / scale
+          const y = (evt.pageY - rect.top) / scale
           return sprites.findIndex((sprite) => {
             const [left, top, width, height] = sprite.rect
             return x >= left &&
@@ -94,13 +97,13 @@ export default function Editor (state, dispatch) {
           })
         }
 
-        canvas.addEventListener('mousedown', (onmousedown = (evt) => {
-          dispatch(startPan, { x: evt.pageX, y: evt.pageY })
+        editor.addEventListener('mousedown', (onmousedown = (evt) => {
+          dispatch(startPan, { x: evt.pageX / scale, y: evt.pageY / scale })
         }))
 
         window.addEventListener('mousemove', (onmousemove = (evt) => {
           if (pan) {
-            dispatch(updatePan, { x: evt.pageX, y: evt.pageY })
+            dispatch(updatePan, { x: evt.pageX / scale, y: evt.pageY / scale })
           } else {
             const select = findSelect(evt)
             if (select !== -1) {
@@ -130,7 +133,7 @@ export default function Editor (state, dispatch) {
           }
         }))
 
-        canvas.addEventListener('wheel', (onwheel = (evt) => {
+        editor.addEventListener('wheel', (onwheel = (evt) => {
           evt.preventDefault()
           scale = Math.max(1, scale + evt.deltaY * -0.01)
           dispatch(scaleEditor, scale)
@@ -140,7 +143,7 @@ export default function Editor (state, dispatch) {
         canvas.removeEventListener('mousedown', onmousedown)
         window.removeEventListener('mousemove', onmousemove)
         window.removeEventListener('mouseup', onmouseup)
-        canvas.removeEventListener('wheel', onwheel)
+        editor.removeEventListener('wheel', onwheel)
       },
       onupdate: (vnode) => {
         if (image) {
@@ -181,7 +184,10 @@ export default function Editor (state, dispatch) {
         }
       }
     }, m('canvas', {
-      style: `transform: translate(${pos.x}px, ${pos.y}px) scale(${scale})`
+      style: cssify({
+        transform: `translate(${pos.x}px, ${pos.y}px) scale(${scale})`,
+        'transform-origin': `${-pos.x}px ${-pos.y}px`
+      })
     }))
   ])
 }
