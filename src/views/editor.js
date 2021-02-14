@@ -7,11 +7,13 @@ let canvas = null
 let onmousedown = null
 let onmousemove = null
 let onmouseup = null
+let onwheel = null
 let sprites = null
 let pos = null
 let pan = null
 let click = false
 let hover = -1
+let scale = 1
 
 export const startPan = (state, { x, y }) => ({
   ...state,
@@ -45,6 +47,11 @@ export const endPan = (state) => ({
   editor: { ...state.editor, click: false, pan: null }
 })
 
+export const scaleEditor = (state, scale) => ({
+  ...state,
+  editor: { ...state.editor, scale }
+})
+
 export const hoverSprite = (state, { index }) => ({
   ...state,
   editor: { ...state.editor, hover: index }
@@ -62,7 +69,7 @@ export const deselect = (state) => ({
 
 export default function Editor (state, dispatch) {
   ;({ sprites } = state)
-  ;({ pos, pan, hover, click } = state.editor)
+  ;({ pos, pan, hover, click, scale } = state.editor)
   const image = cache.image
   return m('.editor', {
     class: [
@@ -122,11 +129,18 @@ export default function Editor (state, dispatch) {
             dispatch(endPan)
           }
         }))
+
+        canvas.addEventListener('wheel', (onwheel = (evt) => {
+          evt.preventDefault()
+          scale = Math.max(1, scale + evt.deltaY * -0.01)
+          dispatch(scaleEditor, scale)
+        }))
       },
       onremove: (vnode) => {
         canvas.removeEventListener('mousedown', onmousedown)
         window.removeEventListener('mousemove', onmousemove)
         window.removeEventListener('mouseup', onmouseup)
+        canvas.removeEventListener('wheel', onwheel)
       },
       onupdate: (vnode) => {
         if (image) {
@@ -167,7 +181,7 @@ export default function Editor (state, dispatch) {
         }
       }
     }, m('canvas', {
-      style: `transform: translate(${pos.x}px, ${pos.y}px)`
+      style: `transform: translate(${pos.x}px, ${pos.y}px) scale(${scale})`
     }))
   ])
 }

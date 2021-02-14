@@ -31,6 +31,10 @@
   .frame-number:nth-child(2) span {
     margin-left: 12px;
   }
+
+  .frame-number:last-child span {
+    margin-right: 12px;
+  }
 }
 
 .timeline-header, .timeline-track {
@@ -46,5 +50,18 @@
     padding: 0 24px;
     line-height: 72px;
     border-top: thin solid $silver;
+  }
+
+  td:not(.track-name) {
+    border-top: thin solid $silver;
+  }
+
+  .track-prompt {
+    color: $lightgray;
+    border: 2px dashed $silver;
+    border-radius: 4px;
+    line-height: calc(48px - 4px);
+    margin: 0 12px;
+    text-align: center;
   }
 }

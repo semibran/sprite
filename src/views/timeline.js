@@ -32,7 +32,10 @@ export default function Timeline (state, dispatch) {
         m('th.frame-number', m('span', '5'))
       ]),
       m('tr.timeline-track', [
-        m('td.track-name', 'Example_01')
+        m('td.track-name', 'Example_01'),
+        m('td', { colspan: 5 }, [
+          m('.track-prompt', 'Drag sprites here to create an animation.')
+        ])
       ]),
       m('tr.timeline-track', [
         m('td.track-name', 'Example_02')

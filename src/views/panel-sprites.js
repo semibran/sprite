@@ -34,17 +34,17 @@ export const selectSprite = (state, { index, focus, opts }) => {
   return newState
 }
 
-export const startFocus = (state, { sprite, opts }) => (dispatch, getState) => {
+export const focusSprite = (state, { sprite, opts }) => (dispatch, getState) => {
   dispatch(selectSprite, {
     index: state.sprites.indexOf(sprite),
     focus: true,
     opts
   })
 
-  const target = focusSprite(state, sprite).editor.target
+  const target = startFocus(state, sprite).editor.target
   const x = target.x
   const y = target.y
-  dispatch(focusSprite, sprite)
+  dispatch(startFocus, sprite)
   requestAnimationFrame(function animate () {
     const editor = getState().editor
     if (!editor.target ||
@@ -63,7 +63,7 @@ export const startFocus = (state, { sprite, opts }) => (dispatch, getState) => {
   })
 }
 
-export const focusSprite = (state, sprite) => {
+export const startFocus = (state, sprite) => {
   const editor = deepClone(state.editor)
   const [left, top, width, height] = sprite.rect
   editor.click = false
@@ -130,7 +130,7 @@ export default function SpritesPanel (state, dispatch) {
           return m('.thumb', {
             key: `${i}-${sprite.name}`,
             class: selected ? '-select' : '',
-            onclick: (evt) => dispatch(startFocus, {
+            onclick: (evt) => dispatch(focusSprite, {
               sprite,
               opts: {
                 ctrl: evt.ctrlKey || evt.metaKey,

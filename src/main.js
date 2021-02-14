@@ -25,7 +25,8 @@ const initialState = {
     target: null,
     pan: null,
     click: false,
-    hover: -1
+    hover: -1,
+    scale: 1
   },
   panels: {
     sprites: true,
