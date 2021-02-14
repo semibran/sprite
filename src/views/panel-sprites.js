@@ -18,7 +18,7 @@ export const hideSprites = (state) => ({
   panels: { ...state.panels, sprites: false }
 })
 
-export const selectSprite = (state, { index, opts }) => {
+export const selectSprite = (state, { index, focus, opts }) => {
   const newState = deepClone(state)
   const selection = newState.select
   if (selection.target !== 'sprites') {
@@ -31,13 +31,19 @@ export const selectSprite = (state, { index, opts }) => {
     selection.target = null
   }
 
-  // const target = newState.sprites[selection.items[selection.items.length - 1]]
-  // newState.editor.click = false
-  // newState.editor.pan = null
-  // newState.editor.pos = {
-  //   x: -target.rect[0],
-  //   y: -target.rect[1]
-  // }
+  // focus on the latest item in the selection matrix
+  // TODO: helper methods for selections?
+  const target = newState.sprites[selection.items[selection.items.length - 1]]
+  if (target && focus) {
+    const [left, top, width, height] = target.rect
+    newState.editor.pos = {
+      x: Math.floor(-left - width / 2),
+      y: Math.floor(-top - height / 2)
+    }
+  }
+
+  newState.editor.click = false
+  newState.editor.pan = null
 
   return newState
 }
@@ -87,6 +93,7 @@ export default function SpritesPanel (state, dispatch) {
             class: selected ? '-select' : '',
             onclick: (evt) => dispatch(selectSprite, {
               index: i,
+              focus: true,
               opts: {
                 ctrl: evt.ctrlKey || evt.metaKey,
                 shift: evt.shiftKey
