@@ -3,6 +3,7 @@ import m from 'mithril'
 import cache from '../app/cache'
 import { selectSprite } from './panel-sprites'
 
+let canvas = null
 let onmousedown = null
 let onmousemove = null
 let onmouseup = null
@@ -71,6 +72,8 @@ export default function Editor (state, dispatch) {
   }, [
     m.fragment({
       oncreate: (vnode) => {
+        canvas = vnode.dom
+
         const findSelect = (evt) => {
           const rect = vnode.dom.getBoundingClientRect()
           const x = evt.pageX - rect.left
@@ -84,7 +87,7 @@ export default function Editor (state, dispatch) {
           })
         }
 
-        vnode.dom.addEventListener('mousedown', (onmousedown = (evt) => {
+        canvas.addEventListener('mousedown', (onmousedown = (evt) => {
           dispatch(startPan, { x: evt.pageX, y: evt.pageY })
         }))
 
@@ -121,12 +124,11 @@ export default function Editor (state, dispatch) {
         }))
       },
       onremove: (vnode) => {
-        vnode.dom.removeEventListener('mousedown', onmousedown)
+        canvas.removeEventListener('mousedown', onmousedown)
         window.removeEventListener('mousemove', onmousemove)
         window.removeEventListener('mouseup', onmouseup)
       },
       onupdate: (vnode) => {
-        const canvas = vnode.dom
         if (image) {
           canvas.width = image.width
           canvas.height = image.height
