@@ -20,6 +20,10 @@ const initialState = {
     target: [],
     items: []
   },
+  editor: {
+    pos: { x: 0, y: 0 },
+    pan: null
+  },
   panels: {
     sprites: true,
     props: true,

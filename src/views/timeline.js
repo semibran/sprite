@@ -1,5 +1,4 @@
 
-import m from 'mithril'
 import Panel from './panel'
 
 export const showTimeline = (state) => ({

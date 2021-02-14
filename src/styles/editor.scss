@@ -7,4 +7,14 @@
 
 .editor canvas {
   position: absolute;
+  border: thin solid $gray;
+  box-shadow: 0 8px 16px rgba(black, 0.25);
+}
+
+.editor:hover {
+  cursor: grab;
+}
+
+.editor.-pan {
+  cursor: grabbing;
 }

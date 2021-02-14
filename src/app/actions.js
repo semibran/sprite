@@ -12,17 +12,18 @@ import {
   getFrameIndex
 } from './helpers'
 
+export * from '../views/editor'
 export * from '../views/timeline'
 export * from '../views/panel-sprites'
 export * from '../views/panel-props'
 
 export const useImage = (state) => {
-  if (state.sprites.list.length) return state
+  if (state.sprites.lengthor ) return state
   const canvas = cloneImage(cache.image)
   return {
     ...state,
     sprites: sliceCanvas(canvas).map((rect, i) => (
-      { name: `${state.sprname}_${i}`, rect }
+      { name: `${state.project.name.toLowerCase()}_${i}`, rect }
     ))
   }
 }
