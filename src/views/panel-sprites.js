@@ -31,21 +31,59 @@ export const selectSprite = (state, { index, focus, opts }) => {
     selection.target = null
   }
 
-  // focus on the latest item in the selection matrix
-  // TODO: helper methods for selections?
-  const target = newState.sprites[selection.items[selection.items.length - 1]]
-  if (target && focus) {
-    const [left, top, width, height] = target.rect
-    newState.editor.pos = {
-      x: Math.floor(-left - width / 2),
-      y: Math.floor(-top - height / 2)
-    }
-  }
-
-  newState.editor.click = false
-  newState.editor.pan = null
-
   return newState
+}
+
+export const startFocus = (state, { sprite, opts }) => (dispatch, getState) => {
+  dispatch(selectSprite, {
+    index: state.sprites.indexOf(sprite),
+    focus: true,
+    opts
+  })
+
+  const target = focusSprite(state, sprite).editor.target
+  const x = target.x
+  const y = target.y
+  dispatch(focusSprite, sprite)
+  requestAnimationFrame(function animate () {
+    const editor = getState().editor
+    if (!editor.target ||
+        editor.target.x !== x ||
+        editor.target.y !== y) {
+      return
+    }
+    const xdist = Math.abs(editor.target.x - editor.pos.x)
+    const ydist = Math.abs(editor.target.y - editor.pos.y)
+    if (xdist + ydist < 1) {
+      dispatch(endFocus)
+    } else {
+      dispatch(updateCamera)
+      requestAnimationFrame(animate)
+    }
+  })
+}
+
+export const focusSprite = (state, sprite) => {
+  const editor = deepClone(state.editor)
+  const [left, top, width, height] = sprite.rect
+  editor.click = false
+  editor.pan = null
+  editor.target = {
+    x: Math.floor(-left - width / 2),
+    y: Math.floor(-top - height / 2)
+  }
+  return { ...state, editor }
+}
+
+export const endFocus = (state, sprite) => {
+  return { ...state, editor: { ...state.editor, target: null } }
+}
+
+export const updateCamera = (state) => {
+  const editor = deepClone(state.editor)
+  editor.pos.x += (editor.target.x - editor.pos.x) / 8
+  editor.pos.y += (editor.target.y - editor.pos.y) / 8
+  return { ...state, editor }
 }
 
 export const mergeSprites = (state) => {
@@ -86,14 +124,14 @@ export default function SpritesPanel (state, dispatch) {
     cache.sprites && m('.panel-content', [
       m('.thumbs', [
         cache.sprites.map((image, i) => {
+          const sprite = state.sprites[i]
           const selected = selection.target === 'sprites' &&
             selection.items.includes(i)
           return m('.thumb', {
-            key: `${i}-${state.sprites[i].name}`,
+            key: `${i}-${sprite.name}`,
             class: selected ? '-select' : '',
-            onclick: (evt) => dispatch(selectSprite, {
-              index: i,
-              focus: true,
+            onclick: (evt) => dispatch(startFocus, {
+              sprite,
               opts: {
                 ctrl: evt.ctrlKey || evt.metaKey,
                 shift: evt.shiftKey

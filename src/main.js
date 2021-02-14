@@ -3,8 +3,8 @@ import m from 'mithril'
 import { createStore, applyMiddleware, compose } from 'redux'
 import { persistStore, persistReducer } from 'redux-persist'
 import storage from 'redux-persist/lib/storage'
-import thunk from 'redux-thunk'
 import loadImage from 'img-load'
+import thunk from './lib/thunk'
 import reduce from './lib/combine-reducers'
 import App from './views/app'
 import cache from './app/cache'
@@ -22,6 +22,7 @@ const initialState = {
   },
   editor: {
     pos: { x: 0, y: 0 },
+    target: null,
     pan: null,
     click: false,
     hover: -1
@@ -60,10 +61,5 @@ loadImage('../tmp/copen.png').then((image) => {
 })
 
 m.mount(document.body, () => ({
-  view: () => App(
-    store.getState(),
-    (action, payload) => {
-      store.dispatch({ type: action.name, payload })
-    }
-  )
+  view: () => App(store.getState(), store.dispatch)
 }))
