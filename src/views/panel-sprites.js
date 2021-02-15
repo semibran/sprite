@@ -2,6 +2,7 @@
 import m from 'mithril'
 import deepClone from 'lodash.clonedeep'
 import extractImage from 'img-extract'
+import sliceImage from '../lib/slice'
 import mergeRects from '../lib/merge'
 import select from '../lib/select'
 import Panel from './panel'
@@ -106,7 +107,56 @@ export const mergeSprites = (state) => {
   sprite.rect = rect
   cache.sprites[idx] = extractImage(cache.image, ...rect)
   selects.length = 0
-  newState.select.target = null
+  newState.select.items = [idx]
+  return newState
+}
+
+export const splitSprite = (state) => {
+  if (state.select.target !== 'sprites' || state.select.items.length !== 1) {
+    return state
+  }
+
+  const newState = deepClone(state)
+  const id = state.select.items[0]
+  const offset = state.sprites[id].rect
+  const image = cache.sprites[id]
+  const rects = sliceImage(image).map(rect =>
+    [rect[0] + offset[0], rect[1] + offset[1], rect[2], rect[3]])
+
+  if (rects.length === 1) {
+    return state
+  }
+
+  const images = rects.map(rect => extractImage(cache.image, ...rect))
+  cache.sprites.splice(id, 1, ...images)
+
+  newState.sprites.splice(id, 1)
+
+  const used = []
+  const sprites = rects.map((rect) => ({
+    rect,
+    name: (() => {
+      const projid = state.project.name.toLowerCase()
+      let i = 0
+      while (used.includes(i) ||
+      newState.sprites.find(sprite => sprite.name === `${projid}_${i}`)) {
+        i++
+      }
+      used.push(i)
+      return `${projid}_${i}`
+    })()
+  }))
+
+  newState.sprites.splice(id, 0, ...sprites)
+
+  newState.anims.forEach(anim => {
+    anim.frames.forEach(frame => {
+      frame.sprite += sprites.length
+    })
+  })
+
+  newState.select.items = new Array(sprites.length).fill(0).map((_, i) => id + i)
+
   return newState
 }
 
@@ -149,8 +199,11 @@ export default function SpritesPanel (state, dispatch) {
             onupdate: (vnode) => {
               const thumb = vnode.dom
               const wrap = thumb.parentNode.parentNode
-              if (isSpriteSelected(state.select, i) && selection !== i) {
-                selection = i
+              const last = state.select.items[state.select.items.length - 1]
+              if (isSpriteSelected(state.select) &&
+                  i === last &&
+                  selection !== state.select.items.join()) {
+                selection = state.select.items.join()
                 const thumbTop = thumb.offsetTop
                 const thumbHeight = thumb.offsetHeight
                 const thumbBottom = thumbTop + thumbHeight
@@ -167,7 +220,7 @@ export default function SpritesPanel (state, dispatch) {
               }
             }
           }, m('.thumb', {
-            key: `${i}-${sprite.name}`,
+            key: `${i}-${sprite.name}-${sprite.rect.join()}`,
             class: (selected ? '-select' : '') +
               (dragging && isSpriteSelected(state.select, i) ? ' -drag' : ''),
             onclick: handleSelect,
@@ -197,7 +250,9 @@ export default function SpritesPanel (state, dispatch) {
           ? `${state.select.items.length} sprites selected`
           : '1 sprite selected',
         state.select.items.length === 1
-          ? m('button', 'Split')
+          ? m('button', {
+              onclick: () => dispatch('splitSprite')
+            }, 'Split')
           : m('button', {
             onclick: () => dispatch(mergeSprites)
           }, 'Merge')
