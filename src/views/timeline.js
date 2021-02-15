@@ -72,7 +72,8 @@ export default function Timeline (state, dispatch) {
         TimelineControls(state, dispatch),
         new Array(maxframes).fill(0).map((_, i) =>
           m('th.frame-number', m('span', i + 1))
-        )
+        ),
+        m('th.track-end')
       ]),
       state.anims.map((anim, i) =>
         m('tr.timeline-track', {
@@ -91,7 +92,8 @@ export default function Timeline (state, dispatch) {
             return m('td.frame', [
               m('.thumb', image && Thumb(image))
             ])
-          })
+          }),
+          m('div.track-bg')
         ])
       ),
       m('tr.timeline-track', [
@@ -100,25 +102,27 @@ export default function Timeline (state, dispatch) {
           'Create new'
         ]),
         state.select.target === 'sprites' &&
-        state.select.items.length &&
-          m('td', { colspan: maxframes }, [
-            m('.track-prompt', {
-              class: dragging ? '-focus' : '',
-              ondragover: (evt) => evt.preventDefault(),
-              ondragenter: (evt) => { dragging = true },
-              ondragleave: (evt) => { dragging = false },
-              ondrop: (evt) => {
-                evt.preventDefault()
-                dragging = false
+        state.select.items.length
+          ? m('td', { colspan: maxframes }, [
+              m('.track-prompt', {
+                class: dragging ? '-focus' : '',
+                ondragover: (evt) => evt.preventDefault(),
+                ondragenter: (evt) => { dragging = true },
+                ondragleave: (evt) => { dragging = false },
+                ondrop: (evt) => {
+                  evt.preventDefault()
+                  dragging = false
 
-                const data = evt.dataTransfer.getData('text')
-                evt.dataTransfer.clearData()
+                  const data = evt.dataTransfer.getData('text')
+                  evt.dataTransfer.clearData()
 
-                const idx = parseInt(data)
-                dispatch(addFrame, idx)
-              }
-            }, 'Drag sprites here to create an animation.')
-          ])
+                  const idx = parseInt(data)
+                  dispatch(addFrame, idx)
+                }
+              }, 'Drag sprites here to create an animation.')
+            ])
+          : m('td'),
+        m('div.track-bg')
       ])
     ])
   ])
