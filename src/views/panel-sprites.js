@@ -8,6 +8,8 @@ import cache from '../app/cache'
 import Panel from './panel'
 import Thumb from './thumb'
 
+let dragged = -1
+
 export const showSprites = (state) => ({
   ...state,
   panels: { ...state.panels, sprites: true }
@@ -127,16 +129,33 @@ export default function SpritesPanel (state, dispatch) {
           const sprite = state.sprites[i]
           const selected = selection.target === 'sprites' &&
             selection.items.includes(i)
+
+          const handleSelect = (evt) => dispatch(focusSprite, {
+            sprite,
+            opts: {
+              ctrl: evt.ctrlKey || evt.metaKey,
+              shift: evt.shiftKey
+            }
+          })
+
+          const handleDragStart = (evt) => {
+            dragged = i
+            evt.dataTransfer.setData('text/plain', i)
+            handleSelect(evt)
+          }
+
+          const handleDragEnd = (evt) => {
+            dragged = -1
+          }
+
           return m('.thumb', {
             key: `${i}-${sprite.name}`,
-            class: selected ? '-select' : '',
-            onclick: (evt) => dispatch(focusSprite, {
-              sprite,
-              opts: {
-                ctrl: evt.ctrlKey || evt.metaKey,
-                shift: evt.shiftKey
-              }
-            })
+            class: (selected ? '-select' : '') +
+              (dragged === i ? ' -drag' : ''),
+            onclick: handleSelect,
+            ondragstart: handleDragStart,
+            ondragend: handleDragEnd,
+            draggable: true
           }, Thumb(image))
         })
       ])

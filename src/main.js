@@ -8,7 +8,7 @@ import thunk from './lib/thunk'
 import reduce from './lib/combine-reducers'
 import App from './views/app'
 import cache from './app/cache'
-import * as actions from './app/actions'
+import * as actions from './actions'
 
 const initialState = {
   project: { name: 'Untitled' },
@@ -18,6 +18,7 @@ const initialState = {
   anims: [],
   select: {
     target: null,
+    drag: -1,
     items: []
   },
   editor: {

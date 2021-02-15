@@ -1,5 +1,6 @@
 
 import m from 'mithril'
+import deepClone from 'lodash.clonedeep'
 import cssify from 'css-string'
 import cache from '../app/cache'
 import { selectSprite } from './panel-sprites'
@@ -44,12 +45,19 @@ export const updatePan = (state, { x, y }) => {
   }
 }
 
+export const moveCamera = (state, { x, y }) => {
+  const editor = deepClone(state.editor)
+  editor.pos.x += x
+  editor.pos.y += y
+  return { ...state, editor }
+}
+
 export const endPan = (state) => ({
   ...state,
   editor: { ...state.editor, click: false, pan: null }
 })
 
-export const scaleEditor = (state, scale) => ({
+export const zoomCamera = (state, scale) => ({
   ...state,
   editor: { ...state.editor, scale }
 })
@@ -85,7 +93,7 @@ export default function Editor (state, dispatch) {
         editor = canvas.parentNode
 
         const findSelect = (evt) => {
-          const rect = vnode.dom.getBoundingClientRect()
+          const rect = canvas.getBoundingClientRect()
           const x = (evt.pageX - rect.left) / scale - 1
           const y = (evt.pageY - rect.top) / scale - 1
           return sprites.findIndex((sprite) => {
@@ -135,11 +143,15 @@ export default function Editor (state, dispatch) {
 
         editor.addEventListener('wheel', (onwheel = (evt) => {
           evt.preventDefault()
-          const newScale = Math.min(8, Math.max(1, scale + evt.deltaY * -0.01))
-          console.log(evt.deltaY)
+          const delta = evt.deltaY * 0.01
+          const newScale = Math.min(8, Math.max(1, scale - delta))
+          const rect = editor.getBoundingClientRect()
+          const x = (evt.clientX - rect.left - rect.width / 2) * delta
+          const y = (evt.clientY - rect.top - rect.height / 2) * delta
           if (scale !== newScale) {
             scale = newScale
-            dispatch(scaleEditor, newScale)
+            dispatch(zoomCamera, newScale)
+            // dispatch(moveCamera, { x, y })
           }
         }))
       },

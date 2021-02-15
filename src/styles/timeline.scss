@@ -14,6 +14,7 @@
     display: table-cell;
     background: white;
     height: 40vh;
+    border-top: thin solid $silver;
     border-right: thin solid $silver;
   }
 
@@ -21,7 +22,7 @@
     color: $lightgray;
     border: thin solid $silver;
     border-radius: 4px;
-    padding: 0 32px;
+    width: $thumb-size;
     line-height: 24px;
     margin-left: 4px;
     text-align: center;
@@ -35,6 +36,10 @@
   .frame-number:last-child span {
     margin-right: 12px;
   }
+
+  .frame:nth-child(2) {
+    padding-left: 12px;
+  }
 }
 
 .timeline-header, .timeline-track {
@@ -46,10 +51,26 @@
 
 .timeline-track {
   .track-name {
-    font-weight: bold;
-    padding: 0 24px;
-    line-height: 72px;
     border-top: thin solid $silver;
+    padding: 0 24px;
+    line-height: 80px;
+    font-weight: 500;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+
+    .icon {
+      margin-right: 8px;
+    }
+  }
+
+  .track-name.-add {
+    color: $blue;
+
+    &:hover {
+      cursor: pointer;
+      background: $lightblue;
+    }
   }
 
   td:not(.track-name) {
@@ -60,8 +81,14 @@
     color: $lightgray;
     border: 2px dashed $silver;
     border-radius: 4px;
-    line-height: calc(48px - 4px);
+    line-height: calc(64px - 4px);
     margin: 0 12px;
     text-align: center;
+
+    &.-focus {
+      color: $blue;
+      border-color: $blue;
+      background: $lightblue;
+    }
   }
 }
