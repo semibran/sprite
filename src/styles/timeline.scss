@@ -3,9 +3,16 @@
 .panel.-timeline {
   background: $white;
   border-top: thin solid $silver;
-  flex-basis: 40vh;
+  flex-grow: 0;
+
+  .panel-content {
+    height: 45vh;
+    position: relative;
+    overflow-y: auto;
+  }
 
   table {
+    position: absolute;
     border-spacing: 0;
     border-collapse: collapse;
     width: 100%;
@@ -15,7 +22,7 @@
     content: '';
     display: table-cell;
     background: white;
-    height: 40vh;
+    height: 80px;
     border-top: thin solid $silver;
     border-right: thin solid $silver;
   }

@@ -67,62 +67,64 @@ export default function Timeline (state, dispatch) {
     onshow: () => dispatch(showTimeline),
     onhide: () => dispatch(hideTimeline)
   }, [
-    m('table.panel-content', [
-      m('tr.timeline-header', [
-        TimelineControls(state, dispatch),
-        new Array(maxframes).fill(0).map((_, i) =>
-          m('th.frame-number', m('span', i + 1))
+    m('.panel-content', [
+      m('table.timeline', [
+        m('tr.timeline-header', [
+          TimelineControls(state, dispatch),
+          new Array(maxframes).fill(0).map((_, i) =>
+            m('th.frame-number', m('span', i + 1))
+          ),
+          m('th.track-end')
+        ]),
+        state.anims.map((anim, i) =>
+          m('tr.timeline-track', {
+            class: isAnimSelected(state.select, i) ? '-select' : '',
+            onclick: (evt) => dispatch(selectAnim, {
+              index: i,
+              opts: {
+                ctrl: evt.ctrlKey || evt.metaKey,
+                shift: evt.shiftKey
+              }
+            })
+          }, [
+            m('td.track-name', anim.name),
+            anim.frames.map((frame) => {
+              const image = cache.sprites && cache.sprites[frame.sprite]
+              return m('td.frame', [
+                m('.thumb', image && Thumb(image))
+              ])
+            }),
+            m('div.track-bg')
+          ])
         ),
-        m('th.track-end')
-      ]),
-      state.anims.map((anim, i) =>
-        m('tr.timeline-track', {
-          class: isAnimSelected(state.select, i) ? '-select' : '',
-          onclick: (evt) => dispatch(selectAnim, {
-            index: i,
-            opts: {
-              ctrl: evt.ctrlKey || evt.metaKey,
-              shift: evt.shiftKey
-            }
-          })
-        }, [
-          m('td.track-name', anim.name),
-          anim.frames.map((frame) => {
-            const image = cache.sprites && cache.sprites[frame.sprite]
-            return m('td.frame', [
-              m('.thumb', image && Thumb(image))
-            ])
-          }),
+        m('tr.timeline-track', [
+          m('td.track-name.-add', [
+            m('span.icon.material-icons-round', 'add'),
+            'Create new'
+          ]),
+          state.select.target === 'sprites' &&
+          state.select.items.length
+            ? m('td', { colspan: maxframes }, [
+                m('.track-prompt', {
+                  class: dragging ? '-focus' : '',
+                  ondragover: (evt) => evt.preventDefault(),
+                  ondragenter: (evt) => { dragging = true },
+                  ondragleave: (evt) => { dragging = false },
+                  ondrop: (evt) => {
+                    evt.preventDefault()
+                    dragging = false
+
+                    const data = evt.dataTransfer.getData('text')
+                    evt.dataTransfer.clearData()
+
+                    const idx = parseInt(data)
+                    dispatch(addFrame, idx)
+                  }
+                }, 'Drag sprites here to create an animation.')
+              ])
+            : m('td'),
           m('div.track-bg')
         ])
-      ),
-      m('tr.timeline-track', [
-        m('td.track-name.-add', [
-          m('span.icon.material-icons-round', 'add'),
-          'Create new'
-        ]),
-        state.select.target === 'sprites' &&
-        state.select.items.length
-          ? m('td', { colspan: maxframes }, [
-              m('.track-prompt', {
-                class: dragging ? '-focus' : '',
-                ondragover: (evt) => evt.preventDefault(),
-                ondragenter: (evt) => { dragging = true },
-                ondragleave: (evt) => { dragging = false },
-                ondrop: (evt) => {
-                  evt.preventDefault()
-                  dragging = false
-
-                  const data = evt.dataTransfer.getData('text')
-                  evt.dataTransfer.clearData()
-
-                  const idx = parseInt(data)
-                  dispatch(addFrame, idx)
-                }
-              }, 'Drag sprites here to create an animation.')
-            ])
-          : m('td'),
-        m('div.track-bg')
       ])
     ])
   ])
