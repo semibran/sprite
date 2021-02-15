@@ -22,7 +22,7 @@ export const hideTimeline = (state) => ({
   panels: { ...state.panels, timeline: false }
 })
 
-export const addFrame = (state, sprid) => ({
+export const createAnim = (state, { ids }) => ({
   ...state,
   select: {
     ...state.select,
@@ -33,17 +33,22 @@ export const addFrame = (state, sprid) => ({
     name: 'untitled',
     next: null,
     speed: 1,
-    frames: sprid != null
-      ? ((sprite) => [{
-          sprite: sprid,
+    frames: ids
+      ? ids.map((id) => ({
+          sprite: id,
           duration: 1,
           origin: {
-            x: Math.round(sprite.rect[2] / 2),
-            y: sprite.rect[3]
+            x: Math.round(state.sprites[id].rect[2] / 2),
+            y: state.sprites[id].rect[3]
           }
-        }])(state.sprites[sprid])
+        }))
       : []
   }]
+})
+
+export const removeAnim = (state, { index }) => ({
+  ...state,
+  anims: state.anims.filter((_, i) => i !== index)
 })
 
 export const selectAnim = (state, { index, opts }) => {
@@ -59,7 +64,11 @@ export const selectAnim = (state, { index, opts }) => {
 
 export default function Timeline (state, dispatch) {
   const shown = state.panels.timeline
-  const maxframes = 5
+  const maxframes = state.anims.reduce(
+    (max, anim) =>
+      anim.frames.length > max
+        ? anim.frames.length
+        : max, 5)
   return Panel({
     id: 'timeline',
     name: 'Timeline',
@@ -87,7 +96,16 @@ export default function Timeline (state, dispatch) {
               }
             })
           }, [
-            m('td.track-name', anim.name),
+            m('td.track-name', [
+              isAnimSelected(state.select, i)
+                ? m('div', [
+                    anim.name,
+                    m('span.icon.material-icons-round', {
+                      onclick: () => dispatch(removeAnim, { index: i })
+                    }, 'close')
+                  ])
+                : anim.name
+            ]),
             anim.frames.map((frame) => {
               const image = cache.sprites && cache.sprites[frame.sprite]
               return m('td.frame', [
@@ -117,8 +135,8 @@ export default function Timeline (state, dispatch) {
                     const data = evt.dataTransfer.getData('text')
                     evt.dataTransfer.clearData()
 
-                    const idx = parseInt(data)
-                    dispatch(addFrame, idx)
+                    const ids = data.split(',').map(Number)
+                    dispatch(createAnim, { ids })
                   }
                 }, 'Drag sprites here to create an animation.')
               ])

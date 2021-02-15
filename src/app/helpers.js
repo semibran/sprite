@@ -6,7 +6,8 @@ export const isAnimSelected = (select, id) =>
   select.target === 'anims' && select.items.includes(id)
 
 export const getSelectedAnim = (state) =>
-  state.anims.list[state.anims.selects[state.anims.selects.length - 1]]
+  state.select.target === 'anims' &&
+  state.anims[state.select.list[state.select.list.length - 1]]
 
 export const getSelectedFrame = (state) =>
   getFrameAt(getSelectedAnim(state), state.timeline.selects[state.timeline.selects.length - 1])

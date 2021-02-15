@@ -15,16 +15,21 @@
     position: absolute;
     border-spacing: 0;
     border-collapse: collapse;
-    width: 100%;
+    width: calc(100% - 1px);
   }
 
   table::after {
     content: '';
-    display: table-cell;
+    display: block;
     background: white;
     height: 80px;
     border-top: thin solid $silver;
     border-right: thin solid $silver;
+  }
+
+  tr, td {
+    position: relative;
+    z-index: 2;
   }
 
   .frame-number span {
@@ -46,8 +51,16 @@
     margin-right: 12px;
   }
 
+  .frame .thumb {
+    margin-left: 4px;
+  }
+
   .frame:nth-child(2) {
     padding-left: 12px;
+
+    .thumb {
+      margin: 0;
+    }
   }
 
   .track-end {
@@ -71,8 +84,11 @@
 }
 
 .timeline-track {
-  cursor: pointer;
   position: relative;
+
+  &:not(:last-child) {
+    cursor: pointer;
+  }
 
   .track-name {
     border-top: thin solid $silver;
@@ -83,12 +99,30 @@
     justify-content: flex-end;
     align-items: center;
 
-    .icon {
+    & > .icon {
       margin-right: 8px;
+    }
+
+    div {
+      width: 100%;
+      display: flex;
+      flex-direction: row-reverse;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    div .icon {
+      margin-left: -4px;
+      border-radius: 4px;
+
+      &:hover {
+        background: $skyblue;
+      }
     }
   }
 
   .track-name.-add {
+    cursor: pointer;
     color: $blue;
 
     &:hover {
@@ -113,7 +147,6 @@
 }
 
 .timeline-track.-select {
-
   .track-name {
     background: $lightblue;
     color: $blue;
@@ -121,17 +154,14 @@
     border-right-color: $blue;
   }
 
-  .track-name, .frame {
-    position: relative;
-    z-index: 2;
-  }
-
   .track-bg {
     border-top-color: $blue;
     background: $lightblue;
   }
 
-  & + .timeline-track .track-bg {
-    border-top-color: $blue;
+  & + .timeline-track {
+    .track-name, .track-bg {
+      border-top-color: $blue;
+    }
   }
 }

@@ -4,11 +4,12 @@ import deepClone from 'lodash.clonedeep'
 import extractImage from 'img-extract'
 import mergeRects from '../lib/merge'
 import select from '../lib/select'
-import cache from '../app/cache'
 import Panel from './panel'
 import Thumb from './thumb'
+import cache from '../app/cache'
+import { isSpriteSelected } from '../app/helpers'
 
-let dragged = -1
+let dragging = false
 
 export const showSprites = (state) => ({
   ...state,
@@ -134,19 +135,21 @@ export default function SpritesPanel (state, dispatch) {
           })
 
           const handleDragStart = (evt) => {
-            dragged = i
-            evt.dataTransfer.setData('text/plain', i)
-            handleSelect(evt)
+            dragging = true
+            evt.dataTransfer.setData('text/plain', selection.items.join())
+            if (!isSpriteSelected(state.select, i)) {
+              handleSelect(evt)
+            }
           }
 
           const handleDragEnd = (evt) => {
-            dragged = -1
+            dragging = false
           }
 
           return m('.thumb', {
             key: `${i}-${sprite.name}`,
             class: (selected ? '-select' : '') +
-              (dragged === i ? ' -drag' : ''),
+              (dragging && isSpriteSelected(state.select, i) ? ' -drag' : ''),
             onclick: handleSelect,
             ondragstart: handleDragStart,
             ondragend: handleDragEnd,
