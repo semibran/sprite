@@ -117,10 +117,10 @@ export default function SpritesPanel (state, dispatch) {
   return Panel({
     id: 'sprites',
     name: `Sprites (${state.sprites.length})`,
-    hidden: !shown,
+    shown,
     onshow: () => dispatch(showSprites),
     onhide: () => dispatch(hideSprites)
-  }, shown && [
+  }, [
     cache.sprites && m('.panel-content', [
       m('.thumbs', [
         cache.sprites.map((image, i) => {

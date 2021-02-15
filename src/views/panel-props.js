@@ -17,10 +17,10 @@ export default function PropsPanel (state, dispatch) {
   return Panel({
     id: 'props',
     name: 'Properties',
-    hidden: !shown,
+    shown,
     onshow: () => dispatch(showProps),
     onhide: () => dispatch(hideProps)
-  }, shown && [
+  }, [
     !state.select.items.length &&
       ProjectPanel({ project: state.project, sprites: state.sprites, anims: state.anims }),
     state.select.target === 'sprites' && state.select.items.length === 1 &&

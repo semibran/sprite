@@ -18,10 +18,10 @@ export default function Timeline (state, dispatch) {
   return Panel({
     id: 'timeline',
     name: 'Timeline',
-    hidden: !shown,
+    shown,
     onshow: () => dispatch(showTimeline),
     onhide: () => dispatch(hideTimeline)
-  }, shown && [
+  }, [
     m('table.panel-content', [
       m('tr.timeline-header', [
         TimelineControls(state, dispatch),

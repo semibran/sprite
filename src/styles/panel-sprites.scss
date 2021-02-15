@@ -15,7 +15,8 @@ $banner-height: 56px;
   .thumbs {
     position: absolute;
     width: 100%;
-    padding: 16px 0 calc(16px + #{$banner-height});
+    padding: 16px;
+    padding-bottom: calc(16px + #{$banner-height});
     display: grid;
     grid-template-columns: repeat(auto-fill, $thumb-size);
     grid-gap: 8px;

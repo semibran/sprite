@@ -86,14 +86,14 @@ export default function Editor (state, dispatch) {
 
         const findSelect = (evt) => {
           const rect = vnode.dom.getBoundingClientRect()
-          const x = (evt.pageX - rect.left) / scale
-          const y = (evt.pageY - rect.top) / scale
+          const x = (evt.pageX - rect.left) / scale - 1
+          const y = (evt.pageY - rect.top) / scale - 1
           return sprites.findIndex((sprite) => {
             const [left, top, width, height] = sprite.rect
-            return x >= left &&
-              y >= top &&
-              x < left + width &&
-              y < top + height
+            return x >= left - 1 &&
+              y >= top - 1 &&
+              x < left + width + 1 &&
+              y < top + height + 1
           })
         }
 
@@ -107,7 +107,7 @@ export default function Editor (state, dispatch) {
           } else {
             const select = findSelect(evt)
             if (select !== -1) {
-              if (hover === -1) {
+              if (select !== hover) {
                 dispatch(hoverSprite, { index: select })
               }
             } else if (hover !== -1) {
@@ -135,8 +135,12 @@ export default function Editor (state, dispatch) {
 
         editor.addEventListener('wheel', (onwheel = (evt) => {
           evt.preventDefault()
-          scale = Math.max(1, scale + evt.deltaY * -0.01)
-          dispatch(scaleEditor, scale)
+          const newScale = Math.min(8, Math.max(1, scale + evt.deltaY * -0.01))
+          console.log(evt.deltaY)
+          if (scale !== newScale) {
+            scale = newScale
+            dispatch(scaleEditor, newScale)
+          }
         }))
       },
       onremove: (vnode) => {
