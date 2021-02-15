@@ -9,6 +9,7 @@ import Thumb from './thumb'
 import cache from '../app/cache'
 import { isSpriteSelected } from '../app/helpers'
 
+let selection = null
 let dragging = false
 
 export const showSprites = (state) => ({
@@ -110,7 +111,6 @@ export const mergeSprites = (state) => {
 }
 
 export default function SpritesPanel (state, dispatch) {
-  const selection = state.select
   const shown = state.panels.sprites
   return Panel({
     id: 'sprites',
@@ -123,8 +123,7 @@ export default function SpritesPanel (state, dispatch) {
       m('.thumbs', [
         cache.sprites.map((image, i) => {
           const sprite = state.sprites[i]
-          const selected = selection.target === 'sprites' &&
-            selection.items.includes(i)
+          const selected = isSpriteSelected(state.select, i)
 
           const handleSelect = (evt) => dispatch(focusSprite, {
             sprite,
@@ -136,7 +135,7 @@ export default function SpritesPanel (state, dispatch) {
 
           const handleDragStart = (evt) => {
             dragging = true
-            evt.dataTransfer.setData('text/plain', selection.items.join())
+            evt.dataTransfer.setData('text/plain', state.select.items.join())
             if (!isSpriteSelected(state.select, i)) {
               handleSelect(evt)
             }
@@ -146,7 +145,28 @@ export default function SpritesPanel (state, dispatch) {
             dragging = false
           }
 
-          return m('.thumb', {
+          return m.fragment({
+            onupdate: (vnode) => {
+              const thumb = vnode.dom
+              const wrap = thumb.parentNode.parentNode
+              if (isSpriteSelected(state.select, i) && selection !== i) {
+                selection = i
+                const thumbTop = thumb.offsetTop
+                const thumbHeight = thumb.offsetHeight
+                const thumbBottom = thumbTop + thumbHeight
+                const wrapTop = wrap.scrollTop
+                const wrapHeight = wrap.offsetHeight
+                const wrapBottom = wrapTop + wrapHeight
+                if (thumbTop < wrapTop || thumbBottom > wrapBottom) {
+                  thumb.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'center',
+                    inline: 'end'
+                  })
+                }
+              }
+            }
+          }, m('.thumb', {
             key: `${i}-${sprite.name}`,
             class: (selected ? '-select' : '') +
               (dragging && isSpriteSelected(state.select, i) ? ' -drag' : ''),
@@ -154,32 +174,33 @@ export default function SpritesPanel (state, dispatch) {
             ondragstart: handleDragStart,
             ondragend: handleDragEnd,
             draggable: true
-          }, Thumb(image))
+          }, Thumb(image)))
         })
       ])
     ]),
-    selection.target === 'sprites' && selection.items.length > 0 && m.fragment({
-      onbeforeremove: (vnode) => {
-        vnode.dom.classList.remove('-enter')
+    state.select.target === 'sprites' && state.select.items.length > 0 &&
+      m.fragment({
+        onbeforeremove: (vnode) => {
+          vnode.dom.classList.remove('-enter')
 
-        // HACK: reflush element to play same animation in reverse
-        // eslint-disable-next-line
-        void vnode.dom.offsetWidth
+          // HACK: reflush element to play same animation in reverse
+          // eslint-disable-next-line
+          void vnode.dom.offsetWidth
 
-        vnode.dom.classList.add('-exit')
-        return new Promise((resolve) => {
-          vnode.dom.addEventListener('animationend', resolve)
-        })
-      }
-    }, m('.banner.-enter', [
-      selection.items.length > 1
-        ? `${selection.items.length} sprites selected`
-        : '1 sprite selected',
-      selection.items.length === 1
-        ? m('button', 'Split')
-        : m('button', {
-          onclick: () => dispatch(mergeSprites)
-        }, 'Merge')
-    ]))
+          vnode.dom.classList.add('-exit')
+          return new Promise((resolve) => {
+            vnode.dom.addEventListener('animationend', resolve)
+          })
+        }
+      }, m('.banner.-enter', [
+        state.select.items.length > 1
+          ? `${state.select.items.length} sprites selected`
+          : '1 sprite selected',
+        state.select.items.length === 1
+          ? m('button', 'Split')
+          : m('button', {
+            onclick: () => dispatch(mergeSprites)
+          }, 'Merge')
+      ]))
   ])
 }

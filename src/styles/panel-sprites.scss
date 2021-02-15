@@ -16,7 +16,6 @@ $banner-height: 56px;
     position: absolute;
     width: 100%;
     padding: 16px;
-    padding-bottom: calc(16px + #{$banner-height});
     display: grid;
     grid-template-columns: repeat(auto-fill, $thumb-size);
     grid-gap: 8px;
@@ -29,7 +28,6 @@ $banner-height: 56px;
     font-weight: 500;
     padding: 0 24px;
     height: $banner-height;
-    margin-top: -$banner-height;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -61,9 +59,11 @@ $banner-height: 56px;
 @keyframes banner-enter {
   from {
     transform: translateY(100%);
+    margin-top: -$banner-height;
   }
 
   to {
     transform: translateY(0);
+    margin-top: 0;
   }
 }
