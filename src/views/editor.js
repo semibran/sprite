@@ -145,9 +145,9 @@ export default function Editor (state, dispatch) {
           evt.preventDefault()
           const delta = evt.deltaY * 0.01
           const newScale = Math.min(8, Math.max(1, scale - delta))
-          const rect = editor.getBoundingClientRect()
-          const x = (evt.clientX - rect.left - rect.width / 2) * delta
-          const y = (evt.clientY - rect.top - rect.height / 2) * delta
+          // const rect = editor.getBoundingClientRect()
+          // const x = (evt.clientX - rect.left - rect.width / 2) * delta
+          // const y = (evt.clientY - rect.top - rect.height / 2) * delta
           if (scale !== newScale) {
             scale = newScale
             dispatch(zoomCamera, newScale)

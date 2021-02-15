@@ -26,7 +26,9 @@ export default function PropsPanel (state, dispatch) {
     state.select.target === 'sprites' && state.select.items.length === 1 &&
       SpritePanel({ sprite: state.sprites[state.select.items[0]] }),
     state.select.target === 'sprites' && state.select.items.length > 1 &&
-      SpritesPanel({ sprites: state.select.items.map(index => state.sprites[index]) })
+      SpritesPanel({ sprites: state.select.items.map(index => state.sprites[index]) }),
+    state.select.target === 'anims' && state.select.items.length === 1 &&
+      AnimPanel({ anim: state.anims[state.select.items[0]] })
   ])
 }
 
@@ -90,6 +92,27 @@ function SpritesPanel ({ sprites }) {
       m('span', sprites.length > 1
         ? `${sprites.length} sprites selected`
         : '1 sprite selected')
+    ])
+  ])
+}
+
+function AnimPanel ({ anim }) {
+  return m('.panel-content', [
+    m('.panel-section.-name.-inline', [
+      m('.section-key', 'Animation'),
+      m('.section-value', anim.name)
+    ]),
+    m('.panel-section.-duration.-inline', [
+      m('.section-key', 'Duration'),
+      m('.section-value', anim.frames.length)
+    ]),
+    m('.panel-section.-speed.-inline', [
+      m('.section-key', 'Speed'),
+      m('.section-value', anim.speed)
+    ]),
+    m('.panel-section.-repeat.-inline', [
+      m('.section-key', 'Repeat'),
+      m('.section-value', anim.next ? 'Yes' : 'No')
     ])
   ])
 }

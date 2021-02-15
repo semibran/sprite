@@ -1,4 +1,10 @@
 
+export const isSpriteSelected = (select, id) =>
+  select.target === 'sprites' && select.items.includes(id)
+
+export const isAnimSelected = (select, id) =>
+  select.target === 'anims' && select.items.includes(id)
+
 export const getSelectedAnim = (state) =>
   state.anims.list[state.anims.selects[state.anims.selects.length - 1]]
 

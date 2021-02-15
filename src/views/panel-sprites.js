@@ -20,20 +20,15 @@ export const hideSprites = (state) => ({
   panels: { ...state.panels, sprites: false }
 })
 
-export const selectSprite = (state, { index, focus, opts }) => {
-  const newState = deepClone(state)
-  const selection = newState.select
+export const selectSprite = (state, { index, opts }) => {
+  const selection = deepClone(state.select)
   if (selection.target !== 'sprites') {
     selection.target = 'sprites'
     selection.items = []
   }
 
   select(selection.items, index, opts)
-  if (!selection.items.length) {
-    selection.target = null
-  }
-
-  return newState
+  return { ...state, select: selection }
 }
 
 export const focusSprite = (state, { sprite, opts }) => (dispatch, getState) => {
@@ -160,7 +155,7 @@ export default function SpritesPanel (state, dispatch) {
         })
       ])
     ]),
-    selection.target === 'sprites' && selection.items.length && m.fragment({
+    selection.target === 'sprites' && selection.items.length > 0 && m.fragment({
       onbeforeremove: (vnode) => {
         vnode.dom.classList.remove('-enter')
 
