@@ -34,7 +34,8 @@ export const selectSprite = (state, { index, opts }) => {
   return { ...state, select: selection }
 }
 
-export const focusSprite = (state, { sprite, opts }) => (dispatch, getState) => {
+export const focusSprite = ({ sprite, opts }) => (dispatch, getState) => {
+  const state = getState()
   dispatch(selectSprite, {
     index: state.sprites.indexOf(sprite),
     focus: true,
@@ -175,13 +176,13 @@ export default function SpritesPanel (state, dispatch) {
           const sprite = state.sprites[i]
           const selected = isSpriteSelected(state.select, i)
 
-          const handleSelect = (evt) => dispatch(focusSprite, {
+          const handleSelect = (evt) => dispatch(focusSprite({
             sprite,
             opts: {
               ctrl: evt.ctrlKey || evt.metaKey,
               shift: evt.shiftKey
             }
-          })
+          }))
 
           const handleDragStart = (evt) => {
             dragging = true

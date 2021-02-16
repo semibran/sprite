@@ -17,7 +17,6 @@ let pan = null
 let click = false
 let hover = -1
 let scale = 1
-let mouse = null
 
 export const startPan = (state, { x, y }) => ({
   ...state,
@@ -46,6 +45,13 @@ export const updatePan = (state, { x, y }) => {
   }
 }
 
+export const setCamera = (state, { x, y }) => {
+  const editor = deepClone(state.editor)
+  editor.pos.x = x
+  editor.pos.y = y
+  return { ...state, editor }
+}
+
 export const moveCamera = (state, { x, y }) => {
   const editor = deepClone(state.editor)
   editor.pos.x += x
@@ -71,6 +77,9 @@ export const deselect = (state) => ({
 export default function Editor (state, dispatch) {
   ;({ sprites } = state)
   ;({ pos, pan, click, scale } = state.editor)
+  // if (!pos) {
+  //   pos = state.editor.pos
+  // }
   const image = cache.image
   return m('.editor', {
     class: [
@@ -97,12 +106,16 @@ export default function Editor (state, dispatch) {
         }
 
         editor.addEventListener('mousedown', (onmousedown = (evt) => {
-          dispatch(startPan, { x: evt.pageX / scale, y: evt.pageY / scale })
+          const mouse = { x: evt.pageX, y: evt.pageY }
+          pos = startPan(state, mouse).editor.pos
+          dispatch(startPan, mouse)
         }))
 
         window.addEventListener('mousemove', (onmousemove = (evt) => {
           if (pan) {
-            dispatch(updatePan, { x: evt.pageX / scale, y: evt.pageY / scale })
+            const mouse = { x: evt.pageX, y: evt.pageY }
+            pos = updatePan(state, mouse).editor.pos
+            dispatch(updatePan, mouse)
           } else {
             const select = findSelect(evt)
             if (select !== -1) {
@@ -136,17 +149,19 @@ export default function Editor (state, dispatch) {
 
         editor.addEventListener('wheel', (onwheel = (evt) => {
           evt.preventDefault()
-          const delta = evt.deltaY * 0.01
-          const newScale = Math.min(8, Math.max(1, scale - delta))
-          // const rect = editor.getBoundingClientRect()
-          // const x = (evt.clientX - rect.left - rect.width / 2) * delta
-          // const y = (evt.clientY - rect.top - rect.height / 2) * delta
-          if (scale !== newScale) {
-            scale = newScale
-            mouse = { x, y }
-            dispatch(zoomCamera, newScale)
-            // dispatch(moveCamera, { x, y })
-          }
+          const newScale = Math.min(8, Math.max(1, scale - evt.deltaY * 0.01))
+          const rect = editor.getBoundingClientRect()
+          const mouseX = evt.pageX - rect.left - rect.width / 2
+          const mouseY = evt.pageY - rect.top - rect.height / 2
+          const imageX = (mouseX - pos.x) / scale
+          const imageY = (mouseY - pos.y) / scale
+          const x = mouseX - imageX * newScale
+          const y = mouseY - imageY * newScale
+          pos.x = x
+          pos.y = y
+          scale = newScale
+          dispatch(zoomCamera, newScale)
+          dispatch(setCamera, { x, y })
         }))
       },
       onremove: (vnode) => {
@@ -195,8 +210,8 @@ export default function Editor (state, dispatch) {
       }
     }, m('canvas', {
       style: cssify({
-        transform: `translate(${pos.x}px, ${pos.y}px) scale(${scale})`,
-        'transform-origin': `${-pos.x}px ${-pos.y}px`
+        transform: `translate3d(${Math.round(pos.x)}px, ${Math.round(pos.y)}px, 0)` +
+          ` scale(${scale})`
       })
     }))
   ])

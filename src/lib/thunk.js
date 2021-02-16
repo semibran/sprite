@@ -8,12 +8,8 @@ const thunk = ({ dispatch, getState }) => (next) => (action, payload) => {
     return next(action)
   }
 
-  // TODO: actions are run every time regardless of return type
-  // we need a way to distinguish between return types
-  // use objects, strings, or promises as actions
-  const result = action(getState(), payload)
-  if (typeof result === 'function') {
-    result(dispatch, getState)
+  if (action.toString().slice(1).startsWith('dispatch')) {
+    action(dispatch, getState)
   } else {
     return next({ type: action.name, payload })
   }
