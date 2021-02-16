@@ -62,16 +62,6 @@ export const zoomCamera = (state, scale) => ({
   editor: { ...state.editor, scale }
 })
 
-export const hoverSprite = (state, { index }) => ({
-  ...state,
-  editor: { ...state.editor, hover: index }
-})
-
-export const unhoverSprite = (state) => ({
-  ...state,
-  editor: { ...state.editor, hover: -1 }
-})
-
 export const deselect = (state) => ({
   ...state,
   select: { ...state.select, target: null, items: [] }
@@ -79,7 +69,7 @@ export const deselect = (state) => ({
 
 export default function Editor (state, dispatch) {
   ;({ sprites } = state)
-  ;({ pos, pan, hover, click, scale } = state.editor)
+  ;({ pos, pan, click, scale } = state.editor)
   const image = cache.image
   return m('.editor', {
     class: [
@@ -115,11 +105,13 @@ export default function Editor (state, dispatch) {
           } else {
             const select = findSelect(evt)
             if (select !== -1) {
-              if (select !== hover) {
-                dispatch(hoverSprite, { index: select })
+              if (hover !== select) {
+                hover = select
+                m.redraw()
               }
             } else if (hover !== -1) {
-              dispatch(unhoverSprite)
+              hover = -1
+              m.redraw()
             }
           }
         }))

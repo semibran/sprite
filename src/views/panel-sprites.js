@@ -197,13 +197,15 @@ export default function SpritesPanel (state, dispatch) {
 
           return m.fragment({
             onupdate: (vnode) => {
+              const last = state.select.items[state.select.items.length - 1]
+              if (!isSpriteSelected(state.select) || i !== last) {
+                return
+              }
+
               const thumb = vnode.dom
               const wrap = thumb.parentNode.parentNode
-              const last = state.select.items[state.select.items.length - 1]
-              if (isSpriteSelected(state.select) &&
-                  i === last &&
-                  selection !== state.select.items.join()) {
-                selection = state.select.items.join()
+              const id = state.select.items.join()
+              if (!selection || id.length > selection.length) {
                 const thumbTop = thumb.offsetTop
                 const thumbHeight = thumb.offsetHeight
                 const thumbBottom = thumbTop + thumbHeight
@@ -218,6 +220,8 @@ export default function SpritesPanel (state, dispatch) {
                   })
                 }
               }
+
+              selection = id
             }
           }, m('.thumb', {
             key: `${i}-${sprite.name}-${sprite.rect.join()}`,
