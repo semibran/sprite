@@ -1,19 +1,19 @@
 
 import m from 'mithril'
 
-export default function Panel ({ id, name, hidden, onshow, onhide }, children) {
+export default function Panel ({ id, name, shown, onshow, onhide }, children) {
   return m('.panel.-' + id, {
-    class: hidden ? '-min' : ''
+    class: shown ? '' : '-min'
   }, [
     m('.panel-header', {
-      ondblclick: hidden ? onshow : onhide
+      ondblclick: shown ? onhide : onshow
     }, [
       name,
       m('span.icon.-button.material-icons-round', {
         tabindex: 0,
-        onclick: hidden ? onshow : onhide
-      }, hidden ? 'add' : 'remove')
+        onclick: shown ? onhide : onshow
+      }, shown ? 'remove' : 'add')
     ]),
-    children
+    shown && children
   ])
 }

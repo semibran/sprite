@@ -3,24 +3,42 @@
 .panel.-timeline {
   background: $white;
   border-top: thin solid $silver;
+  flex-grow: 0;
+
+  .panel-content {
+    height: 45vh;
+    position: relative;
+    overflow-y: auto;
+  }
 
   table {
+    position: absolute;
     border-spacing: 0;
+    border-collapse: collapse;
+    width: calc(100% - 1px);
   }
 
   table::after {
     content: '';
-    display: table-cell;
+    display: block;
     background: white;
+    height: 80px;
+    border-top: thin solid $silver;
     border-right: thin solid $silver;
+  }
+
+  tr, td {
+    position: relative;
+    z-index: 2;
   }
 
   .frame-number span {
     color: $lightgray;
     border: thin solid $silver;
     border-radius: 4px;
-    padding: 0 32px;
+    width: $thumb-size;
     line-height: 24px;
+    font-size: 12px;
     margin-left: 4px;
     text-align: center;
     display: block;
@@ -28,6 +46,34 @@
 
   .frame-number:nth-child(2) span {
     margin-left: 12px;
+  }
+
+  .frame-number:last-child span {
+    margin-right: 12px;
+  }
+
+  .frame .thumb {
+    margin-left: 4px;
+  }
+
+  .frame:nth-child(2) {
+    padding-left: 12px;
+
+    .thumb {
+      margin: 0;
+    }
+  }
+
+  .track-end {
+    width: 100%;
+  }
+
+  .track-bg {
+    border-top: thin solid $silver;
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 80px;
   }
 }
 
@@ -39,10 +85,84 @@
 }
 
 .timeline-track {
+  position: relative;
+
+  &:not(:last-child) {
+    cursor: pointer;
+  }
+
   .track-name {
-    font-weight: bold;
-    padding: 0 24px;
-    line-height: 72px;
     border-top: thin solid $silver;
+    padding: 0 24px;
+    line-height: 80px;
+    font-weight: 500;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+
+    & > .icon {
+      margin-right: 8px;
+    }
+
+    div {
+      width: 100%;
+      display: flex;
+      flex-direction: row-reverse;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    div .icon {
+      margin-left: -4px;
+      border-radius: 4px;
+
+      &:hover {
+        background: $skyblue;
+      }
+    }
+  }
+
+  .track-name.-add {
+    cursor: pointer;
+    color: $blue;
+
+    &:hover {
+      background: $lightblue;
+    }
+  }
+
+  .track-prompt {
+    color: $lightgray;
+    border: 2px dashed $silver;
+    border-radius: 4px;
+    line-height: calc(64px - 4px);
+    margin-left: 12px;
+    text-align: center;
+
+    &.-focus {
+      color: $blue;
+      border-color: $blue;
+      background: $lightblue;
+    }
+  }
+}
+
+.timeline-track.-select {
+  .track-name {
+    background: $lightblue;
+    color: $blue;
+    border-top-color: $blue;
+    border-right-color: $blue;
+  }
+
+  .track-bg {
+    border-top-color: $blue;
+    background: $lightblue;
+  }
+
+  & + .timeline-track {
+    .track-name, .track-bg {
+      border-top-color: $blue;
+    }
   }
 }

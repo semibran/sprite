@@ -1,16 +1,23 @@
 
 import m from 'mithril'
+import deepClone from 'lodash.clonedeep'
+import cssify from 'css-string'
 import cache from '../app/cache'
 import { selectSprite } from './panel-sprites'
 
+let editor = null
+let canvas = null
 let onmousedown = null
 let onmousemove = null
 let onmouseup = null
+let onwheel = null
 let sprites = null
 let pos = null
 let pan = null
 let click = false
 let hover = -1
+let scale = 1
+let mouse = null
 
 export const startPan = (state, { x, y }) => ({
   ...state,
@@ -39,19 +46,21 @@ export const updatePan = (state, { x, y }) => {
   }
 }
 
+export const moveCamera = (state, { x, y }) => {
+  const editor = deepClone(state.editor)
+  editor.pos.x += x
+  editor.pos.y += y
+  return { ...state, editor }
+}
+
 export const endPan = (state) => ({
   ...state,
   editor: { ...state.editor, click: false, pan: null }
 })
 
-export const hoverSprite = (state, { index }) => ({
+export const zoomCamera = (state, scale) => ({
   ...state,
-  editor: { ...state.editor, hover: index }
-})
-
-export const unhoverSprite = (state) => ({
-  ...state,
-  editor: { ...state.editor, hover: -1 }
+  editor: { ...state.editor, scale }
 })
 
 export const deselect = (state) => ({
@@ -61,7 +70,7 @@ export const deselect = (state) => ({
 
 export default function Editor (state, dispatch) {
   ;({ sprites } = state)
-  ;({ pos, pan, hover, click } = state.editor)
+  ;({ pos, pan, click, scale } = state.editor)
   const image = cache.image
   return m('.editor', {
     class: [
@@ -71,34 +80,39 @@ export default function Editor (state, dispatch) {
   }, [
     m.fragment({
       oncreate: (vnode) => {
+        canvas = vnode.dom
+        editor = canvas.parentNode
+
         const findSelect = (evt) => {
-          const rect = vnode.dom.getBoundingClientRect()
-          const x = evt.pageX - rect.left
-          const y = evt.pageY - rect.top
+          const rect = canvas.getBoundingClientRect()
+          const x = (evt.pageX - rect.left) / scale - 1
+          const y = (evt.pageY - rect.top) / scale - 1
           return sprites.findIndex((sprite) => {
             const [left, top, width, height] = sprite.rect
-            return x >= left &&
-              y >= top &&
-              x < left + width &&
-              y < top + height
+            return x >= left - 1 &&
+              y >= top - 1 &&
+              x < left + width + 1 &&
+              y < top + height + 1
           })
         }
 
-        vnode.dom.addEventListener('mousedown', (onmousedown = (evt) => {
-          dispatch(startPan, { x: evt.pageX, y: evt.pageY })
+        editor.addEventListener('mousedown', (onmousedown = (evt) => {
+          dispatch(startPan, { x: evt.pageX / scale, y: evt.pageY / scale })
         }))
 
         window.addEventListener('mousemove', (onmousemove = (evt) => {
           if (pan) {
-            dispatch(updatePan, { x: evt.pageX, y: evt.pageY })
+            dispatch(updatePan, { x: evt.pageX / scale, y: evt.pageY / scale })
           } else {
             const select = findSelect(evt)
             if (select !== -1) {
-              if (hover === -1) {
-                dispatch(hoverSprite, { index: select })
+              if (hover !== select) {
+                hover = select
+                m.redraw()
               }
             } else if (hover !== -1) {
-              dispatch(unhoverSprite)
+              hover = -1
+              m.redraw()
             }
           }
         }))
@@ -119,14 +133,29 @@ export default function Editor (state, dispatch) {
             dispatch(endPan)
           }
         }))
+
+        editor.addEventListener('wheel', (onwheel = (evt) => {
+          evt.preventDefault()
+          const delta = evt.deltaY * 0.01
+          const newScale = Math.min(8, Math.max(1, scale - delta))
+          // const rect = editor.getBoundingClientRect()
+          // const x = (evt.clientX - rect.left - rect.width / 2) * delta
+          // const y = (evt.clientY - rect.top - rect.height / 2) * delta
+          if (scale !== newScale) {
+            scale = newScale
+            mouse = { x, y }
+            dispatch(zoomCamera, newScale)
+            // dispatch(moveCamera, { x, y })
+          }
+        }))
       },
       onremove: (vnode) => {
-        vnode.dom.removeEventListener('mousedown', onmousedown)
+        canvas.removeEventListener('mousedown', onmousedown)
         window.removeEventListener('mousemove', onmousemove)
         window.removeEventListener('mouseup', onmouseup)
+        editor.removeEventListener('wheel', onwheel)
       },
       onupdate: (vnode) => {
-        const canvas = vnode.dom
         if (image) {
           canvas.width = image.width
           canvas.height = image.height
@@ -165,7 +194,10 @@ export default function Editor (state, dispatch) {
         }
       }
     }, m('canvas', {
-      style: `transform: translate(${pos.x}px, ${pos.y}px)`
+      style: cssify({
+        transform: `translate(${pos.x}px, ${pos.y}px) scale(${scale})`,
+        'transform-origin': `${-pos.x}px ${-pos.y}px`
+      })
     }))
   ])
 }

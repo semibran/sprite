@@ -3,7 +3,7 @@ $banner-height: 56px;
 .panel.-sprites {
   background: $white;
   border-right: thin solid $silver;
-  flex: 1;
+  flex: 2;
   display: flex;
   flex-direction: column;
 
@@ -15,21 +15,19 @@ $banner-height: 56px;
 
   .thumbs {
     position: absolute;
-    display: flex;
-    flex-wrap: wrap;
+    width: 100%;
+    padding: 16px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, $thumb-size);
+    grid-gap: 8px;
     justify-content: center;
-    gap: 8px;
-    padding: 16px 0 calc(16px + #{$banner-height});
   }
 
   .banner {
-    user-select: none;
     background: $blue;
     color: white;
-    font-weight: bold;
+    font-weight: 500;
     padding: 0 24px;
-    margin-top: -$banner-height;
-    margin-right: 15px;
     height: $banner-height;
     display: flex;
     justify-content: space-between;
@@ -38,7 +36,7 @@ $banner-height: 56px;
     z-index: 1;
 
     &.-enter {
-      animation: 250ms banner-enter ease-out;
+      animation: 125ms banner-enter ease-out;
     }
 
     &.-exit {
@@ -48,6 +46,7 @@ $banner-height: 56px;
     button {
       background: white;
       color: $blue;
+      font-weight: bold;
       padding: 8px 24px;
       border-radius: 4px;
     }
@@ -61,9 +60,11 @@ $banner-height: 56px;
 @keyframes banner-enter {
   from {
     transform: translateY(100%);
+    margin-top: -$banner-height;
   }
 
   to {
     transform: translateY(0);
+    margin-top: 0;
   }
 }

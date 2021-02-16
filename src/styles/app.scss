@@ -23,6 +23,7 @@ html {
 }
 
 body {
+  user-select: none;
   color: $charcoal;
 }
 
@@ -57,9 +58,4 @@ canvas {
 .content {
   display: flex;
   flex: 1;
-}
-
-.content.-col {
-  flex-direction: column;
-  flex: 2;
 }

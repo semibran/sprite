@@ -2,7 +2,7 @@
 import extractImage from 'img-extract'
 import cloneImage from '../lib/img-clone'
 import sliceCanvas from '../lib/slice'
-import cache from './cache'
+import cache from '../app/cache'
 
 export * from '../views/editor'
 export * from '../views/timeline'
@@ -11,6 +11,7 @@ export * from '../views/panel-sprites'
 export * from '../views/panel-props'
 
 export const useImage = (state) => {
+  state.anims = []
   if (state.sprites.length) {
     cache.sprites = state.sprites.map((sprite) =>
       extractImage(cache.image, ...sprite.rect))

@@ -1,22 +1,24 @@
 $thumb-bg: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAApklEQVR4Xu3WQQ0AIQADQdCEWjyBpjsZ+2AwQEJoO3Pv/Y3wrLXC28eYHsAPEAEdULaQErQCZrBMIAeAEAmSIAmSYLlDJEiCJFgmkARJkARJkARJsNwhEiRBEiwTSIIk+LwEzzmpA+69bQd4AD9ABHRA2UJK0AqYwTKBY3IAB3AAB5QtxAEcwAFlAjkAhEiQBEmQBMsdIkESJMEygSRIgiRIgm9L8AfNACXwHHdRTwAAAABJRU5ErkJggg==) #ccc;
+$thumb-size: 64px;
 
 .thumb {
   cursor: pointer;
   background: $thumb-bg;
   border: thin solid $gray;
   border-radius: 4px;
-  width: 64px;
-  height: 64px;
+  width: $thumb-size;
+  height: $thumb-size;
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
   overflow: hidden;
+  transition: 125ms opacity;
 }
 
 .thumb canvas {
-  max-width: 64px;
-  max-height: 64px;
+  max-width: $thumb-size;
+  max-height: $thumb-size;
   position: relative;
   z-index: 1;
 }
@@ -35,4 +37,8 @@ $thumb-bg: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXH
     bottom: 0;
     left: 0;
   }
+}
+
+.thumb.-drag {
+  opacity: 0.75;
 }
