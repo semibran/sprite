@@ -14,6 +14,11 @@ export const getSelectedSprite = (state) =>
     ? state.sprites[state.select.items[state.select.items.length - 1]]
     : null
 
+export const getSelectedSprites = (state) =>
+  state.select.target === 'sprites' && state.select.items.length
+    ? state.select.items.map(idx => state.sprites[idx])
+    : []
+
 export const getSelectedAnim = (state) =>
   state.select.target === 'anims' &&
   state.anims[state.select.items[state.select.items.length - 1]]

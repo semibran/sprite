@@ -8,6 +8,7 @@ export * from '../views/editor-sprites'
 export * from '../views/timeline'
 export * from '../views/timeline-controls'
 export * from '../views/panel-sprites'
+export * from '../views/banner'
 export * from '../views/panel-props'
 
 export const useImage = (state) => {

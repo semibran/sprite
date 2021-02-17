@@ -4,10 +4,7 @@ import cache from '../app/cache'
 import Editor from './editor'
 import contains from '../lib/rect-contains'
 import { selectSprite } from './panel-sprites'
-import {
-  isSpriteSelected,
-  getSelectedSprite
-} from '../app/helpers'
+import { isSpriteSelected } from '../app/helpers'
 
 let hover = -1
 let sprite = null
@@ -108,7 +105,7 @@ export default function SpritesEditor (state, dispatch) {
     persist = true
     transform = {
       pos: spriteEditor.pos,
-      scale: spriteEditor.scale,
+      scale: spriteEditor.scale
     }
   }
 

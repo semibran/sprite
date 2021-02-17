@@ -8,13 +8,16 @@ const SCALE_MAX = 8
 const SCALE_FACTOR = 0.01
 
 export default function Editor ({ attrs }) {
-  const { onrender, onclick, onmove, onpan, onzoom } = attrs
   let pos = attrs.pos || { x: 0, y: 0 }
   let scale = attrs.scale || 1
+  let onrender = attrs.onrender
+  let onclick = attrs.onclick
+  let onmove = attrs.onmove
+  let onpan = attrs.onpan
+  let onzoom = attrs.onzoom
   let pan = null
   let click = null
   let hover = false
-  let rehydrated = false
   let target = null
   let editor = null
   let canvas = null
@@ -34,16 +37,18 @@ export default function Editor ({ attrs }) {
     return transformPos(mouse.x, mouse.y)
   }
 
-  const moveTo = (_target) => {
+  const flyTo = (_target) => {
     target = _target
     requestAnimationFrame(function animate () {
       if (target !== _target) {
-        return
+        return // a different target was clicked during animation
       }
       const xdist = target.x - pos.x
       const ydist = target.y - pos.y
       if (Math.abs(xdist) + Math.abs(ydist) < 1) {
-        return
+        pos.x = target.x
+        pos.y = target.y
+        return // we've arrived
       }
       pos.x += xdist / 8
       pos.y += ydist / 8
@@ -129,17 +134,15 @@ export default function Editor ({ attrs }) {
       window.removeEventListener('mouseup', onmouseup)
       canvas.removeEventListener('wheel', onwheel)
     },
-    onbeforeupdate: (vnode) => {
-      if (vnode.attrs.pos) {
-        if (!rehydrated) {
-          rehydrated = true
-          pos = vnode.attrs.pos
-        } else {
-          moveTo(vnode.attrs.pos)
-        }
-      }
-      scale = vnode.attrs.scale || scale
-      hover = vnode.attrs.hover || false
+    onbeforeupdate: ({ attrs }) => {
+      attrs.pos && flyTo(attrs.pos)
+      scale = attrs.scale || scale
+      hover = attrs.hover || false
+      onrender = attrs.onrender
+      onclick = attrs.onclick
+      onmove = attrs.onmove
+      onpan = attrs.onpan
+      onzoom = attrs.onzoom
     },
     onupdate: (vnode) => {
       onrender && onrender(canvas)
