@@ -41,39 +41,17 @@ export const focusSprite = ({ sprite, opts }) => (dispatch, getState) => {
     focus: true,
     opts
   })
-
-  const target = startFocus(state, sprite).editor.target
-  const x = target.x
-  const y = target.y
   dispatch(startFocus, sprite)
-  requestAnimationFrame(function animate () {
-    const editor = getState().editor
-    if (!editor.target ||
-        editor.target.x !== x ||
-        editor.target.y !== y) {
-      return
-    }
-    const xdist = Math.abs(editor.target.x - editor.pos.x)
-    const ydist = Math.abs(editor.target.y - editor.pos.y)
-    if (xdist + ydist < 1) {
-      dispatch(endFocus)
-    } else {
-      dispatch(updateCamera)
-      requestAnimationFrame(animate)
-    }
-  })
 }
 
 export const startFocus = (state, sprite) => {
-  const editor = deepClone(state.editor)
+  const editor = deepClone(state.spritesEditor)
   const { x, y, width, height } = sprite.rect
-  editor.click = false
-  editor.pan = null
-  editor.target = {
+  spritesEditor.target = {
     x: Math.floor(-x - width / 2),
     y: Math.floor(-y - height / 2)
   }
-  return { ...state, editor }
+  return { ...state, spritesEditor }
 }
 
 export const endFocus = (state, sprite) => {
@@ -203,15 +181,18 @@ export default function SpritesPanel (state, dispatch) {
 
           return m.fragment({
             onupdate: (vnode) => {
-              const last = state.select.items[state.select.items.length - 1]
+              const selects = state.select.items
+              const last = selects[selects.length - 1]
               if (!isSpriteSelected(state.select) || i !== last) {
                 return
               }
 
               const thumb = vnode.dom
               const wrap = thumb.parentNode.parentNode
-              const id = state.select.items.join()
-              if (!selection || id.length > selection.length) {
+              const id = selects.join()
+              if (!selection ||
+                 (id !== selection
+                    && selects.length >= selection.split(',').length)) {
                 const thumbTop = thumb.offsetTop
                 const thumbHeight = thumb.offsetHeight
                 const thumbBottom = thumbTop + thumbHeight
@@ -224,10 +205,11 @@ export default function SpritesPanel (state, dispatch) {
                     block: 'center',
                     inline: 'end'
                   })
+                  console.log('scrolling')
                 }
               }
 
-              selection = id
+              selection = selects.join()
             }
           }, m('.thumb', {
             key: `${sprite.name}(${sprite.rect.x},${sprite.rect.y},${sprite.width},${sprite.height})`,

@@ -94,7 +94,6 @@ export default function SpritesEditor (state, dispatch) {
         }
       },
       onclick: ({ x, y, ctrl, shift }) => {
-        console.log(x, y)
         const id = sprites.findIndex((sprite) => contains(sprite.rect, x, y))
         if (id === -1) {
           dispatch(deselectSprites)

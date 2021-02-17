@@ -46,7 +46,8 @@ export default function Editor ({ attrs }) {
 
   const onmousemove = (evt) => {
     if (click &&
-        Math.abs(evt.pageX - click.x) + Math.abs(evt.pageY - click.y) > 2) {
+        Math.abs(evt.pageX - click.x) +
+        Math.abs(evt.pageY - click.y) > 2) {
       click = null
     }
     if (pan) {
