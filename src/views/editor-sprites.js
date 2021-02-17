@@ -113,10 +113,13 @@ export default function SpritesEditor (state, dispatch) {
     ...transform,
     hover: hover !== -1,
     onupdate: (vnode) => {
-      render(vnode.dom.firstChild)
+      render(vnode.state.canvas)
     },
-    onmove: ({ x, y }) => {
-      const id = sprites.findIndex((sprite) => contains(sprite.rect, x, y))
+    onmove: ({ x, y, contained }) => {
+      let id = -1
+      if (contained) {
+        id = sprites.findIndex((sprite) => contains(sprite.rect, x, y))
+      }
       if (hover !== id) {
         hover = id
         m.redraw()

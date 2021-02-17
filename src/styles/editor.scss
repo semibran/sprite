@@ -10,9 +10,12 @@
   left: 50%;
   top: 50%;
   transform-origin: 0 0 0;
-  // transition: 0.25s transform;
   border: thin solid $gray;
   box-shadow: 0 8px 16px rgba(black, 0.25);
+}
+
+.editor canvas.-adjust {
+  transition: 250ms transform;
 }
 
 .editor:hover {
