@@ -15,7 +15,7 @@ const initialState = {
   window: null,
   menu: false,
   select: {
-    target: null,
+    target: 'sprites',
     items: []
   },
   sprites: [],
