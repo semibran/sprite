@@ -14,6 +14,8 @@ export default function Editor ({ attrs }) {
   let pan = null
   let click = null
   let hover = false
+  let rehydrated = false
+  let target = null
   let editor = null
   let canvas = null
 
@@ -30,6 +32,24 @@ export default function Editor ({ attrs }) {
   const getImagePos = (x, y) => {
     const mouse = getMousePos(x, y)
     return transformPos(mouse.x, mouse.y)
+  }
+
+  const moveTo = (_target) => {
+    target = _target
+    requestAnimationFrame(function animate () {
+      if (target !== _target) {
+        return
+      }
+      const xdist = target.x - pos.x
+      const ydist = target.y - pos.y
+      if (Math.abs(xdist) + Math.abs(ydist) < 1) {
+        return
+      }
+      pos.x += xdist / 8
+      pos.y += ydist / 8
+      m.redraw()
+      requestAnimationFrame(animate)
+    })
   }
 
   const onmousedown = (evt) => {
@@ -110,7 +130,16 @@ export default function Editor ({ attrs }) {
       canvas.removeEventListener('wheel', onwheel)
     },
     onbeforeupdate: (vnode) => {
-      hover = vnode.attrs.hover
+      if (vnode.attrs.pos) {
+        if (!rehydrated) {
+          rehydrated = true
+          pos = vnode.attrs.pos
+        } else {
+          moveTo(vnode.attrs.pos)
+        }
+      }
+      scale = vnode.attrs.scale || scale
+      hover = vnode.attrs.hover || false
     },
     onupdate: (vnode) => {
       onrender && onrender(canvas)

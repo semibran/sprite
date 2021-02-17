@@ -45,7 +45,8 @@ const initialState = {
 Object.assign(cache, {
   image: null,
   timeout: null,
-  images: []
+  sprites: [],
+  messages: {}
 })
 
 const persistConfig = { key: 'root', storage }

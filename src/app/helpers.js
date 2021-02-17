@@ -5,11 +5,18 @@ export const isSpriteSelected = (select, id) =>
     : select.target === 'sprites' && select.items.includes(id)
 
 export const isAnimSelected = (select, id) =>
-  select.target === 'anims' && select.items.includes(id)
+  id == null
+    ? select.target === 'anims'
+    : select.target === 'anims' && select.items.includes(id)
+
+export const getSelectedSprite = (state) =>
+  state.select.target === 'sprites' && state.select.items.length
+    ? state.sprites[state.select.items[state.select.items.length - 1]]
+    : null
 
 export const getSelectedAnim = (state) =>
   state.select.target === 'anims' &&
-  state.anims[state.select.list[state.select.list.length - 1]]
+  state.anims[state.select.items[state.select.items.length - 1]]
 
 export const getSelectedFrame = (state) =>
   getFrameAt(getSelectedAnim(state), state.timeline.selects[state.timeline.selects.length - 1])

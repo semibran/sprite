@@ -4,9 +4,14 @@ import cache from '../app/cache'
 import Editor from './editor'
 import contains from '../lib/rect-contains'
 import { selectSprite } from './panel-sprites'
-import { isSpriteSelected } from '../app/helpers'
+import {
+  isSpriteSelected,
+  getSelectedSprite
+} from '../app/helpers'
 
 let hover = -1
+let sprite = null
+let persist = false
 
 const fill = (canvas) => {
   const context = canvas.getContext('2d')
@@ -38,7 +43,7 @@ export const deselectSprites = (state) => ({
 })
 
 export default function SpritesEditor (state, dispatch) {
-  const sprites = state.sprites
+  const { sprites, spriteEditor } = state
   const image = cache.image
 
   const render = (canvas) => {
@@ -78,37 +83,64 @@ export default function SpritesEditor (state, dispatch) {
     })
   }
 
-  return (!state._persist || state._persist.rehydrated) &&
-    m(Editor, {
-      pos: state.spriteEditor.pos,
-      scale: state.spriteEditor.scale,
-      hover: hover !== -1,
-      onupdate: (vnode) => {
-        render(vnode.dom.firstChild)
-      },
-      onmove: ({ x, y }) => {
-        const id = sprites.findIndex((sprite) => contains(sprite.rect, x, y))
-        if (hover !== id) {
-          hover = id
-          m.redraw()
+  if (state._persist && !state._persist.rehydrated) {
+    return null
+  }
+
+  let transform = {}
+
+  if (cache.messages.focus) {
+    const newSprite = cache.messages.focus
+    cache.messages.focus = null
+    if (newSprite && sprite !== newSprite) {
+      sprite = newSprite
+      const { x, y, width, height } = sprite.rect
+      transform = {
+        pos: {
+          x: Math.floor(-x - width / 2),
+          y: Math.floor(-y - height / 2)
         }
-      },
-      onclick: ({ x, y, ctrl, shift }) => {
-        const id = sprites.findIndex((sprite) => contains(sprite.rect, x, y))
-        if (id === -1) {
-          dispatch(deselectSprites)
-        } else {
-          dispatch(selectSprite, {
-            index: id,
-            opts: { ctrl: ctrl || shift }
-          })
-        }
-      },
-      onpan: ({ x, y }) => {
-        dispatch(panSpriteEditor, { x, y })
-      },
-      onzoom: (scale) => {
-        dispatch(zoomSpriteEditor, scale)
       }
-    })
+    }
+  }
+
+  if (!persist && (!state._persist || state._persist.rehydrated)) {
+    persist = true
+    transform = {
+      pos: spriteEditor.pos,
+      scale: spriteEditor.scale,
+    }
+  }
+
+  return m(Editor, {
+    ...transform,
+    hover: hover !== -1,
+    onupdate: (vnode) => {
+      render(vnode.dom.firstChild)
+    },
+    onmove: ({ x, y }) => {
+      const id = sprites.findIndex((sprite) => contains(sprite.rect, x, y))
+      if (hover !== id) {
+        hover = id
+        m.redraw()
+      }
+    },
+    onclick: ({ x, y, ctrl, shift }) => {
+      const id = sprites.findIndex((sprite) => contains(sprite.rect, x, y))
+      if (id !== -1) {
+        dispatch(selectSprite, {
+          index: id,
+          opts: { ctrl: ctrl || shift }
+        })
+      } else if (state.select.items.length) {
+        dispatch(deselectSprites)
+      }
+    },
+    onpan: ({ x, y }) => {
+      dispatch(panSpriteEditor, { x, y })
+    },
+    onzoom: (scale) => {
+      dispatch(zoomSpriteEditor, scale)
+    }
+  })
 }

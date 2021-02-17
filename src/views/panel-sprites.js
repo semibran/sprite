@@ -36,26 +36,9 @@ export const selectSprite = (state, { index, opts }) => {
 
 export const focusSprite = ({ sprite, opts }) => (dispatch, getState) => {
   const state = getState()
-  dispatch(selectSprite, {
-    index: state.sprites.indexOf(sprite),
-    focus: true,
-    opts
-  })
-  dispatch(startFocus, sprite)
-}
-
-export const startFocus = (state, sprite) => {
-  const editor = deepClone(state.spritesEditor)
-  const { x, y, width, height } = sprite.rect
-  spritesEditor.target = {
-    x: Math.floor(-x - width / 2),
-    y: Math.floor(-y - height / 2)
-  }
-  return { ...state, spritesEditor }
-}
-
-export const endFocus = (state, sprite) => {
-  return { ...state, editor: { ...state.editor, target: null } }
+  const index = state.sprites.indexOf(sprite)
+  dispatch(selectSprite, { index, opts })
+  cache.messages.focus = sprite
 }
 
 export const updateCamera = (state) => {
@@ -205,7 +188,6 @@ export default function SpritesPanel (state, dispatch) {
                     block: 'center',
                     inline: 'end'
                   })
-                  console.log('scrolling')
                 }
               }
 
