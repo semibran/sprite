@@ -94,8 +94,8 @@ export default function SpritesEditor (state, dispatch) {
       const { x, y, width, height } = sprite.rect
       transform = {
         pos: {
-          x: Math.floor(-x - width / 2),
-          y: Math.floor(-y - height / 2)
+          x: Math.floor(-x - width / 2) * spriteEditor.scale,
+          y: Math.floor(-y - height / 2) * spriteEditor.scale
         }
       }
     }
@@ -109,6 +109,14 @@ export default function SpritesEditor (state, dispatch) {
     }
   }
 
+  const findIndex = (sprites, x, y) =>
+    sprites.findIndex((sprite) => contains({
+      x: sprite.rect.x,
+      y: sprite.rect.y,
+      width: sprite.rect.width + 2,
+      height: sprite.rect.height + 2
+    }, x, y))
+
   return m(Editor, {
     ...transform,
     hover: hover !== -1,
@@ -118,7 +126,7 @@ export default function SpritesEditor (state, dispatch) {
     onmove: ({ x, y, contained }) => {
       let id = -1
       if (contained) {
-        id = sprites.findIndex((sprite) => contains(sprite.rect, x, y))
+        id = findIndex(sprites, x, y)
       }
       if (hover !== id) {
         hover = id
@@ -126,7 +134,7 @@ export default function SpritesEditor (state, dispatch) {
       }
     },
     onclick: ({ x, y, ctrl, shift }) => {
-      const id = sprites.findIndex((sprite) => contains(sprite.rect, x, y))
+      const id = findIndex(sprites, x, y)
       if (id !== -1) {
         dispatch(selectSprite, {
           index: id,
