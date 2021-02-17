@@ -4,7 +4,7 @@ import cloneImage from '../lib/img-clone'
 import sliceCanvas from '../lib/slice'
 import cache from '../app/cache'
 
-export * from '../views/editor'
+export * from '../views/editor-sprites'
 export * from '../views/timeline'
 export * from '../views/timeline-controls'
 export * from '../views/panel-sprites'

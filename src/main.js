@@ -14,19 +14,18 @@ const initialState = {
   project: { name: 'Untitled' },
   window: null,
   menu: false,
-  sprites: [],
-  anims: [],
   select: {
     target: null,
-    drag: -1,
     items: []
   },
-  editor: {
+  sprites: [],
+  spriteEditor: {
     pos: { x: 0, y: 0 },
-    target: null,
-    pan: null,
-    click: false,
-    hover: -1,
+    scale: 1
+  },
+  anims: [],
+  animEditor: {
+    pos: { x: 0, y: 0 },
     scale: 1
   },
   panels: {

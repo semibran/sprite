@@ -2,6 +2,7 @@
   "name": "sprite",
   "private": "true",
   "dependencies": {
+    "classcat": "^5.0.1",
     "css-string": "^1.0.1",
     "img-extract": "^1.0.0",
     "img-load": "^2.0.0",

@@ -5,13 +5,16 @@ import Editor from './editor'
 import Timeline from './timeline'
 import SpritesPanel from './panel-sprites'
 import PropsPanel from './panel-props'
+import SpritesEditor from './editor-sprites'
+import AnimsEditor from './editor-anims'
 
 export default function App (state, dispatch) {
   return m('main.app', [
     Header({ title: state.project.name }),
     m('.content', [
       SpritesPanel(state, dispatch),
-      Editor(state, dispatch),
+      state.select.target === 'sprites' && SpritesEditor(state, dispatch),
+      state.select.target === 'anims' && AnimsEditor(state, dispatch),
       PropsPanel(state, dispatch)
     ]),
     Timeline(state, dispatch)
