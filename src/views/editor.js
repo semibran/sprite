@@ -59,8 +59,15 @@ export default function Editor ({ attrs }) {
 
   const onmouseup = (evt) => {
     if (click) {
-      const mouse = transformPos(evt.pageX, evt.pageY)
-      onclick && onclick(mouse)
+      const mouse = getImagePos(evt.pageX, evt.pageY)
+      const rect = editor.getBoundingClientRect()
+      if (contains(rect, evt.pageX, evt.pageY)) {
+        onclick && onclick({
+          ...mouse,
+          ctrl: evt.ctrlKey || evt.metaKey,
+          shift: evt.shiftKey
+        })
+      }
     } else if (pan) {
       onpan && onpan(pos)
     }

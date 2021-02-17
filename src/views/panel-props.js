@@ -50,7 +50,7 @@ function ProjectPanel ({ project, sprites, anims }) {
 }
 
 function SpritePanel ({ sprite }) {
-  const [x, y, width, height] = sprite.rect
+  const { x, y, width, height } = sprite.rect
   return m('.panel-content', [
     m('.panel-section.-name.-inline', [
       m('.section-key', 'Sprite'),

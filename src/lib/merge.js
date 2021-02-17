@@ -8,11 +8,11 @@ export default function merge (rects) {
     const rect = rects[i]
 
     if (rect.x < left) {
-      left = rect[0]
+      left = rect.x
     }
 
     if (rect.y < top) {
-      top = rect[1]
+      top = rect.y
     }
 
     if (rect.x + rect.width > right) {

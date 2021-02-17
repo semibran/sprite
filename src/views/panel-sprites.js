@@ -66,12 +66,12 @@ export const focusSprite = ({ sprite, opts }) => (dispatch, getState) => {
 
 export const startFocus = (state, sprite) => {
   const editor = deepClone(state.editor)
-  const [left, top, width, height] = sprite.rect
+  const { x, y, width, height } = sprite.rect
   editor.click = false
   editor.pan = null
   editor.target = {
-    x: Math.floor(-left - width / 2),
-    y: Math.floor(-top - height / 2)
+    x: Math.floor(-x - width / 2),
+    y: Math.floor(-y - height / 2)
   }
   return { ...state, editor }
 }

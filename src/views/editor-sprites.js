@@ -32,6 +32,11 @@ export const zoomSpriteEditor = (state, scale) => ({
   spriteEditor: { ...state.spriteEditor, scale }
 })
 
+export const deselectSprites = (state) => ({
+  ...state,
+  select: { ...state.select, items: [] }
+})
+
 export default function SpritesEditor (state, dispatch) {
   const sprites = state.sprites
   const image = cache.image
@@ -82,13 +87,22 @@ export default function SpritesEditor (state, dispatch) {
         render(vnode.dom.firstChild)
       },
       onmove: ({ x, y }) => {
-        const id = sprites.findIndex((sprite) => {
-          return contains(sprite.rect, x, y)
-        })
+        const id = sprites.findIndex((sprite) => contains(sprite.rect, x, y))
         if (hover !== id) {
           hover = id
           m.redraw()
-          console.log(x, y, id)
+        }
+      },
+      onclick: ({ x, y, ctrl, shift }) => {
+        console.log(x, y)
+        const id = sprites.findIndex((sprite) => contains(sprite.rect, x, y))
+        if (id === -1) {
+          dispatch(deselectSprites)
+        } else {
+          dispatch(selectSprite, {
+            index: id,
+            opts: { ctrl: ctrl || shift }
+          })
         }
       },
       onpan: ({ x, y }) => {
