@@ -43,9 +43,10 @@ export default function SpritesEditor (state, dispatch) {
   const { sprites, spriteEditor } = state
   const image = cache.image
 
-  const render = (canvas) => {
+  const onrender = (vnode) => {
     if (!image) return
 
+    const canvas = vnode.state.canvas
     canvas.width = image.width
     canvas.height = image.height
     fill(canvas)
@@ -118,11 +119,11 @@ export default function SpritesEditor (state, dispatch) {
     }, x, y))
 
   return m(Editor, {
-    ...transform,
+    class: '-sprites',
     hover: hover !== -1,
-    onupdate: (vnode) => {
-      render(vnode.state.canvas)
-    },
+    ...transform,
+    oncreate: onrender,
+    onupdate: onrender,
     onmove: ({ x, y, contained }) => {
       let id = -1
       if (contained) {

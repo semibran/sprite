@@ -1,7 +1,6 @@
 
 import m from 'mithril'
 import cc from 'classcat'
-import cssify from 'css-string'
 import contains from '../lib/rect-contains'
 
 const ZOOM_MIN = 1
@@ -23,6 +22,7 @@ export default function Editor ({ attrs }) {
   let hover = false
   let target = null
   let animating = false
+  let zooming = false
   let zoomTimeout = null
   let editor = null
   let canvas = null
@@ -109,6 +109,10 @@ export default function Editor ({ attrs }) {
       }
     } else if (pan) {
       onpan && onpan(pos)
+      if (zooming) {
+        zoomTimeout && clearTimeout(zoomTimeout)
+        zoomTimeout = setTimeout(() => onzoomend(evt), ZOOM_DEBOUNCE)
+      }
     }
     pan = false
     m.redraw()
@@ -130,6 +134,7 @@ export default function Editor ({ attrs }) {
     scale = newScale
     m.redraw()
 
+    zooming = true
     zoomTimeout && clearTimeout(zoomTimeout)
     zoomTimeout = setTimeout(() => onzoomend(evt), ZOOM_DEBOUNCE)
   }
@@ -139,6 +144,7 @@ export default function Editor ({ attrs }) {
   }
 
   const onzoomend = (evt) => {
+    if (pan) return
     const newScale = adjustScale(scale)
     if (scale !== newScale) {
       const mouse = getMousePos(evt.pageX, evt.pageY)
@@ -151,9 +157,11 @@ export default function Editor ({ attrs }) {
     }
     onpan && onpan(pos)
     onzoom && onzoom(scale)
+    m.redraw()
   }
 
   const ontransitionend = (evt) => {
+    zooming = false
     animating = false
     canvas.removeEventListener('transitionend', ontransitionend)
     m.redraw()
@@ -162,7 +170,7 @@ export default function Editor ({ attrs }) {
   return {
     oncreate: (vnode) => {
       editor = vnode.dom
-      canvas = vnode.dom.firstChild
+      canvas = vnode.dom.firstChild.firstChild
       vnode.state.editor = editor
       vnode.state.canvas = canvas
       canvas.addEventListener('mousedown', onmousedown)
@@ -189,19 +197,20 @@ export default function Editor ({ attrs }) {
     onupdate: (vnode) => {
       onrender && onrender(canvas)
     },
-    view: () => m('.editor', {
-      class: cc({
+    view: (vnode) => m('.editor', {
+      class: cc([vnode.attrs.class, {
         '-pan': pan && (!click || !hover),
         '-hover': hover
-      })
+      }])
     }, [
-      m('canvas', {
-        class: cc({ '-adjust': animating }),
-        style: cssify({
-          transform: `translate3d(${Math.round(pos.x)}px, ${Math.round(pos.y)}px, 0)` +
-                      `scale(${scale})`
+      m('.canvas-wrap', [
+        m('canvas', {
+          class: animating ? '-adjust' : '',
+          style: 'transform: ' +
+            `translate3d(${Math.round(pos.x)}px, ${Math.round(pos.y)}px, 0)` +
+            `scale(${scale})`
         })
-      })
+      ])
     ])
   }
 }

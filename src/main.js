@@ -36,6 +36,7 @@ const initialState = {
   timeline: {
     pos: 0,
     subpos: 0,
+    selects: [],
     playing: false,
     repeat: false,
     onionskin: false

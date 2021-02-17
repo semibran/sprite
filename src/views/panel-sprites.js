@@ -128,6 +128,6 @@ export default function SpritesPanel (state, dispatch) {
         })
       ])
     ]),
-    sprites.length > 0 && Banner({ sprites, dispatch })
+    sprites.length > 0 && Banner(state, dispatch)
   ])
 }

@@ -86,7 +86,8 @@ export const splitSprite = (state) => {
   return newState
 }
 
-export default function Banner ({ sprites, dispatch }) {
+export default function Banner (state, dispatch) {
+  const sprites = getSelectedSprites(state)
   return m.fragment({
     onbeforeremove: (vnode) => {
       const banner = vnode.dom
@@ -101,11 +102,12 @@ export default function Banner ({ sprites, dispatch }) {
         banner.addEventListener('animationend', resolve)
       })
     }
-  }, m('.banner.-enter',
+  }, m('.banner.-enter', [
     sprites.length === 1
-      ? ['1 sprite selected',
-          m('button', { onclick: () => dispatch(splitSprite) }, 'Split')]
-      : [`${sprites.length} sprites selected`,
-          m('button', { onclick: () => dispatch(mergeSprites) }, 'Merge')]
-  ))
+      ? '1 sprite selected'
+      : `${sprites.length} sprites selected`,
+    sprites.length === 1
+      ? m('button', { onclick: () => dispatch(splitSprite) }, 'Split')
+      : m('button', { onclick: () => dispatch(mergeSprites) }, 'Merge')
+  ]))
 }

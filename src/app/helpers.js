@@ -20,11 +20,17 @@ export const getSelectedSprites = (state) =>
     : []
 
 export const getSelectedAnim = (state) =>
-  state.select.target === 'anims' &&
-  state.anims[state.select.items[state.select.items.length - 1]]
+  state.select.target === 'anims' && state.select.items.length
+    ? state.anims[state.select.items[state.select.items.length - 1]]
+    : null
 
-export const getSelectedFrame = (state) =>
-  getFrameAt(getSelectedAnim(state), state.timeline.selects[state.timeline.selects.length - 1])
+export const getSelectedFrame = (state) => {
+  const anim = getSelectedAnim(state)
+  const framenum = state.timeline.selects[state.timeline.selects.length - 1]
+  return anim
+    ? getFrameAt(anim, framenum)
+    : null
+}
 
 export const isEmptyAnim = (anim) =>
   anim.frames.length === 1 && !anim.frames[0].sprite
