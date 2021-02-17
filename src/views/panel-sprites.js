@@ -145,7 +145,7 @@ export const splitSprite = (state) => {
       const projid = state.project.name.toLowerCase()
       let i = 0
       while (used.includes(i) ||
-      newState.sprites.find((sprite) => sprite.name === `${projid}_${i}`)) {
+             newState.sprites.find((sprite) => sprite.name === `${projid}_${i}`)) {
         i++
       }
       used.push(i)

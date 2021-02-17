@@ -12,7 +12,7 @@ export default function Editor ({ attrs }) {
   let pos = attrs.pos || { x: 0, y: 0 }
   let scale = attrs.scale || 1
   let pan = null
-  let click = false
+  let click = null
   let hover = false
   let editor = null
   let canvas = null
@@ -33,7 +33,10 @@ export default function Editor ({ attrs }) {
   }
 
   const onmousedown = (evt) => {
-    click = true
+    click = {
+      x: evt.pageX,
+      y: evt.pageY
+    }
     pan = {
       x: evt.pageX - pos.x,
       y: evt.pageY - pos.y
@@ -42,8 +45,11 @@ export default function Editor ({ attrs }) {
   }
 
   const onmousemove = (evt) => {
+    if (click &&
+        Math.abs(evt.pageX - click.x) + Math.abs(evt.pageY - click.y) > 2) {
+      click = null
+    }
     if (pan) {
-      click = false
       pos = {
         x: evt.pageX - pan.x,
         y: evt.pageY - pan.y
