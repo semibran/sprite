@@ -5,24 +5,29 @@ export default function merge (rects) {
   let bottom = 0
 
   for (let i = 0; i < rects.length; i++) {
-    if (rects[i][0] < left) {
-      left = rects[i][0]
+    const rect = rects[i]
+
+    if (rect.x < left) {
+      left = rect[0]
     }
 
-    if (rects[i][1] < top) {
-      top = rects[i][1]
+    if (rect.y < top) {
+      top = rect[1]
     }
 
-    if (rects[i][0] + rects[i][2] > right) {
-      right = rects[i][0] + rects[i][2]
+    if (rect.x + rect.width > right) {
+      right = rect.x + rect.width
     }
 
-    if (rects[i][1] + rects[i][3] > bottom) {
-      bottom = rects[i][1] + rects[i][3]
+    if (rect.y + rect.height > bottom) {
+      bottom = rect.y + rect.height
     }
   }
 
-  const width = right - left + 1
-  const height = bottom - top + 1
-  return [left, top, width, height]
+  return {
+    x: left,
+    y: top,
+    width: right - left + 1,
+    height: bottom - top + 1
+  }
 }

@@ -4,34 +4,38 @@ import extract from 'img-extract'
 export default function slice (canvas) {
   const rects = []
   const xrects = xslice(canvas)
-  const xsheets = xrects.map((xrect) => extract(canvas, ...xrect))
+  const xsheets = xrects.map((xrect) =>
+    extract(canvas, xrect.x, xrect.y, xrect.width, xrect.height))
+
   xsheets.forEach((xcanvas, i) => {
     const xrect = xrects[i]
-    const yrects = yslice(xcanvas).map((yrect) => [
-      yrect[0] + xrect[0],
-      yrect[1] + xrect[1],
-      yrect[2],
-      yrect[3]
-    ])
-    const ysheets = yrects.map((yrect) => extract(canvas, ...yrect))
+    const yrects = yslice(xcanvas).map((yrect) => ({
+      x: yrect.x + xrect.x,
+      y: yrect.y + xrect.y,
+      width: yrect.width,
+      height: yrect.height
+    }))
+    const ysheets = yrects.map((yrect) =>
+      extract(canvas, yrect.x, yrect.y, yrect.width, yrect.height))
+
     ysheets.forEach((ycanvas, j) => {
       const yrect = yrects[j]
       const rows = xscan(ycanvas)
       const chunks = tokenize(rows)
       if (chunks.length === 1) {
-        rects.push([
-          yrects[j][0],
-          chunks[0].start + yrects[j][1],
-          yrects[j][2],
-          chunks[0].length
-        ])
+        rects.push({
+          x: yrect.x,
+          y: chunks[0].start + yrect.y,
+          width: yrect.width,
+          height: chunks[0].length
+        })
       } else {
-        rects.push(...slice(ycanvas).map((rect) => [
-          rect[0] + yrect[0],
-          rect[1] + yrect[1],
-          rect[2],
-          rect[3]
-        ]))
+        rects.push(...slice(ycanvas).map((rect) => ({
+          x: rect.x + yrect.x,
+          y: rect.y + yrect.y,
+          width: rect.width,
+          height: rect.height
+        })))
       }
     })
   })
@@ -42,13 +46,23 @@ export default function slice (canvas) {
 function xslice (canvas) {
   const rows = xscan(canvas)
   const chunks = tokenize(rows)
-  return chunks.map((chunk) => [0, chunk.start, canvas.width, chunk.length])
+  return chunks.map((chunk) => ({
+    x: 0,
+    y: chunk.start,
+    width: canvas.width,
+    height: chunk.length
+  }))
 }
 
 function yslice (canvas) {
   const cols = yscan(canvas)
   const chunks = tokenize(cols)
-  return chunks.map((chunk) => [chunk.start, 0, chunk.length, canvas.height])
+  return chunks.map((chunk) => ({
+    x: chunk.start,
+    y: 0,
+    width: chunk.length,
+    height: canvas.height
+  }))
 }
 
 function xscan (canvas) {

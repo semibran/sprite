@@ -106,7 +106,7 @@ export const mergeSprites = (state) => {
   const idx = selects[0]
   const sprite = sprites[idx]
   sprite.rect = rect
-  cache.sprites[idx] = extractImage(cache.image, ...rect)
+  cache.sprites[idx] = extractImage(cache.image, rect.x, rect.y, rect.width, rect.height)
   selects.length = 0
   newState.select.items = [idx]
   return newState
@@ -121,14 +121,19 @@ export const splitSprite = (state) => {
   const id = state.select.items[0]
   const offset = state.sprites[id].rect
   const image = cache.sprites[id]
-  const rects = sliceImage(image).map(rect =>
-    [rect[0] + offset[0], rect[1] + offset[1], rect[2], rect[3]])
+  const rects = sliceImage(image).map(({ x, y, width, height }) => ({
+    x: x + offset.x,
+    y: y + offset.y,
+    width,
+    height
+  }))
 
   if (rects.length === 1) {
     return state
   }
 
-  const images = rects.map(rect => extractImage(cache.image, ...rect))
+  const images = rects.map(({ x, y, width, height }) =>
+    extractImage(cache.image, x, y, width, height))
   cache.sprites.splice(id, 1, ...images)
 
   newState.sprites.splice(id, 1)
@@ -140,7 +145,7 @@ export const splitSprite = (state) => {
       const projid = state.project.name.toLowerCase()
       let i = 0
       while (used.includes(i) ||
-      newState.sprites.find(sprite => sprite.name === `${projid}_${i}`)) {
+      newState.sprites.find((sprite) => sprite.name === `${projid}_${i}`)) {
         i++
       }
       used.push(i)
@@ -150,8 +155,8 @@ export const splitSprite = (state) => {
 
   newState.sprites.splice(id, 0, ...sprites)
 
-  newState.anims.forEach(anim => {
-    anim.frames.forEach(frame => {
+  newState.anims.forEach((anim) => {
+    anim.frames.forEach((frame) => {
       frame.sprite += sprites.length
     })
   })
@@ -225,7 +230,7 @@ export default function SpritesPanel (state, dispatch) {
               selection = id
             }
           }, m('.thumb', {
-            key: `${i}-${sprite.name}-${sprite.rect.join()}`,
+            key: `${sprite.name}(${sprite.rect.x},${sprite.rect.y},${sprite.width},${sprite.height})`,
             class: (selected ? '-select' : '') +
               (dragging && isSpriteSelected(state.select, i) ? ' -drag' : ''),
             onclick: handleSelect,

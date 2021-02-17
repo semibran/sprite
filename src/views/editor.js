@@ -1,6 +1,7 @@
 
 import m from 'mithril'
 import cc from 'classcat'
+import contains from '../lib/rect-contains'
 
 const SCALE_MIN = 1
 const SCALE_MAX = 8
@@ -12,6 +13,7 @@ export default function Editor ({ attrs }) {
   let scale = attrs.scale || 1
   let pan = null
   let click = false
+  let hover = false
   let editor = null
   let canvas = null
 
@@ -25,12 +27,18 @@ export default function Editor ({ attrs }) {
     y: y - editor.offsetTop - editor.offsetHeight / 2
   })
 
+  const getImagePos = (x, y) => {
+    const mouse = getMousePos(x, y)
+    return transformPos(mouse.x, mouse.y)
+  }
+
   const onmousedown = (evt) => {
     click = true
     pan = {
       x: evt.pageX - pos.x,
       y: evt.pageY - pos.y
     }
+    m.redraw()
   }
 
   const onmousemove = (evt) => {
@@ -42,8 +50,11 @@ export default function Editor ({ attrs }) {
       }
       m.redraw()
     }
-    const mouse = transformPos(evt.pageX, evt.pageY)
-    onmove && onmove(mouse)
+    const mouse = getImagePos(evt.pageX, evt.pageY)
+    const rect = editor.getBoundingClientRect()
+    if (contains(rect, evt.pageX, evt.pageY)) {
+      onmove && onmove(mouse)
+    }
   }
 
   const onmouseup = (evt) => {
@@ -54,6 +65,7 @@ export default function Editor ({ attrs }) {
       onpan && onpan(pos)
     }
     pan = false
+    m.redraw()
   }
 
   const onwheel = (evt) => {
@@ -83,13 +95,16 @@ export default function Editor ({ attrs }) {
       window.removeEventListener('mouseup', onmouseup)
       canvas.removeEventListener('wheel', onwheel)
     },
+    onbeforeupdate: (vnode) => {
+      hover = vnode.attrs.hover
+    },
     onupdate: (vnode) => {
       onrender && onrender(canvas)
     },
     view: () => m('.editor', {
       class: cc({
-        '-pan': pan //  && (!click || hover === -1),
-        // '-hover': hover !== -1
+        '-pan': pan && (!click || !hover),
+        '-hover': hover
       })
     }, [
       m('canvas', {

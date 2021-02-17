@@ -13,13 +13,14 @@ export * from '../views/panel-props'
 export const useImage = (state) => {
   state.anims = []
   if (state.sprites.length) {
-    cache.sprites = state.sprites.map((sprite) =>
-      extractImage(cache.image, ...sprite.rect))
+    cache.sprites = state.sprites.map(({ rect }) =>
+      extractImage(cache.image, rect.x, rect.y, rect.width, rect.height))
     return state
   } else {
     const canvas = cloneImage(cache.image)
     const rects = sliceCanvas(canvas)
-    cache.sprites = rects.map((rect) => extractImage(cache.image, ...rect))
+    cache.sprites = rects.map((rect) =>
+      extractImage(cache.image, rect.x, rect.y, rect.width, rect.height))
     return {
       ...state,
       sprites: rects.map((rect, i) => (
