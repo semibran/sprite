@@ -13,8 +13,8 @@ export default function App (state, dispatch) {
     Header({ title: state.project.name }),
     m('.content', [
       SpritesPanel(state, dispatch),
-      state.select.target === 'sprites' && SpritesEditor(state, dispatch),
-      state.select.target === 'anims' && AnimsEditor(state, dispatch),
+      state.focus === 'sprites' && SpritesEditor(state, dispatch),
+      state.focus === 'anims' && AnimsEditor(state, dispatch),
       PropsPanel(state, dispatch)
     ]),
     Timeline(state, dispatch)

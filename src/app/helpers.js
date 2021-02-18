@@ -1,28 +1,44 @@
 
-export const isSpriteSelected = (select, id) =>
-  id == null
-    ? select.target === 'sprites'
-    : select.target === 'sprites' && select.items.includes(id)
+export const isNoneSelected = (state) =>
+  state.focus === 'sprites' && !state.sprites.selects.length ||
+  state.focus === 'anims' && !state.anims.selects.length ||
+  state.focus === 'timeline' && !state.timeline.selects.length
 
-export const isAnimSelected = (select, id) =>
+export const isSpriteSelected = (state, id) =>
   id == null
-    ? select.target === 'anims'
-    : select.target === 'anims' && select.items.includes(id)
+    ? state.focus === 'sprites'
+    : state.focus === 'sprites' && state.sprites.selects.includes(id)
 
-export const getSelectedSprite = (state) =>
-  state.select.target === 'sprites' && state.select.items.length
-    ? state.sprites[state.select.items[state.select.items.length - 1]]
+export const isAnimSelected = (state, id) =>
+  id == null
+    ? state.focus === 'anims'
+    : state.focus === 'anims' && state.anims.selects.includes(id)
+
+export const getSelectedSprite = (state) => {
+  const sprites = state.sprites.list
+  const selects = state.sprites.selects
+  const idx = selects[selects.length - 1]
+  return state.focus === 'sprites' && selects.length
+    ? sprites[idx]
     : null
+}
 
-export const getSelectedSprites = (state) =>
-  state.select.target === 'sprites' && state.select.items.length
-    ? state.select.items.map(idx => state.sprites[idx])
+export const getSelectedSprites = (state) => {
+  const sprites = state.sprites.list
+  const selects = state.sprites.selects
+  return state.focus === 'sprites' && selects.length
+    ? selects.map(idx => sprites[idx])
     : []
+}
 
-export const getSelectedAnim = (state) =>
-  state.select.target === 'anims' && state.select.items.length
-    ? state.anims[state.select.items[state.select.items.length - 1]]
+export const getSelectedAnim = (state) => {
+  const anims = state.anims.list
+  const selects = state.anims.selects
+  const idx = selects[selects.length - 1]
+  return state.focus === 'anims' && selects.length
+    ? anims[selects[selects.length - 1]]
     : null
+}
 
 export const getSelectedFrame = (state) => {
   const anim = getSelectedAnim(state)

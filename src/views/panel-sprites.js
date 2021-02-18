@@ -25,19 +25,19 @@ export const hideSprites = (state) => ({
 })
 
 export const selectSprite = (state, { index, opts }) => {
-  const selection = deepClone(state.select)
-  if (selection.target !== 'sprites') {
-    selection.target = 'sprites'
-    selection.items = []
+  const newState = deepClone(state)
+  if (state.focus !== 'sprites') {
+    newState.focus = 'sprites'
+    // TODO: reset animation/timeline focus?
   }
 
-  select(selection.items, index, opts)
-  return { ...state, select: selection }
+  select(newState.sprites.selects, index, opts)
+  return newState
 }
 
 export const focusSprite = ({ sprite, opts }) => (dispatch, getState) => {
   const state = getState()
-  const index = state.sprites.indexOf(sprite)
+  const index = state.sprites.list.indexOf(sprite)
   dispatch(selectSprite, { index, opts })
   cache.messages.focus = sprite
 }
@@ -54,7 +54,7 @@ export default function SpritesPanel (state, dispatch) {
   const sprites = getSelectedSprites(state)
   return Panel({
     id: 'sprites',
-    name: `Sprites (${state.sprites.length})`,
+    name: `Sprites (${state.sprites.list.length})`,
     shown,
     onshow: () => dispatch(showSprites),
     onhide: () => dispatch(hideSprites)
@@ -62,8 +62,8 @@ export default function SpritesPanel (state, dispatch) {
     cache.sprites && m('.panel-content', [
       m('.thumbs', [
         cache.sprites.map((image, i) => {
-          const sprite = state.sprites[i]
-          const selected = isSpriteSelected(state.select, i)
+          const sprite = state.sprites.list[i]
+          const selected = isSpriteSelected(state, i)
 
           const handleSelect = (evt) => dispatch(focusSprite({
             sprite,
@@ -75,8 +75,8 @@ export default function SpritesPanel (state, dispatch) {
 
           const handleDragStart = (evt) => {
             dragging = true
-            evt.dataTransfer.setData('text/plain', state.select.items.join())
-            if (!isSpriteSelected(state.select, i)) {
+            evt.dataTransfer.setData('text/plain', state.sprites.selects.join())
+            if (!isSpriteSelected(state, i)) {
               handleSelect(evt)
             }
           }
@@ -87,9 +87,9 @@ export default function SpritesPanel (state, dispatch) {
 
           return m.fragment({
             onupdate: (vnode) => {
-              const selects = state.select.items
+              const selects = state.sprites.selects
               const last = selects[selects.length - 1]
-              if (!isSpriteSelected(state.select) || i !== last) {
+              if (!isSpriteSelected(state) || i !== last) {
                 return
               }
 
@@ -119,7 +119,7 @@ export default function SpritesPanel (state, dispatch) {
           }, m('.thumb', {
             key: `${sprite.name}(${sprite.rect.x},${sprite.rect.y},${sprite.width},${sprite.height})`,
             class: (selected ? '-select' : '') +
-              (dragging && isSpriteSelected(state.select, i) ? ' -drag' : ''),
+              (dragging && isSpriteSelected(state, i) ? ' -drag' : ''),
             onclick: handleSelect,
             ondragstart: handleDragStart,
             ondragend: handleDragEnd,

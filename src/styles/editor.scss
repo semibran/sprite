@@ -10,10 +10,6 @@
   transform-origin: 0 0 0;
 }
 
-.editor canvas.-adjust {
-  transition: 250ms transform;
-}
-
 .editor:hover {
   cursor: grab;
 }

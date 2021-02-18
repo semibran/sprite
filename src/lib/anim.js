@@ -1,5 +1,5 @@
 
-export default function createAnim (duration) {
+export default function Anim (duration) {
   let done = false
   let time = 0
   return function update () {

@@ -8,7 +8,7 @@ import TimelineControls from './timeline-controls'
 import Thumb from './thumb'
 
 import cache from '../app/cache'
-import { isAnimSelected } from '../app/helpers'
+import { isAnimSelected, getSelectedSprites } from '../app/helpers'
 
 let dragging = false
 
@@ -24,26 +24,30 @@ export const hideTimeline = (state) => ({
 
 export const createAnim = (state, { ids }) => ({
   ...state,
-  select: {
-    ...state.select,
-    target: 'anims',
-    items: [state.anims.length]
-  },
-  anims: [...state.anims, {
-    name: 'untitled',
-    next: null,
-    speed: 1,
-    frames: ids
-      ? ids.map((id) => ({
-          sprite: id,
-          duration: 1,
-          origin: {
-            x: Math.round(state.sprites[id].rect[2] / 2),
-            y: state.sprites[id].rect[3]
-          }
-        }))
-      : []
-  }]
+  focus: 'anims',
+  anims: {
+    ...state.anims,
+    list: [...state.anims.list, {
+      name: 'untitled',
+      next: null,
+      speed: 1,
+      frames: ids
+        ? ids.map((id) => {
+            const sprite = state.sprites.list[id]
+            const rect = sprite.rect
+            return {
+              sprite: id,
+              duration: 1,
+              origin: {
+                x: Math.round(rect.width / 2),
+                y: rect.height
+              }
+            }
+          })
+        : []
+    }],
+    selects: [state.anims.list.length]
+  }
 })
 
 export const removeAnim = (state, { index }) => ({
@@ -52,19 +56,20 @@ export const removeAnim = (state, { index }) => ({
 })
 
 export const selectAnim = (state, { index, opts }) => {
-  const selection = deepClone(state.select)
-  if (selection.target !== 'anims') {
-    selection.target = 'anims'
-    selection.items = []
+  const newState = deepClone(state)
+  if (state.focus !== 'anims') {
+    newState.focus = 'anims'
+    // TODO: reset sprites/timeline selection?
   }
 
-  select(selection.items, index, opts)
-  return { ...state, select: selection }
+  select(newState.anims.selects, index, opts)
+  console.log(newState.anims.selects)
+  return newState
 }
 
 export default function Timeline (state, dispatch) {
   const shown = state.panels.timeline
-  const maxframes = state.anims.reduce(
+  const maxframes = state.anims.list.reduce(
     (max, anim) =>
       anim.frames.length > max
         ? anim.frames.length
@@ -85,9 +90,9 @@ export default function Timeline (state, dispatch) {
           ),
           m('th.track-end')
         ]),
-        state.anims.map((anim, i) =>
+        state.anims.list.map((anim, i) =>
           m('tr.timeline-track', {
-            class: isAnimSelected(state.select, i) ? '-select' : '',
+            class: isAnimSelected(state, i) ? '-select' : '',
             onclick: (evt) => dispatch(selectAnim, {
               index: i,
               opts: {
@@ -97,7 +102,7 @@ export default function Timeline (state, dispatch) {
             })
           }, [
             m('td.track-name', [
-              isAnimSelected(state.select, i)
+              isAnimSelected(state, i)
                 ? m('div', [
                     anim.name,
                     m('span.icon.material-icons-round', {
@@ -120,8 +125,7 @@ export default function Timeline (state, dispatch) {
             m('span.icon.material-icons-round', 'add'),
             'Create new'
           ]),
-          state.select.target === 'sprites' &&
-          state.select.items.length
+          getSelectedSprites(state).length
             ? m('td', { colspan: maxframes }, [
                 m('.track-prompt', {
                   class: dragging ? '-focus' : '',

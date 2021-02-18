@@ -12,34 +12,35 @@ import * as actions from './actions'
 
 const initialState = {
   project: { name: 'Untitled' },
-  window: null,
-  menu: false,
-  select: {
-    target: 'sprites',
-    items: []
+  focus: 'sprites',
+  sprites: {
+    list: [],
+    selects: [],
+    editor: {
+      pos: { x: 0, y: 0 },
+      scale: 1
+    }
   },
-  sprites: [],
-  spriteEditor: {
-    pos: { x: 0, y: 0 },
-    scale: 1
+  anims: {
+    list: [],
+    selects: [],
+    editor: {
+      pos: { x: 0, y: 0 },
+      scale: 1
+    }
   },
-  anims: [],
-  animEditor: {
-    pos: { x: 0, y: 0 },
-    scale: 1
+  timeline: {
+    pos: 0,
+    subpos: 0,
+    playing: false,
+    repeat: false,
+    onionskin: false,
+    selects: []
   },
   panels: {
     sprites: true,
     props: true,
     timeline: true
-  },
-  timeline: {
-    pos: 0,
-    subpos: 0,
-    selects: [],
-    playing: false,
-    repeat: false,
-    onionskin: false
   }
 }
 
@@ -58,7 +59,7 @@ const store = createStore(reducer, enhancer)
 window.persistor = persistStore(store)
 store.subscribe(m.redraw)
 
-loadImage('../tmp/copen.png').then((image) => {
+loadImage('../tmp/test.png').then((image) => {
   cache.image = image
   store.dispatch({ type: 'useImage' })
 })

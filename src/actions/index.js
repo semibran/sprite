@@ -12,9 +12,8 @@ export * from '../views/banner'
 export * from '../views/panel-props'
 
 export const useImage = (state) => {
-  state.anims = []
-  if (state.sprites.length) {
-    cache.sprites = state.sprites.map(({ rect }) =>
+  if (state.sprites.list.length) {
+    cache.sprites = state.sprites.list.map(({ rect }) =>
       extractImage(cache.image, rect.x, rect.y, rect.width, rect.height))
     return state
   } else {
@@ -24,9 +23,12 @@ export const useImage = (state) => {
       extractImage(cache.image, rect.x, rect.y, rect.width, rect.height))
     return {
       ...state,
-      sprites: rects.map((rect, i) => (
-        { rect, name: `${state.project.name.toLowerCase()}_${i}` }
-      ))
+      sprites: {
+        ...state.sprites,
+        list: rects.map((rect, i) => (
+          { rect, name: `${state.project.name.toLowerCase()}_${i}` }
+        ))
+      }
     }
   }
 }

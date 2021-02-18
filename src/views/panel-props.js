@@ -1,6 +1,11 @@
 
 import m from 'mithril'
 import Panel from './panel'
+import {
+  isNoneSelected,
+  getSelectedSprites,
+  getSelectedAnim
+} from '../app/helpers'
 
 export const showProps = (state) => ({
   ...state,
@@ -14,6 +19,9 @@ export const hideProps = (state) => ({
 
 export default function PropsPanel (state, dispatch) {
   const shown = state.panels.props
+  const sprites = getSelectedSprites(state)
+  const sprite = sprites[sprites.length - 1]
+  const anim = getSelectedAnim(state)
   return Panel({
     id: 'props',
     name: 'Properties',
@@ -21,14 +29,14 @@ export default function PropsPanel (state, dispatch) {
     onshow: () => dispatch(showProps),
     onhide: () => dispatch(hideProps)
   }, [
-    !state.select.items.length &&
+    isNoneSelected(state) &&
       ProjectPanel({ project: state.project, sprites: state.sprites, anims: state.anims }),
-    state.select.target === 'sprites' && state.select.items.length === 1 &&
-      SpritePanel({ sprite: state.sprites[state.select.items[0]] }),
-    state.select.target === 'sprites' && state.select.items.length > 1 &&
-      SpritesPanel({ sprites: state.select.items.map(index => state.sprites[index]) }),
-    state.select.target === 'anims' && state.select.items.length === 1 &&
-      AnimPanel({ anim: state.anims[state.select.items[0]] })
+    sprites.length === 1 &&
+      SpritePanel({ sprite }),
+    sprites.length > 1 &&
+      SpritesPanel({ sprites }),
+    anim &&
+      AnimPanel({ anim })
   ])
 }
 

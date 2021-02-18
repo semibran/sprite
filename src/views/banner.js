@@ -13,8 +13,8 @@ export const mergeSprites = (state) => {
   }
 
   const newState = deepClone(state)
-  const sprites = newState.sprites
-  const selects = newState.select.items.sort()
+  const sprites = newState.sprites.list
+  const selects = newState.sprites.selects.sort()
   const rects = selects.map(idx => sprites[idx].rect)
   const rect = mergeRects(rects)
   for (let i = selects.length; --i;) {
@@ -28,7 +28,7 @@ export const mergeSprites = (state) => {
   sprite.rect = rect
   cache.sprites[idx] = extractImage(cache.image, rect.x, rect.y, rect.width, rect.height)
   selects.length = 0
-  newState.select.items = [idx]
+  newState.sprites.selects = [idx]
   return newState
 }
 
@@ -38,8 +38,8 @@ export const splitSprite = (state) => {
   }
 
   const newState = deepClone(state)
-  const id = state.select.items[0]
-  const offset = state.sprites[id].rect
+  const id = state.sprites.selects[0]
+  const offset = state.sprites.list[id].rect
   const image = cache.sprites[id]
   const rects = sliceImage(image).map(({ x, y, width, height }) => ({
     x: x + offset.x,
@@ -56,7 +56,7 @@ export const splitSprite = (state) => {
     extractImage(cache.image, x, y, width, height))
   cache.sprites.splice(id, 1, ...images)
 
-  newState.sprites.splice(id, 1)
+  newState.sprites.list.splice(id, 1)
 
   const used = []
   const sprites = rects.map((rect) => ({
@@ -65,7 +65,7 @@ export const splitSprite = (state) => {
       const projid = state.project.name.toLowerCase()
       let i = 0
       while (used.includes(i) ||
-             newState.sprites.find((sprite) => sprite.name === `${projid}_${i}`)) {
+             newState.sprites.list.find((sprite) => sprite.name === `${projid}_${i}`)) {
         i++
       }
       used.push(i)
@@ -73,15 +73,15 @@ export const splitSprite = (state) => {
     })()
   }))
 
-  newState.sprites.splice(id, 0, ...sprites)
+  newState.sprites.list.splice(id, 0, ...sprites)
 
-  newState.anims.forEach((anim) => {
+  newState.anims.list.forEach((anim) => {
     anim.frames.forEach((frame) => {
       frame.sprite += sprites.length
     })
   })
 
-  newState.select.items = new Array(sprites.length).fill(0).map((_, i) => id + i)
+  newState.sprites.selects = new Array(sprites.length).fill(0).map((_, i) => id + i)
 
   return newState
 }

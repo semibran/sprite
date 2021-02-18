@@ -26,21 +26,31 @@ const fill = (canvas) => {
 
 export const panSpriteEditor = (state, pos) => ({
   ...state,
-  spriteEditor: { ...state.spriteEditor, pos }
+  sprites: {
+    ...state.sprites,
+    editor: { ...state.sprites.editor, pos }
+  }
 })
 
 export const zoomSpriteEditor = (state, scale) => ({
   ...state,
-  spriteEditor: { ...state.spriteEditor, scale }
+  sprites: {
+    ...state.sprites,
+    editor: { ...state.sprites.editor, scale }
+  }
 })
 
 export const deselectSprites = (state) => ({
   ...state,
-  select: { ...state.select, items: [] }
+  sprites: {
+    ...state.sprites,
+    selects: []
+  }
 })
 
 export default function SpritesEditor (state, dispatch) {
-  const { sprites, spriteEditor } = state
+  const sprites = state.sprites.list
+  const editor = state.sprites.editor
   const image = cache.image
 
   const onrender = (vnode) => {
@@ -58,7 +68,7 @@ export default function SpritesEditor (state, dispatch) {
 
     sprites.forEach((sprite, i) => {
       const { x, y, width, height } = sprite.rect
-      const selected = isSpriteSelected(state.select, i)
+      const selected = isSpriteSelected(state, i)
       const hovered = hover === i
       if (selected) {
         context.lineWidth = 2
@@ -98,8 +108,8 @@ export default function SpritesEditor (state, dispatch) {
       const { x, y, width, height } = sprite.rect
       transform = {
         pos: {
-          x: Math.floor(-x - width / 2) * spriteEditor.scale,
-          y: Math.floor(-y - height / 2) * spriteEditor.scale
+          x: Math.floor(-x - width / 2) * editor.scale,
+          y: Math.floor(-y - height / 2) * editor.scale
         }
       }
     }
@@ -108,8 +118,8 @@ export default function SpritesEditor (state, dispatch) {
   if (!persist && (!state._persist || state._persist.rehydrated)) {
     persist = true
     transform = {
-      pos: spriteEditor.pos,
-      scale: spriteEditor.scale
+      pos: editor.pos,
+      scale: editor.scale
     }
   }
 
@@ -144,7 +154,7 @@ export default function SpritesEditor (state, dispatch) {
           index: id,
           opts: { ctrl: ctrl || shift }
         })
-      } else if (state.select.items.length) {
+      } else if (state.sprites.selects.length) {
         dispatch(deselectSprites)
       }
     },
