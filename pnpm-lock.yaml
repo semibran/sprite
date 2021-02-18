@@ -3,6 +3,7 @@ dependencies:
   css-string: 1.0.1
   img-extract: 1.0.0
   img-load: 2.0.0
+  lerp: 1.0.3
   lodash.clonedeep: 4.5.0
   mithril: 2.0.4
   redux: 4.0.5
@@ -1835,6 +1836,10 @@ packages:
     optional: true
     resolution:
       integrity: sha512-URvsjaA9ypfreqJ2/ylDr5MUERhJZ+DhguoWRr2xgS5C7aGCalXo+ewL+GixgKBfhT2vuL02nbIgNGqVWgTOYw==
+  /lerp/1.0.3:
+    dev: false
+    resolution:
+      integrity: sha1-oYyJaPkXiW3hXM/MKNVaa3Med24=
   /levn/0.4.1:
     dependencies:
       prelude-ls: 1.2.1
@@ -3352,6 +3357,7 @@ specifiers:
   html-minifier: ^4.0.0
   img-extract: ^1.0.0
   img-load: ^2.0.0
+  lerp: ^1.0.3
   lodash.clonedeep: ^4.5.0
   mithril: ^2.0.4
   redux: ^4.0.5

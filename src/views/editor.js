@@ -1,13 +1,17 @@
 
 import m from 'mithril'
 import cc from 'classcat'
+import lerp from 'lerp'
 import contains from '../lib/rect-contains'
+import createAnim from '../lib/anim'
+import { easeInOut } from '../lib/ease-expo'
 
 const ZOOM_MIN = 1
 const ZOOM_MAX = 8
 const ZOOM_FACTOR = 0.01
-const ZOOM_DEBOUNCE = 250
+const ZOOM_DEBOUNCE = 125
 const FLY_SPEED = 6
+const ANIM_DURATION = 15
 
 export default function Editor ({ attrs }) {
   let onrender = attrs.onrender
@@ -21,7 +25,7 @@ export default function Editor ({ attrs }) {
   let click = null
   let hover = false
   let target = null
-  let animating = false
+  let anim = null
   let zooming = false
   let zoomTimeout = null
   let editor = null
@@ -64,7 +68,7 @@ export default function Editor ({ attrs }) {
   }
 
   const onmousedown = (evt) => {
-    if (animating) return
+    if (anim) return
     click = {
       x: evt.pageX,
       y: evt.pageY
@@ -96,7 +100,7 @@ export default function Editor ({ attrs }) {
   }
 
   const onmouseup = (evt) => {
-    if (animating) return
+    if (anim) return
     if (click) {
       const mouse = getImagePos(evt.pageX, evt.pageY)
       const rect = editor.getBoundingClientRect()
@@ -119,7 +123,7 @@ export default function Editor ({ attrs }) {
   }
 
   const onwheel = (evt) => {
-    if (animating) return
+    if (anim) return
     evt.preventDefault()
     const delta = -evt.deltaY * ZOOM_FACTOR
     const newScale = Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, scale + delta))
@@ -149,23 +153,38 @@ export default function Editor ({ attrs }) {
     if (scale !== newScale) {
       const mouse = getMousePos(evt.pageX, evt.pageY)
       const image = transformPos(mouse.x, mouse.y)
-      pos.x = -image.x * newScale + mouse.x
-      pos.y = -image.y * newScale + mouse.y
-      scale = newScale
-      // TODO: rewrite transitions with pure position/scale
-      // animating = true
-      // canvas.addEventListener('transitionend', ontransitionend)
+      const newX = -image.x * newScale + mouse.x
+      const newY = -image.y * newScale + mouse.y
+      ontransitionstart(newX, newY, newScale)
     }
     onpan && onpan(pos)
     onzoom && onzoom(scale)
     m.redraw()
   }
 
-  const ontransitionend = (evt) => {
+  const ontransitionstart = (newX, newY, newScale) => {
+    anim = createAnim(ANIM_DURATION)
+    const oldX = pos.x
+    const oldY = pos.y
+    const oldScale = scale
+    requestAnimationFrame(function animate () {
+      const p = anim()
+      if (p === -1) {
+        ontransitionend()
+      } else {
+        const t = easeInOut(p)
+        pos.x = lerp(oldX, newX, t)
+        pos.y = lerp(oldY, newY, t)
+        scale = lerp(oldScale, newScale, t)
+        m.redraw()
+        requestAnimationFrame(animate)
+      }
+    })
+  }
+
+  const ontransitionend = () => {
     zooming = false
-    animating = false
-    canvas.removeEventListener('transitionend', ontransitionend)
-    m.redraw()
+    anim = null
   }
 
   return {
@@ -210,7 +229,7 @@ export default function Editor ({ attrs }) {
       }])
     }, [
       m('.canvas-wrap', [
-        m('canvas', { class: animating ? '-adjust' : '' }),
+        m('canvas'),
         ...vnode.children
       ])
     ])

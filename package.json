@@ -6,6 +6,7 @@
     "css-string": "^1.0.1",
     "img-extract": "^1.0.0",
     "img-load": "^2.0.0",
+    "lerp": "^1.0.3",
     "lodash.clonedeep": "^4.5.0",
     "mithril": "^2.0.4",
     "redux": "^4.0.5",
