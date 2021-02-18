@@ -33,8 +33,8 @@ export default function Editor ({ attrs }) {
   })
 
   const getMousePos = (x, y) => ({
-    x: x - editor.offsetLeft,// - editor.offsetWidth / 2,
-    y: y - editor.offsetTop// - editor.offsetHeight / 2
+    x: x - editor.offsetLeft - editor.offsetWidth / 2,
+    y: y - editor.offsetTop - editor.offsetHeight / 2
   })
 
   const getImagePos = (x, y) => {
@@ -152,8 +152,9 @@ export default function Editor ({ attrs }) {
       pos.x = -image.x * newScale + mouse.x
       pos.y = -image.y * newScale + mouse.y
       scale = newScale
-      animating = true
-      canvas.addEventListener('transitionend', ontransitionend)
+      // TODO: rewrite transitions with pure position/scale
+      // animating = true
+      // canvas.addEventListener('transitionend', ontransitionend)
     }
     onpan && onpan(pos)
     onzoom && onzoom(scale)
