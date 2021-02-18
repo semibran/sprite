@@ -28,7 +28,9 @@ export const selectSprite = (state, { index, opts }) => {
   const newState = deepClone(state)
   if (state.focus !== 'sprites') {
     newState.focus = 'sprites'
-    // TODO: reset animation/timeline focus?
+    newState.sprites.selects = []
+    newState.anims.selects = []
+    newState.timeline.selects = []
   }
 
   select(newState.sprites.selects, index, opts)
@@ -39,7 +41,10 @@ export const focusSprite = ({ sprite, opts }) => (dispatch, getState) => {
   const state = getState()
   const index = state.sprites.list.indexOf(sprite)
   dispatch(selectSprite, { index, opts })
-  cache.messages.focus = sprite
+
+  if (!state.sprites.selects.includes(index)) {
+    cache.messages.focus = sprite
+  }
 }
 
 export const updateCamera = (state) => {

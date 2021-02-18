@@ -28,7 +28,8 @@ const fill = (canvas, x, y, scale) => {
     }
   }
 
-  context.lineWidth = 2 // 'white'
+  context.lineWidth = 2
+  context.strokeStyle = 'rgba(0, 0, 0, 0.5)'
 
   context.beginPath()
   context.moveTo(Math.round(canvas.width / 2 + x), 0)
@@ -46,8 +47,8 @@ export default function AnimsEditor (state, dispatch) {
     const frame = getSelectedFrame(state)
     if (!frame) return
 
-    const sprite = cache.sprites[frame.sprite]
-    if (!sprite) return
+    const image = cache.sprites[frame.sprite]
+    if (!image) return
 
     const { canvas, editor, pos, scale } = vnode.state
     canvas.width = editor.offsetWidth
@@ -58,11 +59,11 @@ export default function AnimsEditor (state, dispatch) {
     const context = canvas.getContext('2d')
     context.imageSmoothingEnabled = false
     context.drawImage(
-      sprite,
-      Math.round(canvas.width / 2 + pos.x),
-      Math.round(canvas.height / 2 + pos.y),
-      Math.round(sprite.width * scale),
-      Math.round(sprite.height * scale)
+      image,
+      Math.round(canvas.width / 2 + pos.x - frame.origin.x * scale),
+      Math.round(canvas.height / 2 + pos.y - frame.origin.y * scale),
+      Math.round(image.width * scale),
+      Math.round(image.height * scale)
     )
   }
 

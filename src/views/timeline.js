@@ -59,11 +59,35 @@ export const selectAnim = (state, { index, opts }) => {
   const newState = deepClone(state)
   if (state.focus !== 'anims') {
     newState.focus = 'anims'
-    // TODO: reset sprites/timeline selection?
+    newState.sprites.selects = []
+    newState.anims.selects = []
+    newState.timeline.selects = []
   }
 
-  select(newState.anims.selects, index, opts)
-  console.log(newState.anims.selects)
+  // prevent deselection
+  const selects = newState.anims.selects
+  if (!selects.includes(index)) {
+    select(selects, index, opts)
+  }
+
+  return newState
+}
+
+export const selectFrame = (state, { index, opts }) => {
+  const newState = deepClone(state)
+  if (state.focus !== 'timeline') {
+    newState.focus = 'timeline'
+    newState.sprites.selects = []
+    newState.timeline.selects = []
+  }
+
+  // prevent deselection
+  const selects = newState.timeline.selects
+  if (!selects.includes(index)) {
+    select(selects, index, opts)
+    newState.timeline.pos = index
+  }
+
   return newState
 }
 
@@ -85,9 +109,12 @@ export default function Timeline (state, dispatch) {
       m('table.timeline', [
         m('tr.timeline-header', [
           TimelineControls(state, dispatch),
-          new Array(maxframes).fill(0).map((_, i) =>
-            m('th.frame-number', m('span', i + 1))
-          ),
+          new Array(maxframes).fill(0).map((_, i) => {
+            const focus = state.timeline.pos === i && state.focus !== 'sprites'
+            return m('th.frame-number', { class: focus ? '-focus' : '' }, [
+              m('span', i + 1)
+            ])
+          }),
           m('th.track-end')
         ]),
         state.anims.list.map((anim, i) =>
@@ -111,10 +138,22 @@ export default function Timeline (state, dispatch) {
                   ])
                 : anim.name
             ]),
-            anim.frames.map((frame) => {
+            anim.frames.map((frame, i) => {
+              const focus = state.timeline.pos === i && state.focus !== 'sprites'
               const image = cache.sprites && cache.sprites[frame.sprite]
-              return m('td.frame', [
-                m('.thumb', image && Thumb(image))
+              return m('td.frame', { class: focus ? '-focus' : '' }, [
+                m('.thumb', {
+                  class: focus ? '-select' : '',
+                  onclick: (evt) => dispatch(selectFrame, {
+                    index: i,
+                    opts: {
+                      ctrl: evt.ctrlKey || evt.metaKey,
+                      shift: evt.shiftKey
+                    }
+                  })
+                }, [
+                  image && Thumb(image)
+                ])
               ])
             }),
             m('div.track-bg')

@@ -124,12 +124,13 @@ export default function SpritesEditor (state, dispatch) {
   }
 
   const findIndex = (sprites, x, y) =>
-    sprites.findIndex((sprite) => contains({
-      x: sprite.rect.x,
-      y: sprite.rect.y,
-      width: sprite.rect.width + 2,
-      height: sprite.rect.height + 2
-    }, x, y))
+    sprites.findIndex((sprite) =>
+      contains({
+        x: sprite.rect.x,
+        y: sprite.rect.y,
+        width: sprite.rect.width + 2,
+        height: sprite.rect.height + 2
+      }, x, y))
 
   return m(Editor, {
     class: '-sprites',

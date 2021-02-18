@@ -42,7 +42,7 @@ export const getSelectedAnim = (state) => {
 
 export const getSelectedFrame = (state) => {
   const anim = getSelectedAnim(state)
-  const framenum = state.timeline.selects[state.timeline.selects.length - 1]
+  const framenum = state.timeline.pos
   return anim
     ? getFrameAt(anim, framenum)
     : null

@@ -32,6 +32,12 @@
     z-index: 2;
   }
 
+  .frame-number.-focus span {
+    border-color: $blue;
+    background: $blue;
+    color: white;
+  }
+
   .frame-number span {
     color: $lightgray;
     border: thin solid $silver;
@@ -54,6 +60,11 @@
 
   .frame .thumb {
     margin-left: 4px;
+  }
+
+  .frame.-focus .thumb {
+    border-color: $blue;
+    box-shadow: 0 0 0 1px $blue;
   }
 
   .frame:nth-child(2) {
