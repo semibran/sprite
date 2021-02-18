@@ -4,18 +4,32 @@ import Editor from './editor'
 import cache from '../app/cache'
 import { getSelectedFrame } from '../app/helpers'
 
-const fill = (canvas) => {
+const fill = (canvas, x, y) => {
   const context = canvas.getContext('2d')
   context.fillStyle = '#999'
   context.fillRect(0, 0, canvas.width, canvas.height)
-  for (let y = 0; y < canvas.height; y += 16) {
-    for (let x = 0; x < canvas.width; x += 16) {
+  const xoffset = x % 32 + (canvas.width / 2) % 16
+  const yoffset = y % 32 + (canvas.height / 2) % 16
+  for (let y = -32; y < canvas.height + 32; y += 16) {
+    for (let x = -32; x < canvas.width + 32; x += 16) {
       if ((x + y) % 32) {
         context.fillStyle = '#ccc'
-        context.fillRect(x, y, 16, 16)
+        context.fillRect(x + xoffset, y + yoffset, 16, 16)
       }
     }
   }
+
+  context.strokeStyle = 'white'
+
+  context.beginPath()
+  context.moveTo(canvas.width / 2 + x, 0)
+  context.lineTo(canvas.width / 2 + x, canvas.height)
+  context.stroke()
+
+  context.beginPath()
+  context.moveTo(0, canvas.height / 2 + y)
+  context.lineTo(canvas.width, canvas.height / 2 + y)
+  context.stroke()
 }
 
 export default function AnimsEditor (state, dispatch) {
@@ -26,18 +40,29 @@ export default function AnimsEditor (state, dispatch) {
     const sprite = cache.sprites[frame.sprite]
     if (!sprite) return
 
-    const canvas = vnode.state.canvas
-    canvas.width = sprite.width
-    canvas.height = sprite.height
-    fill(canvas)
+    const { canvas, editor, pos, scale } = vnode.state
+    const bg = canvas.nextSibling
+    const x = Math.round(pos.x) - canvas.width / 2
+    const y = Math.round(pos.y) - canvas.height / 2
+    const transform = 'transform: ' +
+      `translate3d(${x}px, ${y}px, 0)` +
+      `scale(${scale})`
+
+    canvas.width = editor.offsetWidth
+    canvas.height = editor.offsetHeight
+    canvas.style = transform
 
     const context = canvas.getContext('2d')
-    context.drawImage(sprite, 0, 0)
+    context.drawImage(sprite, Math.round(canvas.width / 2), Math.round(canvas.height / 2))
+
+    bg.width = canvas.width
+    bg.height = canvas.height
+    bg.style = 'transform: translate(-50%, -50%)'
+    fill(bg, pos.x, pos.y)
   }
 
   return m(Editor, {
     class: '-anims',
-    oncreate: onrender,
-    onupdate: onrender
-  })
+    onrender
+  }, [m('canvas.-bg')])
 }

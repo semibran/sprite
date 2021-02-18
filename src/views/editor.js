@@ -33,8 +33,8 @@ export default function Editor ({ attrs }) {
   })
 
   const getMousePos = (x, y) => ({
-    x: x - editor.offsetLeft - editor.offsetWidth / 2,
-    y: y - editor.offsetTop - editor.offsetHeight / 2
+    x: x - editor.offsetLeft,// - editor.offsetWidth / 2,
+    y: y - editor.offsetTop// - editor.offsetHeight / 2
   })
 
   const getImagePos = (x, y) => {
@@ -173,10 +173,13 @@ export default function Editor ({ attrs }) {
       canvas = vnode.dom.firstChild.firstChild
       vnode.state.editor = editor
       vnode.state.canvas = canvas
+      vnode.state.pos = pos
+      vnode.state.scale = scale
       canvas.addEventListener('mousedown', onmousedown)
       window.addEventListener('mousemove', onmousemove)
       window.addEventListener('mouseup', onmouseup)
       canvas.addEventListener('wheel', onwheel)
+      onrender && onrender(vnode)
     },
     onremove: (vnode) => {
       canvas.removeEventListener('mousedown', onmousedown)
@@ -184,7 +187,7 @@ export default function Editor ({ attrs }) {
       window.removeEventListener('mouseup', onmouseup)
       canvas.removeEventListener('wheel', onwheel)
     },
-    onbeforeupdate: ({ attrs }) => {
+    onbeforeupdate: ({ attrs, state }) => {
       attrs.pos && flyTo(attrs.pos)
       scale = attrs.scale || scale
       hover = attrs.hover || false
@@ -193,9 +196,11 @@ export default function Editor ({ attrs }) {
       onmove = attrs.onmove
       onpan = attrs.onpan
       onzoom = attrs.onzoom
+      state.pos = pos
+      state.scale = scale
     },
     onupdate: (vnode) => {
-      onrender && onrender(canvas)
+      onrender && onrender(vnode)
     },
     view: (vnode) => m('.editor', {
       class: cc([vnode.attrs.class, {
@@ -204,12 +209,8 @@ export default function Editor ({ attrs }) {
       }])
     }, [
       m('.canvas-wrap', [
-        m('canvas', {
-          class: animating ? '-adjust' : '',
-          style: 'transform: ' +
-            `translate3d(${Math.round(pos.x)}px, ${Math.round(pos.y)}px, 0)` +
-            `scale(${scale})`
-        })
+        m('canvas', { class: animating ? '-adjust' : '' }),
+        ...vnode.children
       ])
     ])
   }

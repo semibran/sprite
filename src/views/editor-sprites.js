@@ -46,9 +46,12 @@ export default function SpritesEditor (state, dispatch) {
   const onrender = (vnode) => {
     if (!image) return
 
-    const canvas = vnode.state.canvas
+    const { canvas, pos, scale } = vnode.state
     canvas.width = image.width
     canvas.height = image.height
+    canvas.style = 'transform: ' +
+      `translate3d(${Math.round(pos.x)}px, ${Math.round(pos.y)}px, 0)` +
+      `scale(${scale})`
     fill(canvas)
 
     const context = canvas.getContext('2d')

@@ -1,0 +1,11 @@
+.editor.-anims {
+  canvas {
+    left: 50%;
+    top: 50%;
+    z-index: 1;
+  }
+
+  canvas.-bg {
+    z-index: 0;
+  }
+}
