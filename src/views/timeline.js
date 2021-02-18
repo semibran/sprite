@@ -119,16 +119,17 @@ export default function Timeline (state, dispatch) {
         ]),
         state.anims.list.map((anim, i) =>
           m('tr.timeline-track', {
-            class: isAnimSelected(state, i) ? '-select' : '',
-            onclick: (evt) => dispatch(selectAnim, {
-              index: i,
-              opts: {
-                ctrl: evt.ctrlKey || evt.metaKey,
-                shift: evt.shiftKey
-              }
-            })
+            class: isAnimSelected(state, i) ? '-select' : ''
           }, [
-            m('td.track-name', [
+            m('td.track-name', {
+              onclick: (evt) => dispatch(selectAnim, {
+                index: i,
+                opts: {
+                  ctrl: evt.ctrlKey || evt.metaKey,
+                  shift: evt.shiftKey
+                }
+              })
+            }, [
               isAnimSelected(state, i)
                 ? m('div', [
                     anim.name,

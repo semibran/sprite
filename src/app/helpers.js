@@ -35,7 +35,7 @@ export const getSelectedAnim = (state) => {
   const anims = state.anims.list
   const selects = state.anims.selects
   const idx = selects[selects.length - 1]
-  return state.focus === 'anims' && selects.length
+  return (state.focus === 'anims' || state.focus === 'timeline') && selects.length
     ? anims[selects[selects.length - 1]]
     : null
 }
