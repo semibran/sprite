@@ -42,9 +42,10 @@ export const zoomSpriteEditor = (state, scale) => ({
 
 export const deselectSprites = (state) => ({
   ...state,
-  sprites: {
-    ...state.sprites,
-    selects: []
+  select: {
+    ...state.select,
+    focus: null,
+    list: []
   }
 })
 
@@ -155,7 +156,7 @@ export default function SpritesEditor (state, dispatch) {
           index: id,
           opts: { ctrl: ctrl || shift }
         })
-      } else if (state.sprites.selects.length) {
+      } else if (state.select.list.length) {
         dispatch(deselectSprites)
       }
     },

@@ -14,7 +14,7 @@ export const mergeSprites = (state) => {
 
   const newState = deepClone(state)
   const sprites = newState.sprites.list
-  const selects = newState.sprites.selects.sort()
+  const selects = newState.select.list.sort()
   const rects = selects.map(idx => sprites[idx].rect)
   const rect = mergeRects(rects)
   for (let i = selects.length; --i;) {
@@ -28,7 +28,7 @@ export const mergeSprites = (state) => {
   sprite.rect = rect
   cache.sprites[idx] = extractImage(cache.image, rect.x, rect.y, rect.width, rect.height)
   selects.length = 0
-  newState.sprites.selects = [idx]
+  newState.select.list = [idx]
   return newState
 }
 
@@ -38,7 +38,7 @@ export const splitSprite = (state) => {
   }
 
   const newState = deepClone(state)
-  const id = state.sprites.selects[0]
+  const id = state.select.list[0]
   const offset = state.sprites.list[id].rect
   const image = cache.sprites[id]
   const rects = sliceImage(image).map(({ x, y, width, height }) => ({
@@ -81,7 +81,7 @@ export const splitSprite = (state) => {
     })
   })
 
-  newState.sprites.selects = new Array(sprites.length).fill(0).map((_, i) => id + i)
+  newState.select.list = new Array(sprites.length).fill(0).map((_, i) => id + i)
 
   return newState
 }

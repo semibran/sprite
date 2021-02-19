@@ -24,7 +24,10 @@ export const hideTimeline = (state) => ({
 
 export const createAnim = (state, { ids }) => ({
   ...state,
-  focus: 'anims',
+  select: {
+    focus: 'anims',
+    list: [state.anims.list.length]
+  },
   anims: {
     ...state.anims,
     list: [...state.anims.list, {
@@ -45,49 +48,49 @@ export const createAnim = (state, { ids }) => ({
             }
           })
         : []
-    }],
-    selects: [state.anims.list.length]
+    }]
   }
 })
 
 export const removeAnim = (state, { index }) => ({
   ...state,
-  anims: state.anims.filter((_, i) => i !== index)
+  anims: state.anims.list.filter((_, i) => i !== index)
 })
 
 export const selectAnim = (state, { index, opts }) => {
   const newState = deepClone(state)
-  if (state.focus !== 'anims') {
-    newState.focus = 'anims'
-    newState.sprites.selects = []
-    newState.anims.selects = []
-    newState.timeline.selects = []
+  if (state.select.focus !== 'anims') {
+    newState.panel = 'anims'
+    newState.select.focus = 'anims'
+    newState.select.list = []
   }
 
   // prevent deselection
-  const selects = newState.anims.selects
+  const selects = newState.select.list
   if (!selects.includes(index)) {
     select(selects, index, opts)
+    newState.anims.index = index
   }
 
   return newState
 }
 
-export const selectFrame = (state, { index, opts }) => {
+export const selectFrame = (state, { frameIndex, animIndex, opts }) => {
   const newState = deepClone(state)
-  if (state.focus !== 'timeline') {
-    newState.focus = 'timeline'
-    newState.sprites.selects = []
-    newState.timeline.selects = []
+  if (state.select.focus !== 'timeline') {
+    newState.panel = 'anims'
+    newState.select.focus = 'timeline'
+    newState.select.list = []
   }
 
   // prevent deselection
-  const selects = newState.timeline.selects
-  if (!selects.includes(index)) {
-    select(selects, index, opts)
-    newState.timeline.pos = index
+  const selects = newState.select.list
+  if (!selects.includes(frameIndex)) {
+    select(selects, frameIndex, opts)
   }
 
+  newState.timeline.index = frameIndex
+  newState.anims.index = animIndex
   return newState
 }
 
@@ -110,7 +113,7 @@ export default function Timeline (state, dispatch) {
         m('tr.timeline-header', [
           TimelineControls(state, dispatch),
           new Array(maxframes).fill(0).map((_, i) => {
-            const focus = state.timeline.pos === i && state.focus !== 'sprites'
+            const focus = state.timeline.index === i && state.panel === 'anims'
             return m('th.frame-number', { class: focus ? '-focus' : '' }, [
               m('span', i + 1)
             ])
@@ -139,14 +142,17 @@ export default function Timeline (state, dispatch) {
                   ])
                 : anim.name
             ]),
-            anim.frames.map((frame, i) => {
-              const focus = state.timeline.pos === i && state.focus !== 'sprites'
+            anim.frames.map((frame, j) => {
+              const focus = state.panel === 'anims' &&
+                state.anims.index === i &&
+                state.timeline.index === j
               const image = cache.sprites && cache.sprites[frame.sprite]
               return m('td.frame', { class: focus ? '-focus' : '' }, [
                 m('.thumb', {
                   class: focus ? '-select' : '',
                   onclick: (evt) => dispatch(selectFrame, {
-                    index: i,
+                    animIndex: i,
+                    frameIndex: j,
                     opts: {
                       ctrl: evt.ctrlKey || evt.metaKey,
                       shift: evt.shiftKey

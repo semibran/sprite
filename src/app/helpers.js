@@ -1,48 +1,44 @@
 
 export const isNoneSelected = (state) =>
-  state.focus === 'sprites' && !state.sprites.selects.length ||
-  state.focus === 'anims' && !state.anims.selects.length ||
-  state.focus === 'timeline' && !state.timeline.selects.length
+  !state.select.list.length
 
 export const isSpriteSelected = (state, id) =>
   id == null
-    ? state.focus === 'sprites'
-    : state.focus === 'sprites' && state.sprites.selects.includes(id)
+    ? state.panel === 'sprites'
+    : state.panel === 'sprites' && state.select.list.includes(id)
 
 export const isAnimSelected = (state, id) =>
-  id == null
-    ? state.focus === 'anims'
-    : state.focus === 'anims' && state.anims.selects.includes(id)
+  state.panel === 'anims' && (id == null || state.anims.index === id)
 
 export const getSelectedSprite = (state) => {
   const sprites = state.sprites.list
-  const selects = state.sprites.selects
+  const selects = state.select.list
   const idx = selects[selects.length - 1]
-  return state.focus === 'sprites' && selects.length
+  return state.panel === 'sprites' && selects.length
     ? sprites[idx]
     : null
 }
 
 export const getSelectedSprites = (state) => {
   const sprites = state.sprites.list
-  const selects = state.sprites.selects
-  return state.focus === 'sprites' && selects.length
+  const selects = state.select.list
+  return state.panel === 'sprites' && selects.length
     ? selects.map(idx => sprites[idx])
     : []
 }
 
 export const getSelectedAnim = (state) => {
   const anims = state.anims.list
-  const selects = state.anims.selects
-  const idx = selects[selects.length - 1]
-  return (state.focus === 'anims' || state.focus === 'timeline') && selects.length
-    ? anims[selects[selects.length - 1]]
+  const selects = state.select.list
+  const idx = state.anims.index
+  return state.panel === 'anims' && selects.length
+    ? anims[idx]
     : null
 }
 
 export const getSelectedFrame = (state) => {
   const anim = getSelectedAnim(state)
-  const framenum = state.timeline.pos
+  const framenum = state.timeline.index
   return anim
     ? getFrameAt(anim, framenum)
     : null

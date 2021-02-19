@@ -47,24 +47,25 @@ export default function Editor ({ attrs }) {
   }
 
   const flyTo = (_target) => {
-    target = _target
-    requestAnimationFrame(function animate () {
-      if (target !== _target) {
-        return // a different target was clicked during animation
-      }
-      const xdist = target.x - pos.x
-      const ydist = target.y - pos.y
-      if (Math.abs(xdist) + Math.abs(ydist) < 1) {
-        pos.x += xdist
-        pos.y += ydist
-        m.redraw()
-      } else {
-        pos.x += xdist / FLY_SPEED
-        pos.y += ydist / FLY_SPEED
-        m.redraw()
-        requestAnimationFrame(animate)
-      }
-    })
+    ontransitionstart(_target.x, _target.y, scale)
+    // target = _target
+    // requestAnimationFrame(function animate () {
+    //   if (target !== _target) {
+    //     return // a different target was clicked during animation
+    //   }
+    //   const xdist = target.x - pos.x
+    //   const ydist = target.y - pos.y
+    //   if (Math.abs(xdist) + Math.abs(ydist) < 1) {
+    //     pos.x += xdist
+    //     pos.y += ydist
+    //     m.redraw()
+    //   } else {
+    //     pos.x += xdist / FLY_SPEED
+    //     pos.y += ydist / FLY_SPEED
+    //     m.redraw()
+    //     requestAnimationFrame(animate)
+    //   }
+    // })
   }
 
   const onmousedown = (evt) => {

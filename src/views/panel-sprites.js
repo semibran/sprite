@@ -26,14 +26,13 @@ export const hideSprites = (state) => ({
 
 export const selectSprite = (state, { index, opts }) => {
   const newState = deepClone(state)
-  if (state.focus !== 'sprites') {
-    newState.focus = 'sprites'
-    newState.sprites.selects = []
-    newState.anims.selects = []
-    newState.timeline.selects = []
+  if (state.select.focus !== 'sprites') {
+    newState.panel = 'sprites'
+    newState.select.focus = 'sprites'
+    newState.select.list = []
   }
 
-  select(newState.sprites.selects, index, opts)
+  select(newState.select.list, index, opts)
   return newState
 }
 
@@ -42,7 +41,7 @@ export const focusSprite = ({ sprite, opts }) => (dispatch, getState) => {
   const index = state.sprites.list.indexOf(sprite)
   dispatch(selectSprite, { index, opts })
 
-  if (!state.sprites.selects.includes(index)) {
+  if (!state.select.list.includes(index)) {
     cache.messages.focus = sprite
   }
 }
@@ -80,7 +79,7 @@ export default function SpritesPanel (state, dispatch) {
 
           const handleDragStart = (evt) => {
             dragging = true
-            evt.dataTransfer.setData('text/plain', state.sprites.selects.join())
+            evt.dataTransfer.setData('text/plain', state.select.list.join())
             if (!isSpriteSelected(state, i)) {
               handleSelect(evt)
             }
@@ -92,7 +91,7 @@ export default function SpritesPanel (state, dispatch) {
 
           return m.fragment({
             onupdate: (vnode) => {
-              const selects = state.sprites.selects
+              const selects = state.select.list
               const last = selects[selects.length - 1]
               if (!isSpriteSelected(state) || i !== last) {
                 return

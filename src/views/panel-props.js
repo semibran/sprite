@@ -23,7 +23,7 @@ export default function PropsPanel (state, dispatch) {
   const sprites = getSelectedSprites(state)
   const sprite = sprites[sprites.length - 1]
   const anim = getSelectedAnim(state)
-  const frame = state.focus === 'timeline' && getSelectedFrame(state)
+  const frame = state.select.focus === 'timeline' && getSelectedFrame(state)
   const name = (() => {
     if (isNoneSelected(state)) {
       return 'Project'
