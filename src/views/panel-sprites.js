@@ -6,6 +6,7 @@ import select from '../lib/select'
 import Panel from './panel'
 import Thumb from './thumb'
 import Banner from './banner'
+import { selectSprite } from '../actions/sprite'
 import {
   isSpriteSelected,
   getSelectedSprites
@@ -24,18 +25,6 @@ export const hideSprites = (state) => ({
   panels: { ...state.panels, sprites: false }
 })
 
-export const selectSprite = (state, { index, opts }) => {
-  const newState = deepClone(state)
-  if (state.select.focus !== 'sprites') {
-    newState.panel = 'sprites'
-    newState.select.focus = 'sprites'
-    newState.select.list = []
-  }
-
-  select(newState.select.list, index, opts)
-  return newState
-}
-
 export const focusSprite = ({ sprite, opts }) => (dispatch, getState) => {
   const state = getState()
   const index = state.sprites.list.indexOf(sprite)
@@ -44,13 +33,6 @@ export const focusSprite = ({ sprite, opts }) => (dispatch, getState) => {
   if (!state.select.list.includes(index)) {
     cache.messages.focus = { sprite }
   }
-}
-
-export const updateCamera = (state) => {
-  const editor = deepClone(state.editor)
-  editor.pos.x += (editor.target.x - editor.pos.x) / 8
-  editor.pos.y += (editor.target.y - editor.pos.y) / 8
-  return { ...state, editor }
 }
 
 export default function SpritesPanel (state, dispatch) {

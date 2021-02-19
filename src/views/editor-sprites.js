@@ -3,7 +3,7 @@ import m from 'mithril'
 import cache from '../app/cache'
 import Editor from './editor'
 import contains from '../lib/rect-contains'
-import { selectSprite } from './panel-sprites'
+import { selectSprite } from '../actions/sprite'
 import { isSpriteSelected } from '../app/helpers'
 
 let hover = -1

@@ -1,11 +1,12 @@
 
 import m from 'mithril'
-import deepClone from 'lodash.clonedeep'
-import select from '../lib/select'
 
 import Panel from './panel'
 import TimelineControls from './timeline-controls'
 import Thumb from './thumb'
+
+import { selectAnim, createAnim, removeAnim } from '../actions/anim'
+import { selectFrame } from '../actions/frame'
 
 import cache from '../app/cache'
 import { isAnimSelected, getSelectedSprites } from '../app/helpers'
@@ -21,78 +22,6 @@ export const hideTimeline = (state) => ({
   ...state,
   panels: { ...state.panels, timeline: false }
 })
-
-export const createAnim = (state, { ids }) => ({
-  ...state,
-  select: {
-    focus: 'anims',
-    list: [state.anims.list.length]
-  },
-  anims: {
-    ...state.anims,
-    list: [...state.anims.list, {
-      name: 'untitled',
-      next: null,
-      speed: 1,
-      frames: ids
-        ? ids.map((id) => {
-            const sprite = state.sprites.list[id]
-            const rect = sprite.rect
-            return {
-              sprite: id,
-              duration: 1,
-              origin: {
-                x: Math.round(rect.width / 2),
-                y: rect.height
-              }
-            }
-          })
-        : []
-    }]
-  }
-})
-
-export const removeAnim = (state, { index }) => ({
-  ...state,
-  anims: state.anims.list.filter((_, i) => i !== index)
-})
-
-export const selectAnim = (state, { index, opts }) => {
-  const newState = deepClone(state)
-  if (state.select.focus !== 'anims') {
-    newState.panel = 'anims'
-    newState.select.focus = 'anims'
-    newState.select.list = []
-  }
-
-  // prevent deselection
-  const selects = newState.select.list
-  if (!selects.includes(index)) {
-    select(selects, index, opts)
-    newState.anims.index = index
-  }
-
-  return newState
-}
-
-export const selectFrame = (state, { frameIndex, animIndex, opts }) => {
-  const newState = deepClone(state)
-  if (state.select.focus !== 'timeline') {
-    newState.panel = 'anims'
-    newState.select.focus = 'timeline'
-    newState.select.list = []
-  }
-
-  // prevent deselection
-  const selects = newState.select.list
-  if (!selects.includes(frameIndex)) {
-    select(selects, frameIndex, opts)
-  }
-
-  newState.timeline.index = frameIndex
-  newState.anims.index = animIndex
-  return newState
-}
 
 export default function Timeline (state, dispatch) {
   const shown = state.panels.timeline
@@ -151,8 +80,8 @@ export default function Timeline (state, dispatch) {
                 m('.thumb', {
                   class: focus ? '-select' : '',
                   onclick: (evt) => dispatch(selectFrame, {
-                    animIndex: i,
-                    frameIndex: j,
+                    animid: i,
+                    frameid: j,
                     opts: {
                       ctrl: evt.ctrlKey || evt.metaKey,
                       shift: evt.shiftKey
