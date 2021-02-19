@@ -4,6 +4,9 @@ import Editor from './editor'
 import cache from '../app/cache'
 import { getSelectedFrame } from '../app/helpers'
 
+let persist = false
+let mounted = false
+
 const fill = (canvas, x, y, scale) => {
   const tileSize = 16 * scale
   const patternSize = 32 * scale
@@ -42,7 +45,25 @@ const fill = (canvas, x, y, scale) => {
   context.stroke()
 }
 
+export const panAnimEditor = (state, pos) => ({
+  ...state,
+  anims: {
+    ...state.anims,
+    editor: { ...state.anims.editor, pos }
+  }
+})
+
+export const zoomAnimEditor = (state, scale) => ({
+  ...state,
+  anims: {
+    ...state.anims,
+    editor: { ...state.anims.editor, scale }
+  }
+})
+
 export default function AnimsEditor (state, dispatch) {
+  const editor = state.anims.editor
+
   const onrender = (vnode) => {
     const frame = getSelectedFrame(state)
     if (!frame) return
@@ -67,8 +88,31 @@ export default function AnimsEditor (state, dispatch) {
     )
   }
 
+  let transform = {}
+
+  if (state._persist && !state._persist.rehydrated) {
+    return null
+  } else if (!persist || !mounted) {
+    persist = true
+    mounted = true
+    transform = {
+      pos: editor.pos,
+      scale: Math.round(editor.scale)
+    }
+  }
+
   return m(Editor, {
+    ...transform,
     class: '-anims',
-    onrender
+    onrender,
+    onpan: ({ x, y }) => {
+      dispatch(panAnimEditor, { x, y })
+    },
+    onzoom: (scale) => {
+      dispatch(zoomAnimEditor, scale)
+    },
+    onremove: () => {
+      mounted = false
+    }
   })
 }

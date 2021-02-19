@@ -3,14 +3,13 @@ import m from 'mithril'
 import cc from 'classcat'
 import lerp from 'lerp'
 import contains from '../lib/rect-contains'
-import createAnim from '../lib/anim'
+import Anim from '../lib/anim'
 import { easeInOut } from '../lib/ease-expo'
 
 const ZOOM_MIN = 1
 const ZOOM_MAX = 8
 const ZOOM_FACTOR = 0.01
 const ZOOM_DEBOUNCE = 125
-const FLY_SPEED = 6
 const ANIM_DURATION = 15
 
 export default function Editor ({ attrs }) {
@@ -24,7 +23,6 @@ export default function Editor ({ attrs }) {
   let pan = null
   let click = null
   let hover = false
-  let target = null
   let anim = null
   let zooming = false
   let zoomTimeout = null
@@ -46,26 +44,8 @@ export default function Editor ({ attrs }) {
     return transformPos(mouse.x, mouse.y)
   }
 
-  const flyTo = (_target) => {
-    ontransitionstart(_target.x, _target.y, scale)
-    // target = _target
-    // requestAnimationFrame(function animate () {
-    //   if (target !== _target) {
-    //     return // a different target was clicked during animation
-    //   }
-    //   const xdist = target.x - pos.x
-    //   const ydist = target.y - pos.y
-    //   if (Math.abs(xdist) + Math.abs(ydist) < 1) {
-    //     pos.x += xdist
-    //     pos.y += ydist
-    //     m.redraw()
-    //   } else {
-    //     pos.x += xdist / FLY_SPEED
-    //     pos.y += ydist / FLY_SPEED
-    //     m.redraw()
-    //     requestAnimationFrame(animate)
-    //   }
-    // })
+  const flyTo = ({ x, y }) => {
+    ontransitionstart(x, y, scale)
   }
 
   const onmousedown = (evt) => {
@@ -164,11 +144,12 @@ export default function Editor ({ attrs }) {
   }
 
   const ontransitionstart = (newX, newY, newScale) => {
-    anim = createAnim(ANIM_DURATION)
+    anim = Anim(ANIM_DURATION)
     const oldX = pos.x
     const oldY = pos.y
     const oldScale = scale
     requestAnimationFrame(function animate () {
+      if (!anim) return ontransitionend()
       const p = anim()
       if (p === -1) {
         ontransitionend()

@@ -95,32 +95,32 @@ export default function SpritesEditor (state, dispatch) {
     })
   }
 
-  if (state._persist && !state._persist.rehydrated) {
-    return null
-  }
-
   let transform = {}
 
+  if (state._persist && !state._persist.rehydrated) {
+    return null
+  } else if (!persist) {
+    persist = true
+    transform = {
+      pos: editor.pos,
+      scale: Math.round(editor.scale)
+    }
+  }
+
   if (cache.messages.focus) {
-    const newSprite = cache.messages.focus
+    const newSprite = cache.messages.focus.sprite
     cache.messages.focus = null
     if (newSprite && sprite !== newSprite) {
       sprite = newSprite
       const { x, y, width, height } = sprite.rect
+      const scale = Math.round(editor.scale)
       transform = {
         pos: {
-          x: Math.floor(-x - width / 2) * editor.scale,
-          y: Math.floor(-y - height / 2) * editor.scale
-        }
+          x: Math.round((-x - width / 2) * scale),
+          y: Math.round((-y - height / 2) * scale)
+        },
+        scale: scale
       }
-    }
-  }
-
-  if (!persist && (!state._persist || state._persist.rehydrated)) {
-    persist = true
-    transform = {
-      pos: editor.pos,
-      scale: editor.scale
     }
   }
 
@@ -134,11 +134,10 @@ export default function SpritesEditor (state, dispatch) {
       }, x, y))
 
   return m(Editor, {
+    ...transform,
     class: '-sprites',
     hover: hover !== -1,
-    ...transform,
-    oncreate: onrender,
-    onupdate: onrender,
+    onrender,
     onmove: ({ x, y, contained }) => {
       let id = -1
       if (contained) {

@@ -12,6 +12,16 @@ import * as actions from './actions'
 
 const initialState = {
   project: { name: 'Untitled' },
+  panel: 'sprites',
+  panels: {
+    sprites: true,
+    props: true,
+    timeline: true
+  },
+  select: {
+    focus: null,
+    list: []
+  },
   sprites: {
     list: [],
     editor: {
@@ -33,16 +43,6 @@ const initialState = {
     playing: false,
     repeat: false,
     onionskin: false
-  },
-  panel: 'sprites',
-  select: {
-    focus: null,
-    list: []
-  },
-  panels: {
-    sprites: true,
-    props: true,
-    timeline: true
   }
 }
 

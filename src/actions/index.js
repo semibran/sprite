@@ -5,6 +5,7 @@ import sliceCanvas from '../lib/slice'
 import cache from '../app/cache'
 
 export * from '../views/editor-sprites'
+export * from '../views/editor-anims'
 export * from '../views/timeline'
 export * from '../views/timeline-controls'
 export * from '../views/panel-sprites'

@@ -42,7 +42,7 @@ export const focusSprite = ({ sprite, opts }) => (dispatch, getState) => {
   dispatch(selectSprite, { index, opts })
 
   if (!state.select.list.includes(index)) {
-    cache.messages.focus = sprite
+    cache.messages.focus = { sprite }
   }
 }
 
