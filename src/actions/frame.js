@@ -3,6 +3,13 @@ import deepClone from 'lodash.clonedeep'
 import select from '../lib/select'
 import { getSelectedFrame } from '../app/helpers'
 
+export const setFrameDuration = (state, { duration }) => {
+  const newState = deepClone(state)
+  const frame = getSelectedFrame(newState)
+  frame.duration = duration
+  return newState
+}
+
 export const setFrameOrigin = (state, { x, y }) => {
   const newState = deepClone(state)
   const frame = getSelectedFrame(newState)

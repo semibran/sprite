@@ -29,6 +29,10 @@
     width: 50%;
   }
 
+  .section-value .units {
+    color: $lightgray;
+  }
+
   .section-fields {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -38,6 +42,10 @@
   }
 
   .section-field {
+    cursor: text;
+  }
+
+  .section-field:not(.-inline) {
     display: flex;
     padding: 8px 12px;
     border: thin solid transparent;
@@ -48,6 +56,30 @@
 
     &:focus-within {
       border-color: $blue;
+    }
+  }
+
+  .section-field.-inline {
+    display: block;
+    margin: -8px -12px;
+    border: 12px solid transparent;
+    border-top-width: 8px;
+    border-bottom-width: 8px;
+
+    &:hover {
+      box-shadow: 0 0 0 1px $silver;
+    }
+
+    &:focus-within {
+      box-shadow: 0 0 0 1px $blue;
+    }
+
+    input.field-value {
+      position: absolute;
+    }
+
+    span.field-value {
+      opacity: 0;
     }
   }
 

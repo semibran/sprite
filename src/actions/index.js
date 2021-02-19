@@ -4,6 +4,8 @@ import cloneImage from '../lib/img-clone'
 import sliceCanvas from '../lib/slice'
 import cache from '../app/cache'
 
+export * from './sprite'
+export * from './anim'
 export * from './frame'
 export * from '../views/editor-sprites'
 export * from '../views/editor-anims'
