@@ -1,6 +1,7 @@
 
 import deepClone from 'lodash.clonedeep'
 import select from '../lib/select'
+import { getSelectedAnim } from '../app/helpers'
 
 export const createAnim = (state, { ids }) => ({
   ...state,
@@ -51,5 +52,12 @@ export const selectAnim = (state, { index, opts }) => {
     newState.anims.index = index
   }
 
+  return newState
+}
+
+export const setAnimSpeed = (state, { speed }) => {
+  const newState = deepClone(state)
+  const anim = getSelectedAnim(newState)
+  anim.speed = speed
   return newState
 }

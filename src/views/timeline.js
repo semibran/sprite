@@ -76,7 +76,10 @@ export default function Timeline (state, dispatch) {
                 state.anims.index === i &&
                 state.timeline.index === j
               const image = cache.sprites && cache.sprites[frame.sprite]
-              return m('td.frame', { class: focus ? '-focus' : '' }, [
+              return m('td.frame', {
+                class: focus ? '-focus' : '',
+                colspan: frame.duration > 1 && frame.duration
+              }, [
                 m('.thumb', {
                   class: focus ? '-select' : '',
                   onclick: (evt) => dispatch(selectFrame, {

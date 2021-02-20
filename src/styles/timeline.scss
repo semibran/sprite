@@ -1,5 +1,8 @@
 @import './timeline-controls';
 
+$frame-number-width: $thumb-size;
+$track-height: $thumb-size + 16px;
+
 .panel.-timeline {
   background: $white;
   border-top: thin solid $silver;
@@ -59,6 +62,7 @@
   }
 
   .frame .thumb {
+    width: calc(100% - 4px);
     margin-left: 4px;
   }
 
@@ -71,6 +75,7 @@
     padding-left: 12px;
 
     .thumb {
+      width: 100%;
       margin: 0;
     }
   }

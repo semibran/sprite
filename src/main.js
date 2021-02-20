@@ -61,7 +61,7 @@ const store = createStore(reducer, enhancer)
 window.persistor = persistStore(store)
 store.subscribe(m.redraw)
 
-loadImage('../tmp/test.png').then((image) => {
+loadImage('../tmp/copen.png').then((image) => {
   cache.image = image
   store.dispatch({ type: 'useImage' })
 })

@@ -1,50 +1,10 @@
 
 import m from 'mithril'
+import InlineInput from './input-inline'
 import { setFrameDuration, setFrameOrigin } from '../actions/frame'
 
 const DURATION_MIN = 1
 const DURATION_MAX = 100
-
-const InlineInput = ({ id, value, min, max, oninput }, children) => {
-  const onrender = (vnode) => {
-    const input = vnode.dom
-    if (document.activeElement !== input) {
-      input.value = value
-    }
-  }
-
-  return m('label.section-field.-inline', { for: id }, [
-    m.fragment({ oncreate: onrender, onupdate: onrender }, [
-      m('input.field-value', {
-        type: 'number',
-        id,
-        min,
-        max,
-        oninput: (evt) => {
-          const input = evt.target
-          if (parseInt(input.value) < min) {
-            input.value = min
-          } else if (parseInt(input.value) > max) {
-            input.value = max
-          }
-
-          const duration = parseInt(input.value)
-          if (duration) {
-            input.nextSibling.innerText = duration
-            oninput && oninput(evt)
-          }
-        },
-        onkeydown: (evt) => {
-          const input = evt.target
-          if (evt.code === 'Enter') {
-            input.blur()
-          }
-        }
-      })
-    ]),
-    ...children
-  ])
-}
 
 const FramePanel = ({ frame, sprites }, dispatch) =>
   m('.panel-content', [
