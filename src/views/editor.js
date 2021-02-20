@@ -192,6 +192,12 @@ export default function Editor ({ attrs }) {
     oncreate: (vnode) => {
       editor = vnode.dom
       canvas = vnode.dom.firstChild.firstChild
+
+      if (!pos.x && !pos.y) {
+        pos.x = -editor.offsetWidth / 2 + 16
+        pos.y = -editor.offsetHeight / 2 + 16
+      }
+
       vnode.state.editor = editor
       vnode.state.canvas = canvas
       vnode.state.pos = pos

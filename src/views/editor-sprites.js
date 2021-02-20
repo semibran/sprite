@@ -180,7 +180,7 @@ export default function SpritesEditor (state, dispatch) {
       }
     },
     onmouseup: ({ x, y }) => {
-      if (range.rect) {
+      if (range.rect && range.rect.width > 2 && range.rect.height > 2) {
         const ids = findIndexes(sprites, range.rect)
         ids.forEach((id) => {
           dispatch(selectSprite, {
