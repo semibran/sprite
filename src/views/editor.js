@@ -63,11 +63,13 @@ export default function Editor ({ attrs }) {
     const contained = contains(rect, evt.pageX, evt.pageY)
     if (onmousedown && onmousedown({ ...mouse, contained }) === false) return
 
-    pan = {
-      x: evt.pageX - pos.x,
-      y: evt.pageY - pos.y
+    if (contained) {
+      pan = {
+        x: evt.pageX - pos.x,
+        y: evt.pageY - pos.y
+      }
+      m.redraw()
     }
-    m.redraw()
   }
 
   const _onmousemove = (evt) => {
@@ -194,14 +196,14 @@ export default function Editor ({ attrs }) {
       vnode.state.canvas = canvas
       vnode.state.pos = pos
       vnode.state.scale = scale
-      canvas.addEventListener('mousedown', _onmousedown)
+      window.addEventListener('mousedown', _onmousedown)
       window.addEventListener('mousemove', _onmousemove)
       window.addEventListener('mouseup', _onmouseup)
       canvas.addEventListener('wheel', onwheel)
       onrender && onrender(vnode)
     },
     onremove: (vnode) => {
-      canvas.removeEventListener('mousedown', _onmousedown)
+      window.removeEventListener('mousedown', _onmousedown)
       window.removeEventListener('mousemove', _onmousemove)
       window.removeEventListener('mouseup', _onmouseup)
       canvas.removeEventListener('wheel', onwheel)
