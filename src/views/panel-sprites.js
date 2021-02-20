@@ -1,8 +1,6 @@
 
 import m from 'mithril'
-import deepClone from 'lodash.clonedeep'
 import cache from '../app/cache'
-import select from '../lib/select'
 import Panel from './panel'
 import Thumb from './thumb'
 import Banner from './banner'

@@ -2,13 +2,22 @@
 import m from 'mithril'
 import cache from '../app/cache'
 import Editor from './editor'
-import contains from '../lib/rect-contains'
+import rectContains from '../lib/rect-contains'
+import rectIntersects from '../lib/rect-intersects'
+import rectFromPoints from '../lib/rect-from-points'
 import { selectSprite } from '../actions/sprite'
 import { isSpriteSelected } from '../app/helpers'
+
+const blue = '#36d'
 
 let hover = -1
 let sprite = null
 let persist = false
+const range = {
+  start: null,
+  end: null,
+  rect: null
+}
 
 const fill = (canvas) => {
   const context = canvas.getContext('2d')
@@ -71,19 +80,20 @@ export default function SpritesEditor (state, dispatch) {
       const { x, y, width, height } = sprite.rect
       const selected = isSpriteSelected(state, i)
       const hovered = hover === i
+      const inRange = range.rect && rectIntersects(sprite.rect, range.rect)
       if (selected) {
+        context.fillStyle = blue
+        context.strokeStyle = blue
         context.lineWidth = 2
-        context.fillStyle = '#36d'
-        context.strokeStyle = '#36d'
         context.beginPath()
         context.rect(x, y, width, height)
         context.globalAlpha = 0.25
         context.fill()
         context.globalAlpha = 1
         context.stroke()
-      } else if (hovered) {
+      } else if (hovered || inRange) {
         context.lineWidth = 2
-        context.strokeStyle = '#36d'
+        context.strokeStyle = blue
         context.strokeRect(x, y, width, height)
       } else {
         context.lineWidth = 1
@@ -93,6 +103,13 @@ export default function SpritesEditor (state, dispatch) {
 
       context.drawImage(cache.sprites[i], x, y)
     })
+
+    if (range.rect) {
+      const { x, y, width, height } = range.rect
+      context.lineWidth = 1
+      context.strokeStyle = 'rgba(0, 0, 0, 0.5)'
+      context.strokeRect(Math.round(x) - 0.5, Math.round(y) - 0.5, Math.round(width), Math.round(height))
+    }
   }
 
   let transform = {}
@@ -126,27 +143,55 @@ export default function SpritesEditor (state, dispatch) {
 
   const findIndex = (sprites, x, y) =>
     sprites.findIndex((sprite) =>
-      contains({
+      rectContains({
         x: sprite.rect.x,
         y: sprite.rect.y,
         width: sprite.rect.width + 2,
         height: sprite.rect.height + 2
       }, x, y))
 
+  const findIndexes = (sprites, rect) =>
+    sprites.filter((sprite) => rectIntersects(sprite.rect, rect))
+      .map((sprite) => sprites.indexOf(sprite))
+
   return m(Editor, {
     ...transform,
     class: '-sprites',
     hover: hover !== -1,
     onrender,
-    onmove: ({ x, y, contained }) => {
-      let id = -1
-      if (contained) {
-        id = findIndex(sprites, x, y)
+    onmousedown: ({ x, y, contained }) => {
+      const id = contained ? findIndex(sprites, x, y) : -1
+      if (id !== -1) {
+        range.start = { x, y }
       }
+    },
+    onmousemove: ({ x, y, contained }) => {
+      if (range.start) {
+        range.end = { x, y }
+        range.rect = rectFromPoints(range.start, range.end)
+        m.redraw()
+        return false
+      }
+
+      const id = contained ? findIndex(sprites, x, y) : -1
       if (hover !== id) {
         hover = id
         m.redraw()
       }
+    },
+    onmouseup: ({ x, y }) => {
+      if (range.rect) {
+        const ids = findIndexes(sprites, range.rect)
+        ids.forEach((id) => {
+          dispatch(selectSprite, {
+            index: id,
+            opts: { ctrl: true }
+          })
+        })
+      }
+      range.start = null
+      range.end = null
+      range.rect = null
     },
     onclick: ({ x, y, ctrl, shift }) => {
       const id = findIndex(sprites, x, y)

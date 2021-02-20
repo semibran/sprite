@@ -1,9 +1,11 @@
+
 export default function select (items, i, opts) {
   const idx = items.indexOf(i)
-  const prev = items[items.length - 1]
-  if (opts.shift && !opts.ctrl && prev != null && prev !== i) {
-    const dir = i > prev ? 1 : -1
-    for (let j = prev; j !== i;) {
+  const last = items[items.length - 1]
+
+  if (opts.shift && !opts.ctrl && last != null && last !== i) {
+    const dir = i > last ? 1 : -1
+    for (let j = last; j !== i;) {
       j += dir
       if (items.indexOf(j) === -1) {
         items.push(j)
@@ -21,5 +23,6 @@ export default function select (items, i, opts) {
   } else {
     items.length = 0
   }
+
   return true
 }

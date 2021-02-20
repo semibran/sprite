@@ -15,7 +15,9 @@ const ANIM_DURATION = 15
 export default function Editor ({ attrs }) {
   let onrender = attrs.onrender
   let onclick = attrs.onclick
-  let onmove = attrs.onmove
+  let onmousedown = attrs.onmousedown
+  let onmousemove = attrs.onmousemove
+  let onmouseup = attrs.onmouseup
   let onpan = attrs.onpan
   let onzoom = attrs.onzoom
   let pos = attrs.pos || { x: 0, y: 0 }
@@ -48,12 +50,19 @@ export default function Editor ({ attrs }) {
     ontransitionstart(x, y, scale)
   }
 
-  const onmousedown = (evt) => {
+  const _onmousedown = (evt) => {
     if (anim) return
+
     click = {
       x: evt.pageX,
       y: evt.pageY
     }
+
+    const mouse = getImagePos(evt.pageX, evt.pageY)
+    const rect = editor.getBoundingClientRect()
+    const contained = contains(rect, evt.pageX, evt.pageY)
+    if (onmousedown && onmousedown({ ...mouse, contained }) === false) return
+
     pan = {
       x: evt.pageX - pos.x,
       y: evt.pageY - pos.y
@@ -61,12 +70,18 @@ export default function Editor ({ attrs }) {
     m.redraw()
   }
 
-  const onmousemove = (evt) => {
+  const _onmousemove = (evt) => {
     if (click &&
         Math.abs(evt.pageX - click.x) +
         Math.abs(evt.pageY - click.y) > 2) {
       click = null
     }
+
+    const mouse = getImagePos(evt.pageX, evt.pageY)
+    const rect = editor.getBoundingClientRect()
+    const contained = contains(rect, evt.pageX, evt.pageY)
+    if (onmousemove && onmousemove({ ...mouse, contained }) === false) return
+
     if (pan) {
       pos = {
         x: evt.pageX - pan.x,
@@ -74,14 +89,16 @@ export default function Editor ({ attrs }) {
       }
       m.redraw()
     }
+  }
+
+  const _onmouseup = (evt) => {
+    if (anim) return
+
     const mouse = getImagePos(evt.pageX, evt.pageY)
     const rect = editor.getBoundingClientRect()
     const contained = contains(rect, evt.pageX, evt.pageY)
-    onmove && onmove({ ...mouse, contained })
-  }
+    if (onmouseup && onmouseup({ ...mouse, contained }) === false) return
 
-  const onmouseup = (evt) => {
-    if (anim) return
     if (click) {
       const mouse = getImagePos(evt.pageX, evt.pageY)
       const rect = editor.getBoundingClientRect()
@@ -177,16 +194,16 @@ export default function Editor ({ attrs }) {
       vnode.state.canvas = canvas
       vnode.state.pos = pos
       vnode.state.scale = scale
-      canvas.addEventListener('mousedown', onmousedown)
-      window.addEventListener('mousemove', onmousemove)
-      window.addEventListener('mouseup', onmouseup)
+      canvas.addEventListener('mousedown', _onmousedown)
+      window.addEventListener('mousemove', _onmousemove)
+      window.addEventListener('mouseup', _onmouseup)
       canvas.addEventListener('wheel', onwheel)
       onrender && onrender(vnode)
     },
     onremove: (vnode) => {
-      canvas.removeEventListener('mousedown', onmousedown)
-      window.removeEventListener('mousemove', onmousemove)
-      window.removeEventListener('mouseup', onmouseup)
+      canvas.removeEventListener('mousedown', _onmousedown)
+      window.removeEventListener('mousemove', _onmousemove)
+      window.removeEventListener('mouseup', _onmouseup)
       canvas.removeEventListener('wheel', onwheel)
     },
     onbeforeupdate: ({ attrs, state }) => {
@@ -195,7 +212,9 @@ export default function Editor ({ attrs }) {
       hover = attrs.hover || false
       onrender = attrs.onrender
       onclick = attrs.onclick
-      onmove = attrs.onmove
+      onmousedown = attrs.onmousedown
+      onmousemove = attrs.onmousemove
+      onmouseup = attrs.onmouseup
       onpan = attrs.onpan
       onzoom = attrs.onzoom
       state.pos = pos
