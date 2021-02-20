@@ -25,6 +25,7 @@ export const useImage = (state) => {
     const rects = sliceCanvas(canvas)
     cache.sprites = rects.map((rect) =>
       extractImage(cache.image, rect.x, rect.y, rect.width, rect.height))
+    localStorage.setItem('image', canvas.toDataURL())
     return {
       ...state,
       sprites: {

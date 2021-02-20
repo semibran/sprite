@@ -4,7 +4,7 @@ import { createStore, applyMiddleware, compose } from 'redux'
 import { persistStore, persistReducer } from 'redux-persist'
 import storage from 'redux-persist/lib/storage'
 import loadImage from 'img-load'
-import thunk from './lib/thunk'
+import thunk from './lib/rethunk'
 import reduce from './lib/combine-reducers'
 import App from './views/app'
 import cache from './app/cache'
@@ -61,10 +61,19 @@ const store = createStore(reducer, enhancer)
 window.persistor = persistStore(store)
 store.subscribe(m.redraw)
 
-loadImage('../tmp/copen.png').then((image) => {
+const dataURL = localStorage.getItem('image')
+const useImage = (image) => {
   cache.image = image
   store.dispatch({ type: 'useImage' })
-})
+}
+
+if (dataURL) {
+  const image = new Image()
+  image.src = dataURL
+  image.onload = () => useImage(image)
+} else {
+  loadImage('../tmp/copen.png').then(useImage)
+}
 
 m.mount(document.body, () => ({
   view: () => App(store.getState(), store.dispatch)

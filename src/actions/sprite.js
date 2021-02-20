@@ -118,5 +118,7 @@ export const repackSprites = (state) => {
   state.select.list = []
   cache.image = canvas
   cache.messages.focus = { sprite: state.sprites.list[0] }
+  localStorage.setItem('image', canvas.toDataURL())
+
   return newState
 }
