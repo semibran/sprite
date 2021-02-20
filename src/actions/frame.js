@@ -26,10 +26,9 @@ export const selectFrame = (state, { frameid, animid, opts }) => {
     newState.select.list = []
   }
 
-  // prevent deselection
-  const selects = newState.select.list
-  if (!selects.includes(frameid)) {
-    select(selects, frameid, opts)
+  select(newState.select.list, frameid, opts)
+  if (!newState.select.list.length) {
+    newState.select.focus = 'anims'
   }
 
   newState.timeline.index = frameid
