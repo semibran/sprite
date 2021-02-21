@@ -42,6 +42,7 @@ export const getAnimDuration = (anim) =>
   anim.frames.reduce((duration, frame) => duration + frame.duration, 0)
 
 export const getFrameAt = (anim, t) => {
+  if (t === -1) return null
   let f = 0
   let g = 0
   let frame = anim.frames[0]

@@ -2,7 +2,11 @@
 import m from 'mithril'
 import Editor from './editor'
 import cache from '../app/cache'
-import { getSelectedFrame } from '../app/helpers'
+import {
+  getSelectedAnim,
+  getSelectedFrame,
+  getFrameAt
+} from '../app/helpers'
 
 let persist = false
 let mounted = false
@@ -64,12 +68,23 @@ export const zoomAnimEditor = (state, scale) => ({
 export default function AnimsEditor (state, dispatch) {
   const editor = state.anims.editor
 
+  const drawFrame = (vnode, frame) => {
+    if (!frame) return
+    const { canvas, editor, pos, scale } = vnode.state
+    const context = canvas.getContext('2d')
+    const image = cache.sprites[frame.sprite]
+    context.drawImage(
+      image,
+      Math.round(canvas.width / 2 + pos.x - frame.origin.x * scale),
+      Math.round(canvas.height / 2 + pos.y - frame.origin.y * scale),
+      Math.round(image.width * scale),
+      Math.round(image.height * scale)
+    )
+  }
+
   const onrender = (vnode) => {
     const frame = getSelectedFrame(state)
-    if (!frame) return
-
-    const image = cache.sprites[frame.sprite]
-    if (!image) return
+    if (!frame || !cache.image) return
 
     const { canvas, editor, pos, scale } = vnode.state
     canvas.width = editor.offsetWidth
@@ -79,13 +94,19 @@ export default function AnimsEditor (state, dispatch) {
 
     const context = canvas.getContext('2d')
     context.imageSmoothingEnabled = false
-    context.drawImage(
-      image,
-      Math.round(canvas.width / 2 + pos.x - frame.origin.x * scale),
-      Math.round(canvas.height / 2 + pos.y - frame.origin.y * scale),
-      Math.round(image.width * scale),
-      Math.round(image.height * scale)
-    )
+
+    if (state.timeline.onionskin && !state.timeline.playing) {
+      const anim = getSelectedAnim(state)
+      const prev = getFrameAt(anim, state.timeline.index - 1)
+      const next = getFrameAt(anim, state.timeline.index + 1)
+      context.globalAlpha = 0.25
+      drawFrame(vnode, next)
+      context.globalAlpha = 0.5
+      drawFrame(vnode, prev)
+    }
+
+    context.globalAlpha = 1
+    drawFrame(vnode, frame)
   }
 
   let transform = {}
