@@ -66,9 +66,45 @@ $track-height: $thumb-size + 16px;
     margin-left: 4px;
   }
 
+  .frame.-focus {
+    z-index: 3;
+  }
+
   .frame.-focus .thumb {
     border-color: $blue;
     box-shadow: 0 0 0 1px $blue;
+  }
+
+  .frame .thumb-popup {
+    background: white;
+    padding: 8px 12px;
+    border-radius: 4px;
+    display: flex;
+    position: absolute;
+    left: 50%;
+    top: 100%;
+    transform: translate(-50%, 8px);
+    box-shadow: 0 0 0 1px $silver;
+
+    .icon + .icon {
+      margin-left: 4px;
+    }
+  }
+
+  .frame .thumb-popup::before, .frame .thumb-popup::after {
+    content: '';
+    display: block;
+    position: absolute;
+    border: 8px solid transparent;
+    border-bottom-color: white;
+    left: 50%;
+    bottom: 100%;
+    transform: translateX(-50%);
+  }
+
+  .frame .thumb-popup::before {
+    border-bottom-color: $silver;
+    margin-bottom: 1px;
   }
 
   .frame:nth-child(2) {

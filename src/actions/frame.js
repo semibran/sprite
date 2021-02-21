@@ -1,7 +1,12 @@
 
 import deepClone from 'lodash.clonedeep'
 import select from '../lib/select'
-import { getSelectedFrame, getFrameAt, getFrameIndex } from '../app/helpers'
+import {
+  getSelectedAnim,
+  getSelectedFrame,
+  getFrameAt,
+  getFrameIndex
+} from '../app/helpers'
 
 export const setFrameDuration = (state, { duration }) => {
   const newState = deepClone(state)
@@ -29,11 +34,21 @@ export const selectFrame = (state, { frameid, animid, opts }) => {
   select(newState.select.list, frameid, opts)
   if (!newState.select.list.length) {
     newState.select.focus = 'anims'
+    newState.select.list = [animid]
   }
 
   const anim = newState.anims.list[animid]
   const frame = anim.frames[frameid]
   newState.timeline.index = getFrameIndex(anim, frame)
   newState.anims.index = animid
+  return newState
+}
+
+export const deleteFrame = (state) => {
+  const newState = deepClone(state)
+  const anim = getSelectedAnim(newState)
+  const frame = getFrameAt(anim, newState.timeline.index)
+  const index = anim.frames.indexOf(frame)
+  anim.frames.splice(index, 1)
   return newState
 }

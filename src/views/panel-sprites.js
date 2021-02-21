@@ -108,7 +108,7 @@ export default function SpritesPanel (state, dispatch) {
             ondragstart: handleDragStart,
             ondragend: handleDragEnd,
             draggable: true
-          }, Thumb(image)))
+          }, Thumb({ image })))
         })
       ])
     ]),

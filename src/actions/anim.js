@@ -32,10 +32,18 @@ export const createAnim = (state, { ids }) => ({
   }
 })
 
-export const removeAnim = (state, { index }) => ({
-  ...state,
-  anims: state.anims.list.filter((_, i) => i !== index)
-})
+export const deleteAnim = (state, { index }) => {
+  const newState = deepClone(state)
+  const selects = newState.select.list
+  newState.anims.list.splice(index, 1)
+  if (newState.anims.index >= newState.anims.list.length) {
+    if (--newState.anims.index < 0) {
+      newState.select.focus = 'sprites'
+      newState.panel = 'sprites'
+    }
+  }
+  return newState
+}
 
 export const selectAnim = (state, { index, opts }) => {
   const newState = deepClone(state)

@@ -5,8 +5,8 @@ import Panel from './panel'
 import TimelineControls from './timeline-controls'
 import Thumb from './thumb'
 
-import { selectAnim, createAnim, removeAnim } from '../actions/anim'
-import { selectFrame } from '../actions/frame'
+import { selectAnim, createAnim, deleteAnim } from '../actions/anim'
+import { selectFrame, deleteFrame } from '../actions/frame'
 
 import cache from '../app/cache'
 import {
@@ -75,7 +75,10 @@ export default function Timeline (state, dispatch) {
                 ? m('div', [
                     anim.name,
                     m('span.icon.material-icons-round', {
-                      onclick: () => dispatch(removeAnim, { index: i })
+                      onclick: (evt) => {
+                        dispatch(deleteAnim, { index: i })
+                        evt.stopPropagation()
+                      }
                     }, 'close')
                   ])
                 : anim.name
@@ -100,7 +103,13 @@ export default function Timeline (state, dispatch) {
                     }
                   })
                 }, [
-                  image && Thumb(image)
+                  image && Thumb({ image }),
+                  focus && !state.timeline.playing && m('.thumb-popup', [
+                    m('span.icon.material-icons-round', 'filter_none'),
+                    m('span.icon.material-icons-round', {
+                      onclick: () => dispatch(deleteFrame)
+                    }, 'delete_outline')
+                  ])
                 ])
               ])
             }),

@@ -1,7 +1,7 @@
 
 import m from 'mithril'
 
-export default function Thumb (image) {
+export default function Thumb ({ image }) {
   return m.fragment({
     oncreate: (vnode) => {
       const canvas = vnode.dom
