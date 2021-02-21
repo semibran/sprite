@@ -1,6 +1,7 @@
 
 import m from 'mithril'
-import { exportData } from '../actions'
+import cache from '../app/cache'
+import { prepareExport, exportData } from '../actions'
 
 export default function Header ({ title }, dispatch) {
   return m('header', [
@@ -12,8 +13,14 @@ export default function Header ({ title }, dispatch) {
       ])
     ]),
     m('.header-rhs', [
-      m('button', {
-        onclick: () => dispatch(exportData)
+      m('a.button', {
+        href: cache.url,
+        target: '_blank',
+        onmouseover: () => dispatch(prepareExport),
+        onclick: (evt) => {
+          evt.preventDefault()
+          dispatch(exportData)
+        }
       }, 'Export')
     ])
   ])

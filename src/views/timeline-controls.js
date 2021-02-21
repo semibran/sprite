@@ -19,7 +19,7 @@ export const togglePlay = (dispatch, getState) => {
   dispatch(playAnim)
   requestAnimationFrame(function animate () {
     if (getState().timeline.playing) {
-      dispatch(stepAnim)
+      dispatch(stepFrame)
       requestAnimationFrame(animate)
     }
   })
@@ -32,10 +32,10 @@ export const playAnim = (state) => ({
 
 export const pauseAnim = (state) => ({
   ...state,
-  timeline: { ...state.timeline, playing: false }
+  timeline: { ...state.timeline, playing: false, subindex: 0 }
 })
 
-export const stepAnim = (state) => {
+export const stepFrame = (state) => {
   const timeline = deepClone(state.timeline)
   const anim = getSelectedAnim(state)
   if (++timeline.subindex >= anim.speed) {
@@ -47,19 +47,45 @@ export const stepAnim = (state) => {
   return { ...state, timeline }
 }
 
+export const prevFrame = (state) => {
+  const timeline = deepClone(state.timeline)
+  const anim = getSelectedAnim(state)
+  timeline.playing = false
+  timeline.subindex = 0
+  if (--timeline.index < 0) {
+    timeline.index = getAnimDuration(anim) - 1
+  }
+  return { ...state, timeline }
+}
+
+export const nextFrame = (state) => {
+  const timeline = deepClone(state.timeline)
+  const anim = getSelectedAnim(state)
+  timeline.playing = false
+  timeline.subindex = 0
+  if (++timeline.index >= getAnimDuration(anim)) {
+    timeline.index = 0
+  }
+  return { ...state, timeline }
+}
+
 export default function TimelineControls (state, dispatch) {
   const timeline = state.timeline
   return m('th.timeline-controls', [
     m('.control-group', [
       m('button', [
-        m('span.icon.-prev.material-icons-round', 'eject')
+        m('span.icon.-prev.material-icons-round', {
+          onclick: () => dispatch(prevFrame)
+        }, 'eject')
       ]),
       m('button.-play.material-icons-round', {
         class: timeline.playing ? '-toggle' : '',
         onclick: () => dispatch(togglePlay)
       }, timeline.playing ? 'pause' : 'play_arrow'),
       m('button', [
-        m('span.icon.-next.material-icons-round', 'eject')
+        m('span.icon.-next.material-icons-round', {
+          onclick: () => dispatch(nextFrame)
+        }, 'eject')
       ])
     ]),
     m('.control-group', [

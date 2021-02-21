@@ -2,7 +2,9 @@
 import extractImage from 'img-extract'
 import cloneImage from '../lib/img-clone'
 import sliceCanvas from '../lib/slice'
+import download from '../lib/download'
 import cache from '../app/cache'
+import serialize from '../app/serialize'
 
 export * from './sprite'
 export * from './anim'
@@ -12,7 +14,6 @@ export * from '../views/editor-anims'
 export * from '../views/timeline'
 export * from '../views/timeline-controls'
 export * from '../views/panel-sprites'
-export * from '../views/banner'
 export * from '../views/panel-props'
 
 export const useImage = (state) => {
@@ -38,39 +39,17 @@ export const useImage = (state) => {
   }
 }
 
+export const prepareExport = (dispatch, getState) => {
+  const state = getState()
+  const blob = new Blob([serialize(state)], { type: 'application/json' })
+  const url = URL.createObjectURL(blob)
+  cache.url = url
+  return url
+}
+
 export const exportData = (dispatch, getState) => {
   const state = getState()
-
-  const sprites = state.sprites.list.map((sprite) => {
-    const { x, y, width, height } = sprite.rect
-    return [x, y, width, height]
-  })
-
-  const anims = state.anims.list.reduce((anims, anim) => ({
-    ...anims,
-    [anim.name]: {
-      next: -1,
-      frames: anim.frames.map((frame) => ({
-        sprite: frame.sprite,
-        duration: frame.duration * anim.speed,
-        origin: [frame.origin.x, frame.origin.y]
-      }))
-    }
-  }), {})
-
-  const data = { sprites, anims }
-  const blob = new Blob([JSON.stringify(data)], { type: 'application/json' })
-  const url = URL.createObjectURL(blob)
+  const url = cache.url || prepareExport(dispatch, getState)
   const filename = `${state.project.name}.json`
-
-  const a = document.createElement('a')
-  a.href = url
-  a.download = filename
-  a.addEventListener('click', function onclick () {
-    requestAnimationFrame(() => {
-      URL.revokeObjectURL(url)
-      a.removeEventListener('click', onclick)
-    })
-  })
-  a.click()
+  download(url, filename)
 }

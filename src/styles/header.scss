@@ -24,10 +24,15 @@ header {
   }
 }
 
-.header-rhs button {
+.header-rhs .button {
   background: $blue;
   border-radius: 4px;
   padding: 12px 24px;
   margin-right: 8px;
   font-weight: bold;
+  text-decoration: none;
+
+  &:hover {
+    background: $darkblue;
+  }
 }
