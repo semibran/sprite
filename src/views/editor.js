@@ -82,7 +82,12 @@ export default function Editor ({ attrs }) {
     const mouse = getImagePos(evt.pageX, evt.pageY)
     const rect = editor.getBoundingClientRect()
     const contained = contains(rect, evt.pageX, evt.pageY)
-    if (onmousemove && onmousemove({ ...mouse, contained }) === false) return
+    if (onmousemove && onmousemove({
+      ...mouse,
+      contained,
+      offsetX: evt.pageX - rect.left,
+      offsetY: evt.pageY - rect.top
+    }) === false) return
 
     if (pan) {
       pos = {

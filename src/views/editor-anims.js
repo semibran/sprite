@@ -1,15 +1,22 @@
 
 import m from 'mithril'
 import Editor from './editor'
+import rectContains from '../lib/rect-contains'
 import cache from '../app/cache'
 import {
   getSelectedAnim,
   getSelectedFrame,
   getFrameAt
 } from '../app/helpers'
+import { setFrameOrigin } from '../actions/frame'
+
+const blue = '#36d'
 
 let persist = false
 let mounted = false
+let hover = false
+let rect = null
+let drag = null
 
 const fill = (canvas, x, y, scale) => {
   const tileSize = 16 * scale
@@ -73,13 +80,12 @@ export default function AnimsEditor (state, dispatch) {
     const { canvas, pos, scale } = vnode.state
     const context = canvas.getContext('2d')
     const image = cache.sprites[frame.sprite]
-    context.drawImage(
-      image,
-      Math.round(canvas.width / 2 + pos.x - frame.origin.x * scale),
-      Math.round(canvas.height / 2 + pos.y - frame.origin.y * scale),
-      Math.round(image.width * scale),
-      Math.round(image.height * scale)
-    )
+    const x = Math.round(canvas.width / 2 + pos.x - frame.origin.x * scale)
+    const y = Math.round(canvas.height / 2 + pos.y - frame.origin.y * scale)
+    const width = Math.round(image.width * scale)
+    const height = Math.round(image.height * scale)
+    context.drawImage(image, x, y, width, height)
+    return { x, y, width, height }
   }
 
   const onrender = (vnode) => {
@@ -106,7 +112,12 @@ export default function AnimsEditor (state, dispatch) {
     }
 
     context.globalAlpha = 1
-    drawFrame(vnode, frame)
+    rect = drawFrame(vnode, frame)
+
+    if (hover || drag) {
+      context.strokeStyle = drag ? blue : 'rgba(0, 0, 0, 0.5)'
+      context.strokeRect(rect.x, rect.y, rect.width, rect.height)
+    }
   }
 
   let transform = {}
@@ -124,8 +135,42 @@ export default function AnimsEditor (state, dispatch) {
 
   return m(Editor, {
     ...transform,
+    hover,
     class: '-anims',
     onrender,
+    onmousedown: ({ x, y }) => {
+      if (hover) {
+        const frame = getSelectedFrame(state)
+        drag = {
+          x: -frame.origin.x - x,
+          y: -frame.origin.y - y
+        }
+        m.redraw()
+      }
+    },
+    onmousemove: ({ x, y, offsetX, offsetY, contained }) => {
+      if (!contained) return
+
+      if (drag) {
+        dispatch(setFrameOrigin, {
+          x: Math.round(-drag.x - x),
+          y: Math.round(-drag.y - y)
+        })
+        return false
+      }
+
+      newHover = rect && rectContains(rect, offsetX, offsetY)
+      if (hover !== newHover) {
+        hover = newHover
+        m.redraw()
+      }
+    },
+    onmouseup: () => {
+      if (drag) {
+        drag = null
+        m.redraw()
+      }
+    },
     onpan: ({ x, y }) => {
       dispatch(panAnimEditor, { x, y })
     },

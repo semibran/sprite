@@ -65,10 +65,11 @@ const AnimPanel = (state, dispatch) => {
         }, [
           m('option', { value: 'stop' }, 'Stop on end'),
           m('option', { value: 'loop' }, 'Loop'),
-          ...anims.filter((anim, id) => id !== animid)
-                  .map((anim, id) => m('option', {
-                    value: id
-                  }, `Go to "${anim.name}"`))
+          ...anims.map((anim, id) => {
+            return id === animid
+              ? null
+              : m('option', { value: id }, `Go to "${anim.name}"`)
+          })
         ])
       ])
     ])
