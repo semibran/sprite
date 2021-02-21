@@ -5,8 +5,14 @@ import Panel from './panel'
 import TimelineControls from './timeline-controls'
 import Thumb from './thumb'
 
-import { selectAnim, createAnim, deleteAnim } from '../actions/anim'
 import { selectFrame, deleteFrame } from '../actions/frame'
+import {
+  selectAnim,
+  createAnim,
+  deleteAnim,
+  renameAnim,
+  startRenameAnim
+} from '../actions/anim'
 
 import cache from '../app/cache'
 import {
@@ -73,7 +79,28 @@ export default function Timeline (state, dispatch) {
             }, [
               isAnimSelected(state, i)
                 ? m('div', [
-                    anim.name,
+                    state.select.renaming
+                      ? m.fragment({
+                          oncreate: (vnode) => {
+                            const input = vnode.dom
+                            input.select()
+                          }
+                        }, [
+                          m('input.anim-name', {
+                            value: anim.name,
+                            onblur: (evt) => dispatch(renameAnim, { name: evt.target.value }),
+                            onkeyup: (evt) => {
+                              if (evt.code === 'Enter') {
+                                dispatch(renameAnim, { name: evt.target.value })
+                              } else {
+                                evt.redraw = false
+                              }
+                            }
+                          })
+                        ])
+                      : m('span.anim-name', {
+                        ondblclick: () => dispatch(startRenameAnim)
+                      }, anim.name),
                     m('span.icon.material-icons-round', {
                       onclick: (evt) => {
                         dispatch(deleteAnim, { index: i })

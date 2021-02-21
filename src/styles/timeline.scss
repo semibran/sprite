@@ -146,7 +146,7 @@ $track-height: $thumb-size + 16px;
   .track-name {
     border-top: thin solid $silver;
     padding: 0 24px;
-    line-height: 80px;
+    height: $track-height;
     font-weight: 500;
     display: flex;
     justify-content: flex-end;
@@ -172,6 +172,18 @@ $track-height: $thumb-size + 16px;
         background: $skyblue;
       }
     }
+  }
+
+  .anim-name {
+    border: thin solid transparent;
+    outline: 0;
+    text-align: right;
+    max-width: 100px;
+  }
+
+  input.anim-name {
+    background: white;
+    border-color: $blue;
   }
 
   .track-name.-add {

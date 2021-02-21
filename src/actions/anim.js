@@ -7,6 +7,7 @@ export const createAnim = (state, { ids }) => ({
   ...state,
   panel: 'anims',
   select: {
+    ...state.select,
     focus: 'anims',
     list: [state.anims.list.length]
   },
@@ -69,5 +70,21 @@ export const setAnimSpeed = (state, { speed }) => {
   const newState = deepClone(state)
   const anim = getSelectedAnim(newState)
   anim.speed = speed
+  return newState
+}
+
+export const startRenameAnim = (state) => ({
+  ...state,
+  select: {
+    ...state.select,
+    renaming: true
+  }
+})
+
+export const renameAnim = (state, { name }) => {
+  const newState = deepClone(state)
+  const anim = getSelectedAnim(newState)
+  anim.name = name
+  newState.select.renaming = false
   return newState
 }

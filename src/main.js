@@ -19,8 +19,9 @@ const initialState = {
     timeline: true
   },
   select: {
+    list: [],
     focus: null,
-    list: []
+    renaming: false
   },
   sprites: {
     list: [],
