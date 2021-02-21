@@ -37,3 +37,40 @@ export const useImage = (state) => {
     }
   }
 }
+
+export const exportData = (dispatch, getState) => {
+  const state = getState()
+
+  const sprites = state.sprites.list.map((sprite) => {
+    const { x, y, width, height } = sprite.rect
+    return [x, y, width, height]
+  })
+
+  const anims = state.anims.list.reduce((anims, anim) => ({
+    ...anims,
+    [anim.name]: {
+      next: -1,
+      frames: anim.frames.map((frame) => ({
+        sprite: frame.sprite,
+        duration: frame.duration * anim.speed,
+        origin: [frame.origin.x, frame.origin.y]
+      }))
+    }
+  }), {})
+
+  const data = { sprites, anims }
+  const blob = new Blob([JSON.stringify(data)], { type: 'application/json' })
+  const url = URL.createObjectURL(blob)
+  const filename = `${state.project.name}.json`
+
+  const a = document.createElement('a')
+  a.href = url
+  a.download = filename
+  a.addEventListener('click', function onclick () {
+    requestAnimationFrame(() => {
+      URL.revokeObjectURL(url)
+      a.removeEventListener('click', onclick)
+    })
+  })
+  a.click()
+}

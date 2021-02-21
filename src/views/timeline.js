@@ -89,7 +89,7 @@ export default function Timeline (state, dispatch) {
                           m('input.anim-name', {
                             value: anim.name,
                             onblur: (evt) => dispatch(renameAnim, { name: evt.target.value }),
-                            onkeyup: (evt) => {
+                            onkeydown: (evt) => {
                               if (evt.code === 'Enter') {
                                 dispatch(renameAnim, { name: evt.target.value })
                               } else {
@@ -131,7 +131,7 @@ export default function Timeline (state, dispatch) {
                   })
                 }, [
                   image && Thumb({ image }),
-                  focus && !state.timeline.playing && m('.thumb-popup', [
+                  focus && state.select.focus === 'timeline' && !state.timeline.playing && m('.thumb-popup', [
                     m('span.icon.material-icons-round', 'filter_none'),
                     m('span.icon.material-icons-round', {
                       onclick: () => dispatch(deleteFrame)

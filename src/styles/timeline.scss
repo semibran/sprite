@@ -77,14 +77,15 @@ $track-height: $thumb-size + 16px;
 
   .frame .thumb-popup {
     background: white;
-    padding: 8px 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
+    border: thin solid $silver;
     border-radius: 4px;
+    padding: 8px 12px;
     display: flex;
     position: absolute;
     left: 50%;
     top: 100%;
     transform: translate(-50%, 8px);
-    box-shadow: 0 0 0 1px $silver;
 
     .icon + .icon {
       margin-left: 4px;
@@ -175,15 +176,16 @@ $track-height: $thumb-size + 16px;
   }
 
   .anim-name {
-    border: thin solid transparent;
-    outline: 0;
+    border: 4px solid transparent;
+    outline: thin solid transparent;
     text-align: right;
     max-width: 100px;
   }
 
   input.anim-name {
+    outline-color: $blue;
+    border-color: white;
     background: white;
-    border-color: $blue;
   }
 
   .track-name.-add {

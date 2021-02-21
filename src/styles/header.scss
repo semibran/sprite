@@ -3,8 +3,14 @@ header {
   color: white;
   display: flex;
   align-items: center;
+  justify-content: space-between;
   height: $header-height;
   padding: 0 24px;
+}
+
+.header-lhs {
+  display: flex;
+  align-items: center;
 }
 
 .header-text {
@@ -16,4 +22,12 @@ header {
     font-weight: bold;
     margin-top: 2px;
   }
+}
+
+.header-rhs button {
+  background: $blue;
+  border-radius: 4px;
+  padding: 12px 24px;
+  margin-right: 8px;
+  font-weight: bold;
 }

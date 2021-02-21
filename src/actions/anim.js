@@ -9,7 +9,8 @@ export const createAnim = (state, { ids }) => ({
   select: {
     ...state.select,
     focus: 'anims',
-    list: [state.anims.list.length]
+    list: [state.anims.list.length],
+    renaming: true
   },
   anims: {
     ...state.anims,

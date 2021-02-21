@@ -38,7 +38,7 @@ const FramePanel = ({ frame, sprites }, dispatch) =>
             m('input.field-value#x', {
               type: 'number',
               value: frame.origin.x,
-              onchange: (evt) => dispatch(setFrameOrigin, { x: evt.target.value })
+              onchange: (evt) => dispatch(setFrameOrigin, { x: parseInt(evt.target.value) })
             })
           ]),
           m('label.section-field', { for: 'y' }, [
@@ -46,7 +46,7 @@ const FramePanel = ({ frame, sprites }, dispatch) =>
             m('input.field-value#y', {
               type: 'number',
               value: frame.origin.y,
-              onchange: (evt) => dispatch(setFrameOrigin, { y: evt.target.value })
+              onchange: (evt) => dispatch(setFrameOrigin, { y: parseInt(evt.target.value) })
             })
           ])
         ])
