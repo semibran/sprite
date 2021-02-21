@@ -19,8 +19,8 @@ const fill = (canvas, x, y, scale) => {
   context.fillRect(0, 0, canvas.width, canvas.height)
   const cols = Math.ceil(canvas.width / tileSize)
   const rows = Math.ceil(canvas.height / tileSize)
-  const xoffset = x % patternSize + (canvas.width / 2) % patternSize
-  const yoffset = y % patternSize + (canvas.height / 2) % patternSize
+  const xoffset = Math.round(x % patternSize + (canvas.width / 2) % patternSize)
+  const yoffset = Math.round(y % patternSize + (canvas.height / 2) % patternSize)
   for (let y = 0; y < rows + 5; y++) {
     for (let x = 0; x < cols + 5; x++) {
       if ((x + y) % 2) {
@@ -70,7 +70,7 @@ export default function AnimsEditor (state, dispatch) {
 
   const drawFrame = (vnode, frame) => {
     if (!frame) return
-    const { canvas, editor, pos, scale } = vnode.state
+    const { canvas, pos, scale } = vnode.state
     const context = canvas.getContext('2d')
     const image = cache.sprites[frame.sprite]
     context.drawImage(

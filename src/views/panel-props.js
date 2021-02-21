@@ -44,7 +44,7 @@ export default function PropsPanel (state, dispatch) {
     panel = FramePanel({ frame, sprites: state.sprites.list }, dispatch)
   } else if (anim) {
     name = 'Animation'
-    panel = AnimPanel({ anim }, dispatch)
+    panel = AnimPanel({ anim, id: state.anims.index }, dispatch)
   }
   return Panel({
     id: 'props',

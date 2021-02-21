@@ -66,13 +66,6 @@ export const selectAnim = (state, { index, opts }) => {
   return newState
 }
 
-export const setAnimSpeed = (state, { speed }) => {
-  const newState = deepClone(state)
-  const anim = getSelectedAnim(newState)
-  anim.speed = speed
-  return newState
-}
-
 export const startRenameAnim = (state) => ({
   ...state,
   select: {
@@ -86,5 +79,19 @@ export const renameAnim = (state, { name }) => {
   const anim = getSelectedAnim(newState)
   anim.name = name
   newState.select.renaming = false
+  return newState
+}
+
+export const setAnimSpeed = (state, { speed }) => {
+  const newState = deepClone(state)
+  const anim = getSelectedAnim(newState)
+  anim.speed = speed
+  return newState
+}
+
+export const setAnimBehavior = (state, { value }) => {
+  const newState = deepClone(state)
+  const anim = getSelectedAnim(newState)
+  anim.next = value
   return newState
 }
