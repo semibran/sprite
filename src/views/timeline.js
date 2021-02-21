@@ -37,6 +37,38 @@ export const hideTimeline = (state) => ({
   panels: { ...state.panels, timeline: false }
 })
 
+const Frame = ({ state, anim }, dispatch) => (frame, j) => {
+  const i = state.anims.list.indexOf(anim)
+  const focus = state.panel === 'anims' &&
+    state.anims.index === i &&
+    getFrameAt(anim, state.timeline.index) === frame
+  const image = cache.sprites && cache.sprites[frame.sprite]
+  return m('td.frame', {
+    class: focus ? '-focus' : '',
+    colspan: frame.duration > 1 && frame.duration
+  }, [
+    m('.thumb', {
+      class: focus ? '-select' : '',
+      onclick: (evt) => dispatch(selectFrame, {
+        animid: i,
+        frameid: j,
+        opts: {
+          ctrl: evt.ctrlKey || evt.metaKey,
+          shift: evt.shiftKey
+        }
+      })
+    }, [
+      image && Thumb({ image }),
+      focus && state.select.focus === 'timeline' && !state.timeline.playing && m('.thumb-popup', [
+        m('span.icon.material-icons-round', 'filter_none'),
+        m('span.icon.material-icons-round', {
+          onclick: () => dispatch(deleteFrame)
+        }, 'delete_outline')
+      ])
+    ])
+  ])
+}
+
 export default function Timeline (state, dispatch) {
   const shown = state.panels.timeline
   const anim = getSelectedAnim(state)
@@ -110,36 +142,7 @@ export default function Timeline (state, dispatch) {
                   ])
                 : anim.name
             ]),
-            anim.frames.map((frame, j) => {
-              const focus = state.panel === 'anims' &&
-                state.anims.index === i &&
-                getFrameAt(anim, state.timeline.index) === frame
-              const image = cache.sprites && cache.sprites[frame.sprite]
-              return m('td.frame', {
-                class: focus ? '-focus' : '',
-                colspan: frame.duration > 1 && frame.duration
-              }, [
-                m('.thumb', {
-                  class: focus ? '-select' : '',
-                  onclick: (evt) => dispatch(selectFrame, {
-                    animid: i,
-                    frameid: j,
-                    opts: {
-                      ctrl: evt.ctrlKey || evt.metaKey,
-                      shift: evt.shiftKey
-                    }
-                  })
-                }, [
-                  image && Thumb({ image }),
-                  focus && state.select.focus === 'timeline' && !state.timeline.playing && m('.thumb-popup', [
-                    m('span.icon.material-icons-round', 'filter_none'),
-                    m('span.icon.material-icons-round', {
-                      onclick: () => dispatch(deleteFrame)
-                    }, 'delete_outline')
-                  ])
-                ])
-              ])
-            }),
+            anim.frames.map(Frame({ state, anim }, dispatch)),
             m('div.track-bg')
           ])
         ),

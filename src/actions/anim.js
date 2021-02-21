@@ -60,7 +60,13 @@ export const selectAnim = (state, { index, opts }) => {
   const selects = newState.select.list
   if (!selects.includes(index)) {
     select(selects, index, opts)
+  }
+
+  if (index !== newState.anims.index) {
     newState.anims.index = index
+    if (newState.timeline.playing) {
+      newState.timeline.index = 0
+    }
   }
 
   return newState

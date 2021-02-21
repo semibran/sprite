@@ -5,7 +5,7 @@ const serialize = (state) => {
   const anims = state.anims.list.reduce((anims, anim) => ({
     ...anims,
     [anim.name]: {
-      next: -1,
+      next: anim.next,
       frames: anim.frames.map((frame) => {
         if (registry.indexOf(frame.sprite) === -1) {
           registry.push(frame.sprite)
