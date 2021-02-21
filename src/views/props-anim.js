@@ -1,13 +1,17 @@
 
 import m from 'mithril'
 import InlineInput from './input-inline'
+import { getSelectedAnim } from '../app/helpers'
 import { setAnimSpeed, setAnimBehavior } from '../actions/anim'
 
 const SPEED_MIN = 1
 const SPEED_MAX = 100
 
-const AnimPanel = ({ anim, id }, dispatch) =>
-  m('.panel-content', [
+const AnimPanel = (state, dispatch) => {
+  const anims = state.anims.list
+  const anim = getSelectedAnim(state)
+  const animid = state.anims.index
+  return m('.panel-content', [
     m('.panel-section.-name.-inline', [
       m('.section-key', 'Name'),
       m('.section-value', anim.name)
@@ -43,26 +47,32 @@ const AnimPanel = ({ anim, id }, dispatch) =>
           value: ((next) => {
             if (next === -1) {
               return 'stop'
-            } else if (next === id) {
+            } else if (next === animid) {
               return 'loop'
             } else {
-              return 'switch'
+              return next
             }
           })(anim.next),
           onchange: (evt) => {
             if (evt.target.value === 'stop') {
               dispatch(setAnimBehavior, { value: -1 })
             } else if (evt.target.value === 'loop') {
-              dispatch(setAnimBehavior, { value: id })
+              dispatch(setAnimBehavior, { value: animid })
+            } else {
+              dispatch(setAnimBehavior, { value: parseInt(evt.target.value) })
             }
           }
         }, [
           m('option', { value: 'stop' }, 'Stop on end'),
           m('option', { value: 'loop' }, 'Loop'),
-          m('option', { value: 'switch' }, 'New animation')
+          ...anims.filter((anim, id) => id !== animid)
+                  .map((anim, id) => m('option', {
+                    value: id
+                  }, `Go to "${anim.name}"`))
         ])
       ])
     ])
   ])
+}
 
 export default AnimPanel

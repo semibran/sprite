@@ -17,7 +17,7 @@ export const createAnim = (state, { ids }) => ({
     index: state.anims.list.length,
     list: [...state.anims.list, {
       name: 'untitled',
-      next: null,
+      next: -1,
       speed: 1,
       frames: ids
         ? ids.map((id) => {

@@ -41,6 +41,23 @@
     width: 90%;
   }
 
+  .section-value select {
+    max-width: 90px;
+    margin-left: -4px;
+    outline: 0;
+
+    &:hover {
+      cursor: pointer;
+      box-shadow: 0 0 0 8px white,
+                  0 0 0 9px $silver;
+    }
+
+    &:focus {
+      box-shadow: 0 0 0 8px white,
+                  0 0 0 9px $blue;
+    }
+  }
+
   .section-field {
     cursor: text;
   }

@@ -36,9 +36,10 @@ export const pauseAnim = (state) => ({
 })
 
 export const stepFrame = (state) => {
-  const timeline = deepClone(state.timeline)
-  const anim = getSelectedAnim(state)
+  const newState = deepClone(state)
+  const anim = getSelectedAnim(newState)
   const duration = getAnimDuration(anim)
+  const timeline = newState.timeline
   if (++timeline.subindex >= anim.speed) {
     timeline.subindex = 0
     if (timeline.index + 1 < duration) {
@@ -47,9 +48,12 @@ export const stepFrame = (state) => {
       timeline.playing = false
     } else if (anim.next === state.anims.list.indexOf(anim)) {
       timeline.index = 0
+    } else {
+      timeline.index = 0
+      newState.anims.index = anim.next
     }
   }
-  return { ...state, timeline }
+  return newState
 }
 
 export const prevFrame = (state) => {
