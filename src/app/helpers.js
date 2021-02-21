@@ -7,9 +7,6 @@ export const isSpriteSelected = (state, id) =>
     ? state.panel === 'sprites'
     : state.panel === 'sprites' && state.select.list.includes(id)
 
-export const isAnimSelected = (state, id) =>
-  state.panel === 'anims' && (id == null || state.anims.index === id)
-
 export const getSelectedSprite = (state) => {
   const sprites = state.sprites.list
   const selects = state.select.list
@@ -27,35 +24,29 @@ export const getSelectedSprites = (state) => {
     : []
 }
 
-export const getSelectedAnim = (state) => {
-  const anims = state.anims.list
-  const selects = state.select.list
-  const idx = state.anims.index
-  return state.panel === 'anims' && selects.length
-    ? anims[idx]
-    : null
-}
+export const isAnimSelected = (state, id) =>
+  state.panel === 'anims' && (id == null || state.anims.index === id)
+
+export const getSelectedAnim = (state) =>
+  state.panel === 'anims' ? state.anims.list[state.anims.index] : null
 
 export const getSelectedFrame = (state) => {
   const anim = getSelectedAnim(state)
-  const framenum = state.timeline.index
-  return anim
-    ? getFrameAt(anim, framenum)
-    : null
+  return anim ? getFrameAt(anim, state.timeline.index) : null
 }
 
 export const isEmptyAnim = (anim) =>
   anim.frames.length === 1 && !anim.frames[0].sprite
 
 export const getAnimDuration = (anim) =>
-  anim.frames.reduce((d, frame) => d + frame.duration, 0)
+  anim.frames.reduce((duration, frame) => duration + frame.duration, 0)
 
 export const getFrameAt = (anim, t) => {
   let f = 0
   let g = 0
   let frame = anim.frames[0]
   for (let i = 0; i < t; i++) {
-    if (++g >= frame.duration) {
+    if (++g === frame.duration) {
       g = 0
       frame = anim.frames[++f]
       if (!frame) {

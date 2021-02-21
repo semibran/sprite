@@ -9,7 +9,15 @@ import { selectAnim, createAnim, removeAnim } from '../actions/anim'
 import { selectFrame } from '../actions/frame'
 
 import cache from '../app/cache'
-import { isAnimSelected, getSelectedSprites } from '../app/helpers'
+import {
+  getSelectedSprites,
+  isAnimSelected,
+  getSelectedAnim,
+  getAnimDuration,
+  getSelectedFrame,
+  getFrameAt,
+  getFrameIndex
+} from '../app/helpers'
 
 let dragging = false
 
@@ -25,11 +33,12 @@ export const hideTimeline = (state) => ({
 
 export default function Timeline (state, dispatch) {
   const shown = state.panels.timeline
-  const maxframes = state.anims.list.reduce(
-    (max, anim) =>
-      anim.frames.length > max
-        ? anim.frames.length
-        : max, 5)
+  const anim = getSelectedAnim(state)
+  const frame = getSelectedFrame(state)
+  const maxframes = state.anims.list.reduce((max, anim) => {
+    const duration = getAnimDuration(anim)
+    return duration > max ? duration : max
+  }, 5)
   return Panel({
     id: 'timeline',
     name: 'Timeline',
@@ -42,7 +51,7 @@ export default function Timeline (state, dispatch) {
         m('tr.timeline-header', [
           TimelineControls(state, dispatch),
           new Array(maxframes).fill(0).map((_, i) => {
-            const focus = state.timeline.index === i && state.panel === 'anims'
+            const focus = state.panel === 'anims' && getFrameIndex(anim, frame) === i
             return m('th.frame-number', { class: focus ? '-focus' : '' }, [
               m('span', i + 1)
             ])
@@ -74,7 +83,7 @@ export default function Timeline (state, dispatch) {
             anim.frames.map((frame, j) => {
               const focus = state.panel === 'anims' &&
                 state.anims.index === i &&
-                state.timeline.index === j
+                getFrameAt(anim, state.timeline.index) === frame
               const image = cache.sprites && cache.sprites[frame.sprite]
               return m('td.frame', {
                 class: focus ? '-focus' : '',
