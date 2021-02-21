@@ -5,12 +5,14 @@ import { getSelectedAnim } from '../app/helpers'
 
 export const createAnim = (state, { ids }) => ({
   ...state,
+  panel: 'anims',
   select: {
     focus: 'anims',
     list: [state.anims.list.length]
   },
   anims: {
     ...state.anims,
+    index: state.anims.list.length,
     list: [...state.anims.list, {
       name: 'untitled',
       next: null,
@@ -47,7 +49,7 @@ export const deleteAnim = (state, { index }) => {
 
 export const selectAnim = (state, { index, opts }) => {
   const newState = deepClone(state)
-  if (state.select.focus !== 'anims') {
+  if (newState.select.focus !== 'anims') {
     newState.panel = 'anims'
     newState.select.focus = 'anims'
     newState.select.list = []
