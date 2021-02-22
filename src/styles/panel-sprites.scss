@@ -43,7 +43,7 @@ $banner-height: 56px;
       animation: 125ms banner-enter ease-in reverse;
     }
 
-    &.-all {
+    &.-all, &.-create {
       background: $pink;
 
       button {
@@ -54,9 +54,16 @@ $banner-height: 56px;
     button {
       background: white;
       color: $blue;
-      font-weight: bold;
-      padding: 8px 24px;
+      border: 2px solid transparent;
       border-radius: 4px;
+      padding: 8px 24px;
+      font-weight: bold;
+    }
+
+    button.-alt {
+      background: transparent;
+      color: white;
+      border-color: white;
     }
   }
 }

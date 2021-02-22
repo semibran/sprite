@@ -57,7 +57,6 @@ $track-height: $thumb-size + 16px;
   .frame-number {
     &.-disabled span {
       color: $silver;
-      border-color: $smoke;
     }
 
     &::after {
@@ -204,6 +203,14 @@ $track-height: $thumb-size + 16px;
 
     &:hover {
       background: $lightblue;
+    }
+  }
+
+  .track-name.-add.-creating {
+    color: $pink;
+
+    &:hover {
+      background: $lightpink;
     }
   }
 

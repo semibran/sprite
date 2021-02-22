@@ -9,7 +9,7 @@ import AnimsEditor from './editor-anims'
 
 export default function App (state, dispatch) {
   return m('main.app', [
-    Header({ title: state.project.name }, dispatch),
+    Header({ title: state.project && state.project.name }, dispatch),
     m('.content', [
       SpritesPanel(state, dispatch),
       state.panel === 'sprites' && SpritesEditor(state, dispatch),

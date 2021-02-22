@@ -112,6 +112,7 @@ export default function SpritesPanel (state, dispatch) {
         })
       ])
     ]),
-    sprites.length > 0 && Banner(state, dispatch)
+    (sprites.length > 0 || state.anims.creating) &&
+      Banner(state, dispatch)
   ])
 }

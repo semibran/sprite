@@ -33,7 +33,7 @@ export default function PropsPanel (state, dispatch) {
   if (isNoneSelected(state)) {
     name = 'Project'
     panel = ProjectPanel({ project: state.project, sprites: state.sprites.list, anims: state.anims.list })
-  } else if (sprites.length === 1) {
+  } else if (sprites.length === 1 && sprite) {
     name = 'Sprite'
     panel = SpritePanel({ sprite })
   } else if (sprites.length > 1) {

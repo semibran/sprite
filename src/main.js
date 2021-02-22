@@ -36,7 +36,8 @@ const initialState = {
       pos: { x: 0, y: 0 },
       scale: 2
     },
-    index: 0
+    index: 0,
+    creating: false
   },
   timeline: {
     index: 0,

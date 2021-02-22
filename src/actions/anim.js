@@ -36,6 +36,16 @@ export const createAnim = (state, { ids }) => ({
   }
 })
 
+export const startCreateAnim = (state) => ({
+  ...state,
+  anims: { ...state.anims, creating: true }
+})
+
+export const stopCreateAnim = (state) => ({
+  ...state,
+  anims: { ...state.anims, creating: false }
+})
+
 export const deleteAnim = (state, { index }) => {
   const newState = deepClone(state)
   const anims = newState.anims.list

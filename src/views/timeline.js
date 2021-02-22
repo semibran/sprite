@@ -10,6 +10,7 @@ import { selectFrame, deleteFrame } from '../actions/frame'
 import {
   selectAnim,
   createAnim,
+  startCreateAnim,
   deleteAnim,
   renameAnim,
   startRenameAnim
@@ -152,9 +153,12 @@ export default function Timeline (state, dispatch) {
           ])
         ),
         m('tr.timeline-track', [
-          m('td.track-name.-add', [
+          m('td.track-name.-add', {
+            class: state.anims.creating ? '-creating' : '',
+            onclick: () => dispatch(startCreateAnim)
+          }, [
             m('span.icon.material-icons-round', 'add'),
-            'Create new'
+            state.anims.creating ? 'Waiting...' : 'Create new'
           ]),
           getSelectedSprites(state).length
             ? m('td', { colspan: maxframes }, [
