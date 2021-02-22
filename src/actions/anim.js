@@ -38,8 +38,14 @@ export const createAnim = (state, { ids }) => ({
 
 export const deleteAnim = (state, { index }) => {
   const newState = deepClone(state)
-  newState.anims.list.splice(index, 1)
-  if (newState.anims.index >= newState.anims.list.length) {
+  const anims = newState.anims.list
+  anims.splice(index, 1)
+  anims.forEach((anim) => {
+    if (anim.next >= index) {
+      anim.next--
+    }
+  })
+  if (newState.anims.index >= anims.length) {
     if (--newState.anims.index < 0) {
       newState.select.focus = 'sprites'
       newState.panel = 'sprites'

@@ -1,5 +1,6 @@
 
 import m from 'mithril'
+import cc from 'classcat'
 
 import Panel from './panel'
 import TimelineControls from './timeline-controls'
@@ -72,6 +73,7 @@ const Frame = ({ state, anim }, dispatch) => (frame, j) => {
 export default function Timeline (state, dispatch) {
   const shown = state.panels.timeline
   const anim = getSelectedAnim(state)
+  const duration = anim && getAnimDuration(anim)
   const frame = getSelectedFrame(state)
   const maxframes = state.anims.list.reduce((max, anim) => {
     const duration = getAnimDuration(anim)
@@ -90,9 +92,12 @@ export default function Timeline (state, dispatch) {
           TimelineControls(state, dispatch),
           new Array(maxframes).fill(0).map((_, i) => {
             const focus = state.panel === 'anims' && getFrameIndex(anim, frame) === i
-            return m('th.frame-number', { class: focus ? '-focus' : '' }, [
-              m('span', i + 1)
-            ])
+            return m('th.frame-number', {
+              class: cc({
+                '-focus': focus,
+                '-disabled': i >= duration
+              })
+            }, m('span', i + 1))
           }),
           m('th.track-end')
         ]),

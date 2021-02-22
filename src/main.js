@@ -65,7 +65,10 @@ store.subscribe(m.redraw)
 const dataURL = localStorage.getItem('image')
 const useImage = (image) => {
   cache.image = image
-  store.dispatch({ type: 'useImage' })
+  store.dispatch(actions.useImage)
+  if (store.getState().timeline.playing) {
+    store.dispatch(actions.startPlay)
+  }
 }
 
 if (dataURL) {

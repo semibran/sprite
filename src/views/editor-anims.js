@@ -28,8 +28,8 @@ const fill = (canvas, x, y, scale) => {
   const rows = Math.ceil(canvas.height / tileSize)
   const xoffset = Math.round(x % patternSize + (canvas.width / 2) % patternSize)
   const yoffset = Math.round(y % patternSize + (canvas.height / 2) % patternSize)
-  for (let y = 0; y < rows + 5; y++) {
-    for (let x = 0; x < cols + 5; x++) {
+  for (let y = 0; y < rows + 6; y++) {
+    for (let x = 0; x < cols + 6; x++) {
       if ((x + y) % 2) {
         context.fillStyle = '#ccc'
         context.fillRect(

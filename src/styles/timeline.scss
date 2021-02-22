@@ -55,6 +55,11 @@ $track-height: $thumb-size + 16px;
   }
 
   .frame-number {
+    &.-disabled span {
+      color: $silver;
+      border-color: $smoke;
+    }
+
     &::after {
       content: '';
       display: block;
@@ -175,7 +180,7 @@ $track-height: $thumb-size + 16px;
 .timeline-track {
   position: relative;
 
-  &:not(:last-child) {
+  .track-name {
     cursor: pointer;
   }
 

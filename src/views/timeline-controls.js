@@ -13,9 +13,13 @@ export const toggleOnionSkin = (state) => ({
 
 export const togglePlay = (dispatch, getState) => {
   if (getState().timeline.playing) {
-    return dispatch(pauseAnim)
+    dispatch(pauseAnim)
+  } else {
+    dispatch(startPlay)
   }
+}
 
+export const startPlay = (dispatch, getState) => {
   dispatch(playAnim)
   requestAnimationFrame(function animate () {
     if (getState().timeline.playing) {
