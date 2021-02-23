@@ -114,7 +114,7 @@ export default function AnimsEditor (state, dispatch) {
     context.globalAlpha = 1
     rect = drawFrame(vnode, frame)
 
-    if (hover || drag) {
+    if (hover || drag || state.select.focus === 'timeline') {
       context.strokeStyle = drag ? blue : 'rgba(0, 0, 0, 0.5)'
       context.strokeRect(rect.x, rect.y, rect.width, rect.height)
     }

@@ -1,12 +1,9 @@
 
 import handleAnims from './keybind-anims'
+import handleTimeline from './keybind-timeline'
 
 const handleSprites = (state, dispatch) => (evt) => {
   // editor controls
-}
-
-const handleTimeline = (state, dispatch) => (evt) => {
-  // nudge controls
 }
 
 const onkeydown = (store) => (evt) => {
