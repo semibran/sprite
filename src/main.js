@@ -7,6 +7,7 @@ import loadImage from 'img-load'
 import thunk from './lib/rethunk'
 import reduce from './lib/combine-reducers'
 import App from './views/app'
+import onkeydown from './app/keybind'
 import cache from './app/cache'
 import * as actions from './actions'
 
@@ -79,6 +80,8 @@ if (dataURL) {
 } else {
   loadImage('../tmp/copen.png').then(useImage)
 }
+
+window.addEventListener('keydown', onkeydown(store))
 
 m.mount(document.body, () => ({
   view: () => App(store.getState(), store.dispatch)
