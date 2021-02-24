@@ -159,7 +159,7 @@ export default function AnimsEditor (state, dispatch) {
         return false
       }
 
-      newHover = rect && rectContains(rect, offsetX, offsetY)
+      const newHover = rect && rectContains(rect, offsetX, offsetY)
       if (hover !== newHover) {
         hover = newHover
         m.redraw()
