@@ -199,7 +199,7 @@ $track-height: $thumb-size + 16px;
   .track-name.-add {
     cursor: pointer;
     color: $blue;
-    box-shadow: 0 1px $silver;
+    border-bottom: thin solid $silver;
 
     &:hover {
       background: $lightblue;
@@ -207,11 +207,9 @@ $track-height: $thumb-size + 16px;
   }
 
   .track-name.-add.-creating {
+    background: $lightpink;
     color: $pink;
-
-    &:hover {
-      background: $lightpink;
-    }
+    border-color: $pink;
   }
 
   .track-prompt {

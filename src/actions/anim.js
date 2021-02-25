@@ -38,7 +38,16 @@ export const createAnim = (state, { ids }) => ({
 
 export const startCreateAnim = (state) => ({
   ...state,
-  anims: { ...state.anims, creating: true }
+  panel: 'sprites',
+  select: {
+    ...state.select,
+    focus: 'sprites',
+    list: []
+  },
+  anims: {
+    ...state.anims,
+    creating: true
+  }
 })
 
 export const stopCreateAnim = (state) => ({
