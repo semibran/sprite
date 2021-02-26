@@ -20,6 +20,16 @@ export const selectSprite = (state, { index, opts }) => {
   return newState
 }
 
+export const selectAllSprites = (state) => {
+  const newState = deepClone(state)
+  if (state.select.focus !== 'sprites') {
+    newState.panel = 'sprites'
+    newState.select.focus = 'sprites'
+  }
+  newState.select.list = new Array(newState.sprites.list.length).fill().map((_, i) => i)
+  return newState
+}
+
 export const mergeSprites = (state) => {
   if (getSelectedSprites(state).length < 2) {
     return state

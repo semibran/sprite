@@ -1,23 +1,16 @@
 
+import handleSprites from './keybind-sprites'
 import handleAnims from './keybind-anims'
 import handleTimeline from './keybind-timeline'
-
-const handleSprites = (state, dispatch) => (evt) => {
-  // editor controls
-}
 
 const onkeydown = (store) => (evt) => {
   const state = store.getState()
   const dispatch = store.dispatch
-
   const handler = ((focus) => {
     switch (focus) {
-      case 'sprites':
-        return handleSprites
-      case 'anims':
-        return handleAnims
-      case 'timeline':
-        return handleTimeline
+      case 'sprites': return handleSprites
+      case 'anims': return handleAnims
+      case 'timeline': return handleTimeline
     }
   })(state.select.focus)
 
