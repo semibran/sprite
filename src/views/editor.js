@@ -1,6 +1,7 @@
 
 import m from 'mithril'
 import cc from 'classcat'
+import cache from '../app/cache'
 import lerp from 'lerp'
 import contains from '../lib/rect-contains'
 import Anim from '../lib/anim'
@@ -155,6 +156,7 @@ export default function Editor ({ attrs }) {
   const onzoomend = (evt) => {
     if (pan) return
     const newScale = adjustScale(scale)
+    cache.zoom = newScale
     if (scale !== newScale) {
       const mouse = getMousePos(evt.pageX, evt.pageY)
       const image = transformPos(mouse.x, mouse.y)

@@ -2,6 +2,7 @@
 import m from 'mithril'
 import cache from '../app/cache'
 import Editor from './editor'
+import EditorToolbar from './editor-toolbar'
 import rectContains from '../lib/rect-contains'
 import rectIntersects from '../lib/rect-intersects'
 import rectFromPoints from '../lib/rect-from-points'
@@ -95,10 +96,6 @@ export default function SpritesEditor (state, dispatch) {
         context.lineWidth = 2
         context.strokeStyle = blue
         context.strokeRect(x, y, width, height)
-      } else {
-        context.lineWidth = 1
-        context.strokeStyle = 'rgba(0, 0, 0, 0.5)'
-        context.strokeRect(x - 0.5, y - 0.5, width + 1, height + 1)
       }
 
       context.drawImage(cache.sprites[i], x, y)
@@ -154,61 +151,64 @@ export default function SpritesEditor (state, dispatch) {
     sprites.filter((sprite) => rectIntersects(sprite.rect, rect))
       .map((sprite) => sprites.indexOf(sprite))
 
-  return m(Editor, {
-    ...transform,
-    class: '-sprites',
-    hover: hover !== -1,
-    onrender,
-    onmousedown: ({ x, y, contained }) => {
-      const id = contained ? findIndex(sprites, x, y) : -1
-      if (id !== -1) {
-        range.start = { x, y }
-      }
-    },
-    onmousemove: ({ x, y, contained }) => {
-      if (range.start) {
-        range.end = { x, y }
-        range.rect = rectFromPoints(range.start, range.end)
-        m.redraw()
-        return false
-      }
+  return m('.editor-wrap', [
+    EditorToolbar(state, dispatch),
+    m(Editor, {
+      ...transform,
+      class: '-sprites',
+      hover: hover !== -1,
+      onrender,
+      onmousedown: ({ x, y, contained }) => {
+        const id = contained ? findIndex(sprites, x, y) : -1
+        if (id !== -1) {
+          range.start = { x, y }
+        }
+      },
+      onmousemove: ({ x, y, contained }) => {
+        if (range.start) {
+          range.end = { x, y }
+          range.rect = rectFromPoints(range.start, range.end)
+          m.redraw()
+          return false
+        }
 
-      const id = contained ? findIndex(sprites, x, y) : -1
-      if (hover !== id) {
-        hover = id
-        m.redraw()
-      }
-    },
-    onmouseup: ({ x, y }) => {
-      if (range.rect && range.rect.width > 2 && range.rect.height > 2) {
-        const ids = findIndexes(sprites, range.rect)
-        ids.forEach((id) => {
+        const id = contained ? findIndex(sprites, x, y) : -1
+        if (hover !== id) {
+          hover = id
+          m.redraw()
+        }
+      },
+      onmouseup: ({ x, y }) => {
+        if (range.rect && range.rect.width > 2 && range.rect.height > 2) {
+          const ids = findIndexes(sprites, range.rect)
+          ids.forEach((id) => {
+            dispatch(selectSprite, {
+              index: id,
+              opts: { ctrl: true }
+            })
+          })
+        }
+        range.start = null
+        range.end = null
+        range.rect = null
+      },
+      onclick: ({ x, y, ctrl, shift }) => {
+        const id = findIndex(sprites, x, y)
+        if (id !== -1) {
           dispatch(selectSprite, {
             index: id,
-            opts: { ctrl: true }
+            opts: { ctrl: ctrl || shift }
           })
-        })
+        } else if (state.select.list.length) {
+          dispatch(deselectSprites)
+        }
+      },
+      onpan: ({ x, y }) => {
+        dispatch(panSpriteEditor, { x, y })
+      },
+      onzoom: (scale) => {
+        dispatch(zoomSpriteEditor, scale)
       }
-      range.start = null
-      range.end = null
-      range.rect = null
-    },
-    onclick: ({ x, y, ctrl, shift }) => {
-      const id = findIndex(sprites, x, y)
-      if (id !== -1) {
-        dispatch(selectSprite, {
-          index: id,
-          opts: { ctrl: ctrl || shift }
-        })
-      } else if (state.select.list.length) {
-        dispatch(deselectSprites)
-      }
-    },
-    onpan: ({ x, y }) => {
-      dispatch(panSpriteEditor, { x, y })
-    },
-    onzoom: (scale) => {
-      dispatch(zoomSpriteEditor, scale)
-    }
-  })
+    })
+  ])
 }

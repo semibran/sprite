@@ -1,3 +1,44 @@
+.editor-wrap {
+  flex: 3;
+  display: flex;
+  flex-direction: column;
+}
+
+.editor-toolbar {
+  background: white;
+  border-bottom: thin solid $silver;
+  padding: 0 16px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  & > * {
+    display: flex;
+    align-items: center;
+  }
+}
+
+.editor-tools .tool + .tool {
+  margin-left: 8px;
+}
+
+.editor-zoom input {
+  outline: 0;
+  width: 1px;
+}
+
+.editor-zoom .input-wrap {
+  cursor: text;
+  border: thin solid $silver;
+  padding: 4px 8px;
+  margin: 0 8px;
+
+  &:focus-within {
+    border-color: $blue;
+  }
+}
+
 .editor.-sprites {
   canvas {
     border: thin solid $gray;

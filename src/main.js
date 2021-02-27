@@ -53,6 +53,7 @@ Object.assign(cache, {
   image: null,
   timeout: null,
   sprites: [],
+  zoom: 1,
   messages: {}
 })
 
