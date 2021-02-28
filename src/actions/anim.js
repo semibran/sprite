@@ -205,3 +205,22 @@ export const nextFrame = (state) => {
   }
   return { ...state, timeline }
 }
+
+export const firstFrame = (state) => ({
+  ...state,
+  timeline: {
+    ...state.timeline,
+    playing: false,
+    subindex: 0,
+    index: 0
+  }
+})
+
+export const lastFrame = (state) => {
+  const timeline = deepClone(state.timeline)
+  const anim = getSelectedAnim(state)
+  timeline.playing = false
+  timeline.subindex = 0
+  timeline.index = getAnimDuration(anim) - 1
+  return { ...state, timeline }
+}

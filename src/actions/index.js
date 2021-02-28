@@ -53,3 +53,9 @@ export const exportData = (dispatch, getState) => {
   const filename = `${state.project.name}.json`
   download(url, filename)
 }
+
+export const shift = (state) =>
+  ({ ...state, shift: true })
+
+export const unshift = (state) =>
+  ({ ...state, shift: false })

@@ -15,7 +15,7 @@ const EditorToolbar = (state, dispatch) => {
     ]),
     m('.editor-zoom', [
       m('label.input-wrap', { for: 'zoom' }, [
-        m('input#zoom', { type: 'number', value: '1' }),
+        m('input#zoom', { value: zoom + '%' }),
         m('span.input-text', zoom + '%')
       ]),
       m('span.icon.material-icons-round', 'crop_free')

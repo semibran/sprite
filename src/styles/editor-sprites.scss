@@ -23,16 +23,21 @@
   margin-left: 8px;
 }
 
-.editor-zoom input {
-  outline: 0;
-  width: 1px;
-}
-
 .editor-zoom .input-wrap {
   cursor: text;
   border: thin solid $silver;
   padding: 4px 8px;
   margin: 0 8px;
+
+  input {
+    outline: 0;
+    position: absolute;
+    max-width: 72px;
+  }
+
+  span {
+    opacity: 0;
+  }
 
   &:focus-within {
     border-color: $blue;

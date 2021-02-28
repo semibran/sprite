@@ -7,12 +7,13 @@ import loadImage from 'img-load'
 import thunk from './lib/rethunk'
 import reduce from './lib/combine-reducers'
 import App from './views/app'
-import onkeydown from './app/keybind'
+import { onkeydown, onkeyup } from './app/keybind'
 import cache from './app/cache'
 import * as actions from './actions'
 
 const initialState = {
   project: { name: 'Untitled' },
+  shift: false,
   panel: 'sprites',
   panels: {
     sprites: true,
@@ -83,6 +84,7 @@ if (dataURL) {
 }
 
 window.addEventListener('keydown', onkeydown(store))
+window.addEventListener('keyup', onkeyup(store))
 
 m.mount(document.body, () => ({
   view: () => App(store.getState(), store.dispatch)

@@ -2,10 +2,11 @@
 import handleSprites from './keybind-sprites'
 import handleAnims from './keybind-anims'
 import handleTimeline from './keybind-timeline'
+import { shift, unshift } from '../actions'
 
-const onkeydown = (store) => (evt) => {
-  const state = store.getState()
-  const dispatch = store.dispatch
+export const onkeydown = ({ getState, dispatch }) => (evt) => {
+  const state = getState()
+
   const handler = ((focus) => {
     switch (focus) {
       case 'sprites': return handleSprites
@@ -17,6 +18,14 @@ const onkeydown = (store) => (evt) => {
   if (handler) {
     handler(state, dispatch)(evt)
   }
+
+  if (evt.key === 'Shift') {
+    dispatch(shift)
+  }
 }
 
-export default onkeydown
+export const onkeyup = ({ getState, dispatch }) => (evt) => {
+  if (evt.key === 'Shift') {
+    dispatch(unshift)
+  }
+}

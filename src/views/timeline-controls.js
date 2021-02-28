@@ -1,6 +1,12 @@
 
 import m from 'mithril'
-import { togglePlay, prevFrame, nextFrame } from '../actions/anim'
+import {
+  togglePlay,
+  prevFrame,
+  nextFrame,
+  firstFrame,
+  lastFrame
+} from '../actions/anim'
 
 export const toggleOnionSkin = (state) => ({
   ...state,
@@ -15,18 +21,26 @@ export default function TimelineControls (state, dispatch) {
   return m('th.timeline-controls', [
     m('.control-group', [
       m('button', [
-        m('span.icon.-prev.material-icons-round', {
-          onclick: () => dispatch(prevFrame)
-        }, 'eject')
+        state.panel === 'anims' && state.shift
+          ? m('span.icon.material-icons-round', {
+              onclick: () => dispatch(firstFrame)
+            }, 'skip_previous')
+          : m('span.icon.-prev.material-icons-round', {
+            onclick: () => dispatch(prevFrame)
+          }, 'eject')
       ]),
       m('button.-play.material-icons-round', {
         class: timeline.playing ? '-toggle' : '',
         onclick: () => dispatch(togglePlay)
       }, timeline.playing ? 'pause' : 'play_arrow'),
       m('button', [
-        m('span.icon.-next.material-icons-round', {
-          onclick: () => dispatch(nextFrame)
-        }, 'eject')
+        state.panel === 'anims' && state.shift
+          ? m('span.icon.material-icons-round', {
+              onclick: () => dispatch(lastFrame)
+            }, 'skip_next')
+          : m('span.icon.-next.material-icons-round', {
+            onclick: () => dispatch(nextFrame)
+          }, 'eject')
       ])
     ]),
     m('.control-group', [
