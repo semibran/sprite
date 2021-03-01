@@ -24,6 +24,7 @@ import {
   getAnimDuration,
   getSelectedFrame,
   getFrameAt,
+  getFramesAt,
   getFrameIndex
 } from '../app/helpers'
 
@@ -41,6 +42,8 @@ export const hideTimeline = (state) => ({
 
 const Frame = ({ state, anim }, dispatch) => (frame, j) => {
   const i = state.anims.list.indexOf(anim)
+  const selected = state.select.focus === 'timeline' &&
+    getFramesAt(anim, state.select.list).includes(frame)
   const focus = state.panel === 'anims' &&
     state.anims.index === i &&
     getFrameAt(anim, state.timeline.index) === frame
@@ -50,7 +53,7 @@ const Frame = ({ state, anim }, dispatch) => (frame, j) => {
     colspan: frame.duration > 1 && frame.duration
   }, [
     m('.thumb', {
-      class: focus ? '-select' : '',
+      class: focus || selected ? '-select' : '',
       onclick: (evt) => dispatch(selectFrame, {
         animid: i,
         frameid: j,
