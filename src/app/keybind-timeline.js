@@ -1,10 +1,18 @@
 
 import handleAnims from './keybind-anims'
-import { setFrameOrigin } from '../actions/frame'
 import { getSelectedFrame } from './helpers'
+import {
+  selectAllFrames,
+  setFrameOrigin
+} from '../actions/frame'
 
 const handleTimeline = (state, dispatch) => (evt) => {
   handleAnims(state, dispatch)(evt)
+
+  const ctrl = evt.ctrlKey || evt.metaKey
+  if (evt.code === 'KeyA' && ctrl) {
+    return dispatch(selectAllFrames)
+  }
 
   const delta = evt.shiftKey ? 10 : 1
   const frame = getSelectedFrame(state)

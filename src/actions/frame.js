@@ -44,6 +44,13 @@ export const selectFrame = (state, { frameid, animid, opts }) => {
   return newState
 }
 
+export const selectAllFrames = (state) => {
+  const newState = deepClone(state)
+  const anim = getSelectedAnim(newState)
+  newState.select.list = anim.frames.map((_, i) => i)
+  return newState
+}
+
 export const deleteFrame = (state) => {
   const newState = deepClone(state)
   const anim = getSelectedAnim(newState)
