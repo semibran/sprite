@@ -35,6 +35,13 @@ export const getSelectedFrame = (state) => {
   return anim ? getFrameAt(anim, state.timeline.index) : null
 }
 
+export const getSelectedFrames = (state) => {
+  const anim = getSelectedAnim(state)
+  return anim && state.select.focus === 'timeline'
+    ? getFramesAt(anim, state.select.list)
+    : null
+}
+
 export const isEmptyAnim = (anim) =>
   anim.frames.length === 1 && !anim.frames[0].sprite
 

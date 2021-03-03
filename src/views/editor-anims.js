@@ -6,7 +6,9 @@ import cache from '../app/cache'
 import {
   getSelectedAnim,
   getSelectedFrame,
-  getFrameAt
+  getSelectedFrames,
+  getFrameAt,
+  getFramesAt
 } from '../app/helpers'
 import { setFrameOrigin } from '../actions/frame'
 
@@ -101,14 +103,29 @@ export default function AnimsEditor (state, dispatch) {
     const context = canvas.getContext('2d')
     context.imageSmoothingEnabled = false
 
-    if (state.timeline.onionskin && !state.timeline.playing) {
+    const { onionskin, playing, index } = state.timeline
+    if (onionskin && !playing) {
       const anim = getSelectedAnim(state)
-      const prev = getFrameAt(anim, state.timeline.index - 1)
-      const next = getFrameAt(anim, state.timeline.index + 1)
-      context.globalAlpha = 0.25
-      drawFrame(vnode, next)
-      context.globalAlpha = 0.5
-      drawFrame(vnode, prev)
+      if (state.select.list.length === 1) {
+        const prev = getFrameAt(anim, index - 1)
+        const next = getFrameAt(anim, index + 1)
+        context.globalAlpha = 0.25
+        drawFrame(vnode, next)
+        context.globalAlpha = 0.5
+        drawFrame(vnode, prev)
+      } else {
+        const frames = getFramesAt(anim, state.select.list)
+        const framesBefore = frames.slice(0, index)
+        const framesAfter = frames.slice(index + 1, frames.length)
+        framesBefore.forEach((frame) => {
+          context.globalAlpha = 0.25
+          drawFrame(vnode, frame)
+        })
+        framesAfter.forEach((frame) => {
+          context.globalAlpha = 0.5
+          drawFrame(vnode, frame)
+        })
+      }
     }
 
     context.globalAlpha = 1
